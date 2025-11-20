@@ -349,6 +349,32 @@
         .legend-occupied { background-color: #ffebee; }
         .legend-my-seat { background-color: #FFF3E0; }
         .legend-operator { background-color: #2196F3; }
+        
+        /* ESTILOS PARA HOSPEDAJE */
+        .hospedaje-section {
+            background-color: #fff3e0;
+            border: 1px solid #ffb74d;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .habitacion-info {
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .mi-hospedaje-info {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .companeros-input {
+            margin-bottom: 5px;
+        }
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
@@ -692,6 +718,41 @@
                     </select>
                 </div>
             </div>
+
+            <!-- SISTEMA DE HOSPEDAJE -->
+            <div id="hospedaje-section" class="hospedaje-section" style="display: none;">
+                <h3>🏨 Sistema de Hospedaje</h3>
+                
+                <div class="form-group">
+                    <label for="habitacion-select">Seleccionar Habitación:</label>
+                    <select id="habitacion-select">
+                        <option value="">Elegir habitación...</option>
+                    </select>
+                </div>
+
+                <div id="info-habitacion" style="display: none;">
+                    <div class="habitacion-info">
+                        <strong>Información de la habitación:</strong>
+                        <div id="detalles-habitacion"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>👥 Compañeros de habitación:</label>
+                        <input type="text" id="companero1" class="companeros-input" placeholder="Nombre del compañero 1">
+                        <input type="text" id="companero2" class="companeros-input" placeholder="Nombre del compañero 2">
+                        <input type="text" id="companero3" class="companeros-input" placeholder="Nombre del compañero 3">
+                        <small style="color: #666;">Solo llena los campos para tus compañeros</small>
+                    </div>
+
+                    <button id="confirmar-hospedaje-btn" class="btn-secondary">✅ Confirmar Hospedaje</button>
+                    <button id="liberar-hospedaje-btn" class="remove-btn" style="display: none; width: auto;">🚫 Liberar Habitación</button>
+                </div>
+
+                <div id="mi-hospedaje-info" class="mi-hospedaje-info" style="display: none;">
+                    <strong>Tu hospedaje actual:</strong>
+                    <div id="detalles-mi-hospedaje"></div>
+                </div>
+            </div>
             
             <button id="assign-btn" disabled>Asignar Asiento</button>
             <button id="change-seat-btn" class="btn-secondary" disabled>Cambiar de Asiento</button>
@@ -748,6 +809,14 @@
             const adminControls = document.getElementById('admin-controls');
             const clearAllBtn = document.getElementById('clear-all-btn');
             
+            // Elementos de hospedaje
+            const hospedajeSection = document.getElementById('hospedaje-section');
+            const habitacionSelect = document.getElementById('habitacion-select');
+            const infoHabitacion = document.getElementById('info-habitacion');
+            const confirmarHospedajeBtn = document.getElementById('confirmar-hospedaje-btn');
+            const liberarHospedajeBtn = document.getElementById('liberar-hospedaje-btn');
+            const miHospedajeInfo = document.getElementById('mi-hospedaje-info');
+            
             let selectedSeat = null;
             let currentUser = generarUsuarioUnico();
             let anticipoConfirmado = false;
@@ -768,6 +837,188 @@
                 'logistica_2023': 'LICENCIATURA EN INGENIERIA EN LOGÍSTICA Plan 2023',
                 'sistemas_2025': 'LICENCIATURA EN INGENIERIA EN TECNOLOGÍAS Y SISTEMAS COMPUTACIONALES Plan 2025'
             };
+
+            // Inicializar sistema de hospedaje
+            function inicializarSistemaHospedaje() {
+                // Mostrar sección de hospedaje solo si tiene asiento asignado
+                database.ref('asientos').on('value', (snapshot) => {
+                    const asientosData = snapshot.val() || {};
+                    let tieneAsiento = false;
+                    
+                    for (const seatNum in asientosData) {
+                        if (asientosData[seatNum].usuario === currentUser) {
+                            tieneAsiento = true;
+                            break;
+                        }
+                    }
+                    
+                    hospedajeSection.style.display = tieneAsiento ? 'block' : 'none';
+                });
+
+                // Cargar habitaciones disponibles
+                function cargarHabitaciones() {
+                    database.ref('hospedajes/hotelUnico/habitaciones').on('value', (snapshot) => {
+                        const habitaciones = snapshot.val() || {};
+                        habitacionSelect.innerHTML = '<option value="">Elegir habitación...</option>';
+                        
+                        for (const habitacionId in habitaciones) {
+                            const habitacion = habitaciones[habitacionId];
+                            const ocupados = Object.keys(habitacion.ocupantes || {}).length;
+                            const disponibles = habitacion.capacidad - ocupados;
+                            const disponible = disponibles > 0;
+                            
+                            const option = document.createElement('option');
+                            option.value = habitacionId;
+                            option.textContent = `Habitación ${habitacionId} (${habitacion.tipo}) - ${disponibles}/${habitacion.capacidad} disponibles`;
+                            option.disabled = !disponible;
+                            habitacionSelect.appendChild(option);
+                        }
+                    });
+                }
+
+                // Mostrar información de habitación seleccionada
+                habitacionSelect.addEventListener('change', function() {
+                    const habitacionId = this.value;
+                    if (habitacionId) {
+                        database.ref(`hospedajes/hotelUnico/habitaciones/${habitacionId}`).once('value').then((snapshot) => {
+                            const habitacion = snapshot.val();
+                            const ocupados = Object.keys(habitacion.ocupantes || {}).length;
+                            const disponibles = habitacion.capacidad - ocupados;
+                            
+                            document.getElementById('detalles-habitacion').innerHTML = `
+                                Habitación ${habitacionId} - ${habitacion.tipo}<br>
+                                Capacidad: ${habitacion.capacidad} personas<br>
+                                Disponibles: ${disponibles} lugares<br>
+                                ${ocupados > 0 ? `Ocupantes: ${Object.values(habitacion.ocupantes).map(o => o.nombre).join(', ')}` : ''}
+                            `;
+                            infoHabitacion.style.display = 'block';
+                        });
+                    } else {
+                        infoHabitacion.style.display = 'none';
+                    }
+                });
+
+                // Confirmar hospedaje
+                confirmarHospedajeBtn.addEventListener('click', function() {
+                    const habitacionId = habitacionSelect.value;
+                    if (!habitacionId) {
+                        alert('Selecciona una habitación primero');
+                        return;
+                    }
+
+                    // Obtener datos del alumno desde el asiento
+                    database.ref('asientos').orderByChild('usuario').equalTo(currentUser).once('value').then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const asientoData = Object.values(snapshot.val())[0];
+                            const companeros = [
+                                document.getElementById('companero1').value.trim(),
+                                document.getElementById('companero2').value.trim(), 
+                                document.getElementById('companero3').value.trim()
+                            ].filter(nombre => nombre !== '');
+
+                            const datosHospedaje = {
+                                nombre: asientoData.nombre,
+                                matricula: asientoData.matricula,
+                                companeros: companeros,
+                                timestamp: firebase.database.ServerValue.TIMESTAMP
+                            };
+
+                            // Guardar en Firebase
+                            database.ref(`hospedajes/hotelUnico/habitaciones/${habitacionId}/ocupantes/${currentUser}`).set(datosHospedaje)
+                                .then(() => {
+                                    alert('✅ Hospedaje confirmado correctamente');
+                                    actualizarMiHospedajeInfo();
+                                })
+                                .catch(error => {
+                                    alert('❌ Error: ' + error.message);
+                                });
+                        }
+                    });
+                });
+
+                // Liberar hospedaje
+                liberarHospedajeBtn.addEventListener('click', function() {
+                    if (confirm('¿Estás seguro de que quieres liberar tu hospedaje?')) {
+                        // Buscar y eliminar el hospedaje del usuario
+                        database.ref('hospedajes/hotelUnico/habitaciones').once('value').then((snapshot) => {
+                            const habitaciones = snapshot.val() || {};
+                            for (const habitacionId in habitaciones) {
+                                if (habitaciones[habitacionId].ocupantes && habitaciones[habitacionId].ocupantes[currentUser]) {
+                                    database.ref(`hospedajes/hotelUnico/habitaciones/${habitacionId}/ocupantes/${currentUser}`).remove()
+                                        .then(() => {
+                                            alert('✅ Hospedaje liberado correctamente');
+                                            actualizarMiHospedajeInfo();
+                                        });
+                                    break;
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // Actualizar información de mi hospedaje
+                function actualizarMiHospedajeInfo() {
+                    database.ref('hospedajes/hotelUnico/habitaciones').once('value').then((snapshot) => {
+                        const habitaciones = snapshot.val() || {};
+                        let miHabitacion = null;
+                        
+                        for (const habitacionId in habitaciones) {
+                            if (habitaciones[habitacionId].ocupantes && habitaciones[habitacionId].ocupantes[currentUser]) {
+                                miHabitacion = {
+                                    id: habitacionId,
+                                    datos: habitaciones[habitacionId].ocupantes[currentUser],
+                                    info: habitaciones[habitacionId]
+                                };
+                                break;
+                            }
+                        }
+
+                        if (miHabitacion) {
+                            document.getElementById('detalles-mi-hospedaje').innerHTML = `
+                                Habitación ${miHabitacion.id} - ${miHabitacion.info.tipo}<br>
+                                ${miHabitacion.datos.companeros.length > 0 ? 
+                                    `Compañeros: ${miHabitacion.datos.companeros.join(', ')}` : 
+                                    'Sin compañeros asignados'
+                                }
+                            `;
+                            miHospedajeInfo.style.display = 'block';
+                            liberarHospedajeBtn.style.display = 'inline-block';
+                            confirmarHospedajeBtn.style.display = 'none';
+                            infoHabitacion.style.display = 'none';
+                        } else {
+                            miHospedajeInfo.style.display = 'none';
+                            liberarHospedajeBtn.style.display = 'none';
+                            confirmarHospedajeBtn.style.display = 'inline-block';
+                        }
+                    });
+                }
+
+                // Inicializar
+                cargarHabitaciones();
+                actualizarMiHospedajeInfo();
+                
+                // Inicializar estructura de hotel si no existe
+                database.ref('hospedajes/hotelUnico').once('value').then((snapshot) => {
+                    if (!snapshot.exists()) {
+                        const habitacionesIniciales = {
+                            "101": { tipo: "doble", capacidad: 2, ocupantes: {} },
+                            "102": { tipo: "doble", capacidad: 2, ocupantes: {} },
+                            "103": { tipo: "doble", capacidad: 2, ocupantes: {} },
+                            "104": { tipo: "individual", capacidad: 1, ocupantes: {} },
+                            "105": { tipo: "individual", capacidad: 1, ocupantes: {} },
+                            "201": { tipo: "doble", capacidad: 2, ocupantes: {} },
+                            "202": { tipo: "doble", capacidad: 2, ocupantes: {} },
+                            "203": { tipo: "triple", capacidad: 3, ocupantes: {} },
+                            "204": { tipo: "triple", capacidad: 3, ocupantes: {} }
+                        };
+                        
+                        database.ref('hospedajes/hotelUnico').set({
+                            nombre: "Hotel del Evento",
+                            habitaciones: habitacionesIniciales
+                        });
+                    }
+                });
+            }
 
             // Mostrar ID de usuario
             userIdElement.textContent = `ID de sesión: ${currentUser}`;
@@ -1185,6 +1436,9 @@
                     statusIndicator.style.backgroundColor = "#f44336";
                 }
             });
+
+            // Inicializar sistema de hospedaje
+            inicializarSistemaHospedaje();
         });
     </script>
 </body>
