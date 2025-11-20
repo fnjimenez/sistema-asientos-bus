@@ -99,6 +99,11 @@
             cursor: not-allowed;
             border-color: #999999;
         }
+        .seat.my-seat {
+            background-color: #FF9800;
+            color: white;
+            border-color: #F57C00;
+        }
         .section {
             margin-bottom: 20px;
         }
@@ -142,6 +147,19 @@
             background-color: #cccccc;
             cursor: not-allowed;
         }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
         .passenger-list {
             margin-top: 20px;
             max-height: 300px;
@@ -183,22 +201,37 @@
         .remove-btn:hover {
             background-color: #cc0000;
         }
-        .bus-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+        .bus-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
             gap: 5px;
+            align-items: center;
+        }
+        .column-label {
+            font-weight: bold;
             margin-bottom: 10px;
             text-align: center;
+            background-color: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 11px;
         }
-        .grid-header {
+        .aisle {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
             font-weight: bold;
-            font-size: 10px;
-            padding: 5px;
-            background-color: #f8f9fa;
-            border-radius: 3px;
-        }
-        .bus-row {
-            display: contents;
+            color: #666;
+            padding: 0 15px;
         }
         .real-time-indicator {
             background-color: #4CAF50;
@@ -230,13 +263,71 @@
             text-align: center;
             margin-bottom: 20px;
         }
+        .row-label {
+            font-size: 10px;
+            color: #666;
+            width: 20px;
+            text-align: center;
+        }
+        .seat-with-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .empty-space {
+            width: 45px;
+            height: 45px;
+        }
+        .admin-controls {
+            background-color: #e8f5e8;
+            border: 1px solid #4CAF50;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .admin-title {
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .my-seat-info {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .student-info-section {
+            background-color: #e3f2fd;
+            border: 1px solid #2196F3;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        .matricula-format {
+            font-size: 11px;
+            color: #666;
+            margin-top: 2px;
+        }
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
             }
-            .bus-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 3px;
+            .bus-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .form-row {
+                flex-direction: column;
             }
         }
     </style>
@@ -252,11 +343,15 @@
     <div class="connection-status">
         <h2>Sistema de Selección de Asientos <span class="real-time-indicator" id="status-indicator">Conectando...</span></h2>
         <div id="user-id" style="font-size: 12px; color: #666;"></div>
+        <div id="my-seat-info" class="my-seat-info" style="display: none;">
+            <strong>Tu asiento actual: <span id="current-seat-number">-</span></strong>
+            <button id="release-seat-btn" class="remove-btn" style="margin-left: 10px;">Liberar mi asiento</button>
+        </div>
     </div>
     
     <div class="container">
         <div class="bus-layout">
-            <h2>Distribución del Autobús</h2>
+            <h2>Distribución del Camioncito (37 Pasajeros)</h2>
             
             <div class="verification-section">
                 <div class="verification-question">¿Ya diste tu anticipo a los organizadores?</div>
@@ -277,105 +372,287 @@
 
             <div class="door">PUERTA</div>
 
-            <!-- ENCABEZADOS DE COLUMNAS -->
-            <div class="bus-grid">
-                <div class="grid-header">IZQUIERDA<br>VENTANA</div>
-                <div class="grid-header">IZQUIERDA<br>PASILLO</div>
-                <div class="grid-header">DERECHA<br>PASILLO</div>
-                <div class="grid-header">DERECHA<br>VENTANA</div>
-            </div>
+            <!-- DISTRIBUCIÓN EXACTA SEGÚN LA IMAGEN CON ASIENTO 35 -->
+            <div class="bus-container">
+                <!-- COLUMNA IZQUIERDA VENTANA -->
+                <div class="column">
+                    <div class="column-label">IZQUIERDA<br>VENTANA</div>
+                    <div class="seat-with-label">
+                        <div class="row-label">1</div>
+                        <div class="seat disabled" data-seat="1">1</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">2</div>
+                        <div class="seat disabled" data-seat="5">5</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">3</div>
+                        <div class="seat disabled" data-seat="9">9</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">4</div>
+                        <div class="seat disabled" data-seat="13">13</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">5</div>
+                        <div class="seat disabled" data-seat="17">17</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">6</div>
+                        <div class="seat disabled" data-seat="21">21</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">7</div>
+                        <div class="seat disabled" data-seat="25">25</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">8</div>
+                        <div class="seat disabled" data-seat="29">29</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">9</div>
+                        <div class="seat disabled" data-seat="31">31</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">10</div>
+                        <div class="seat disabled" data-seat="33">33</div>
+                    </div>
+                </div>
 
-            <!-- PRIMERA SECCIÓN - ASIENTOS 2-16 -->
-            <div class="section">
-                <div class="section-title">PASAJEROS SENTADOS</div>
-                <div class="bus-grid">
-                    <!-- Fila 1 -->
-                    <div class="seat disabled" data-seat="2">2</div>
-                    <div class="seat disabled" data-seat="4">4</div>
-                    <div class="seat disabled" data-seat="3">3</div>
-                    <div class="seat disabled" data-seat="5">5</div>
-                    
-                    <!-- Fila 2 -->
-                    <div class="seat disabled" data-seat="6">6</div>
-                    <div class="seat disabled" data-seat="8">8</div>
-                    <div class="seat disabled" data-seat="7">7</div>
-                    <div class="seat disabled" data-seat="9">9</div>
-                    
-                    <!-- Fila 3 -->
-                    <div class="seat disabled" data-seat="10">10</div>
-                    <div class="seat disabled" data-seat="12">12</div>
-                    <div class="seat disabled" data-seat="11">11</div>
-                    <div class="seat disabled" data-seat="13">13</div>
-                    
-                    <!-- Fila 4 -->
-                    <div class="seat disabled" data-seat="14">14</div>
-                    <div class="seat disabled" data-seat="16">16</div>
-                    <div class="seat disabled" data-seat="15">15</div>
-                    <div style="width: 45px;"></div> <!-- Espacio vacío -->
+                <!-- COLUMNA IZQUIERDA PASILLO -->
+                <div class="column">
+                    <div class="column-label">IZQUIERDA<br>PASILLO</div>
+                    <div class="seat-with-label">
+                        <div class="row-label">1</div>
+                        <div class="seat disabled" data-seat="2">2</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">2</div>
+                        <div class="seat disabled" data-seat="6">6</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">3</div>
+                        <div class="seat disabled" data-seat="10">10</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">4</div>
+                        <div class="seat disabled" data-seat="14">14</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">5</div>
+                        <div class="seat disabled" data-seat="18">18</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">6</div>
+                        <div class="seat disabled" data-seat="22">22</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">7</div>
+                        <div class="seat disabled" data-seat="26">26</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">8</div>
+                        <div class="seat disabled" data-seat="30">30</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">9</div>
+                        <div class="seat disabled" data-seat="32">32</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">10</div>
+                        <div class="seat disabled" data-seat="34">34</div>
+                    </div>
+                </div>
+
+                <!-- PASILLO CENTRAL -->
+                <div class="aisle">
+                    <div>↕</div>
+                    <div>PASILLO</div>
+                    <div>↕</div>
+                </div>
+
+                <!-- COLUMNA DERECHA PASILLO -->
+                <div class="column">
+                    <div class="column-label">DERECHA<br>PASILLO</div>
+                    <div class="seat-with-label">
+                        <div class="row-label">1</div>
+                        <div class="seat disabled" data-seat="4">4</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">2</div>
+                        <div class="seat disabled" data-seat="8">8</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">3</div>
+                        <div class="seat disabled" data-seat="12">12</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">4</div>
+                        <div class="seat disabled" data-seat="16">16</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">5</div>
+                        <div class="seat disabled" data-seat="20">20</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">6</div>
+                        <div class="seat disabled" data-seat="24">24</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">7</div>
+                        <div class="seat disabled" data-seat="28">28</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">8</div>
+                        <div class="empty-space"></div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">9</div>
+                        <div class="empty-space"></div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">10</div>
+                        <div class="seat disabled" data-seat="37">37</div>
+                    </div>
+                </div>
+
+                <!-- COLUMNA DERECHA VENTANA -->
+                <div class="column">
+                    <div class="column-label">DERECHA<br>VENTANA</div>
+                    <div class="seat-with-label">
+                        <div class="row-label">1</div>
+                        <div class="seat disabled" data-seat="3">3</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">2</div>
+                        <div class="seat disabled" data-seat="7">7</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">3</div>
+                        <div class="seat disabled" data-seat="11">11</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">4</div>
+                        <div class="seat disabled" data-seat="15">15</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">5</div>
+                        <div class="seat disabled" data-seat="19">19</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">6</div>
+                        <div class="seat disabled" data-seat="23">23</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">7</div>
+                        <div class="seat disabled" data-seat="27">27</div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">8</div>
+                        <div class="empty-space"></div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">9</div>
+                        <div class="empty-space"></div>
+                    </div>
+                    <div class="seat-with-label">
+                        <div class="row-label">10</div>
+                        <div class="seat disabled" data-seat="36">36</div>
+                    </div>
+                </div>
+
+                <!-- COLUMNA EXTRA PARA ASIENTO 35 -->
+                <div class="column">
+                    <div class="column-label">EXTRA<br>ASIENTO 35</div>
+                    <div class="seat-with-label">
+                        <div class="row-label">10</div>
+                        <div class="seat disabled" data-seat="35">35</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="door">PUERTA</div>
+            <!-- LEYENDA -->
+            <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #666;">
+                <div><strong>Distribución EXACTA según la tabla proporcionada + Asiento 35</strong></div>
+                <div>Total: 37 asientos (incluyendo operador)</div>
+            </div>
 
-            <!-- SEGUNDA SECCIÓN - ASIENTOS 17-34 -->
-            <div class="section">
-                <div class="section-title">PASAJEROS SENTADOS</div>
-                <div class="bus-grid">
-                    <!-- Fila 5 -->
-                    <div class="seat disabled" data-seat="17">17</div>
-                    <div class="seat disabled" data-seat="19">19</div>
-                    <div class="seat disabled" data-seat="18">18</div>
-                    <div class="seat disabled" data-seat="20">20</div>
-                    
-                    <!-- Fila 6 -->
-                    <div class="seat disabled" data-seat="21">21</div>
-                    <div class="seat disabled" data-seat="23">23</div>
-                    <div class="seat disabled" data-seat="22">22</div>
-                    <div class="seat disabled" data-seat="24">24</div>
-                    
-                    <!-- Fila 7 -->
-                    <div class="seat disabled" data-seat="25">25</div>
-                    <div class="seat disabled" data-seat="27">27</div>
-                    <div class="seat disabled" data-seat="26">26</div>
-                    <div class="seat disabled" data-seat="28">28</div>
-                    
-                    <!-- Fila 8 -->
-                    <div class="seat disabled" data-seat="29">29</div>
-                    <div class="seat disabled" data-seat="31">31</div>
-                    <div class="seat disabled" data-seat="30">30</div>
-                    <div class="seat disabled" data-seat="32">32</div>
-                    
-                    <!-- Fila 9 -->
-                    <div class="seat disabled" data-seat="33">33</div>
-                    <div class="seat disabled" data-seat="35">35</div>
-                    <div class="seat disabled" data-seat="34">34</div>
-                    <div class="seat disabled" data-seat="36">36</div>
+            <!-- CONTROLES DE ADMINISTRADOR -->
+            <div class="admin-controls">
+                <div class="admin-title">CONTROLES PARA PROFESORES/ORGANIZADORES</div>
+                <div class="form-group">
+                    <label for="admin-password">Contraseña de administrador:</label>
+                    <input type="password" id="admin-password" placeholder="Ingrese contraseña de administrador">
                 </div>
-                
-                <!-- ASIENTO TRASERO 37 -->
-                <div style="display: flex; justify-content: center; margin-top: 10px;">
-                    <div class="seat disabled" data-seat="37">37</div>
+                <button id="admin-login-btn" class="btn-secondary">Acceder como administrador</button>
+                <div id="admin-controls" style="display: none; margin-top: 15px;">
+                    <button id="clear-all-btn" class="btn-warning">Liberar TODOS los asientos</button>
+                    <div style="font-size: 12px; color: #666; margin-top: 10px;">
+                        <strong>Contraseña actual:</strong> SABES2025<br>
+                        <strong>Nota:</strong> Como administrador puedes eliminar cualquier asiento
+                    </div>
                 </div>
             </div>
         </div>
         
         <div class="passenger-info">
-            <h2>Información del Pasajero</h2>
+            <h2>Información del Estudiante</h2>
             
-            <div class="form-group">
-                <label for="seat-number">Número de Asiento:</label>
-                <input type="text" id="seat-number" readonly>
-            </div>
-            
-            <div class="form-group">
-                <label for="passenger-name">Nombre Completo:</label>
-                <input type="text" id="passenger-name" placeholder="Ingrese su nombre completo">
+            <div class="student-info-section">
+                <div class="form-group">
+                    <label for="seat-number">Número de Asiento:</label>
+                    <input type="text" id="seat-number" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="passenger-name">Nombre Completo:</label>
+                    <input type="text" id="passenger-name" placeholder="Ingrese su nombre completo">
+                </div>
+
+                <div class="form-group">
+                    <label for="student-id">Matrícula:</label>
+                    <input type="text" id="student-id" placeholder="Ej: U2303057N0061" maxlength="13" pattern="[Uu][0-9]{7}[Nn][0-9]{4}">
+                    <div class="matricula-format">Formato: U + 7 dígitos + N + 4 dígitos (Ej: U2303057N0061)</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="career">Carrera:</label>
+                    <select id="career">
+                        <option value="">Seleccione carrera</option>
+                        <option value="industrial_2020">LICENCIATURA EN INGENIERIA INDUSTRIAL Plan 2020</option>
+                        <option value="industrial_2025">LICENCIATURA EN INGENIERIA INDUSTRIAL Plan 2025</option>
+                        <option value="ti_2020">LICENCIATURA EN INGENIERIA TECNOLOGÍAS DE INFORMACIÓN Plan 2020</option>
+                        <option value="administracion_2020">LICENCIATURA EN ADMINISTRACIÓN Y DESARROLLO DE NEGOCIOS Plan 2020</option>
+                        <option value="mercadotecnia_2020">LICENCIATURA EN MERCADOTÉCNIA Plan 2020</option>
+                        <option value="administracion_2025">LICENCIATURA EN ADMINISTRACIÓN Y DESARROLLO DE NEGOCIOS Plan 2025</option>
+                        <option value="logistica_2023">LICENCIATURA EN INGENIERIA EN LOGÍSTICA Plan 2023</option>
+                        <option value="sistemas_2025">LICENCIATURA EN INGENIERIA EN TECNOLOGÍAS Y SISTEMAS COMPUTACIONALES Plan 2025</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="semester">Cuatrimestre:</label>
+                    <select id="semester">
+                        <option value="">Seleccione cuatrimestre</option>
+                        <option value="1">1° Cuatrimestre</option>
+                        <option value="2">2° Cuatrimestre</option>
+                        <option value="3">3° Cuatrimestre</option>
+                        <option value="4">4° Cuatrimestre</option>
+                        <option value="5">5° Cuatrimestre</option>
+                        <option value="6">6° Cuatrimestre</option>
+                        <option value="7">7° Cuatrimestre</option>
+                        <option value="8">8° Cuatrimestre</option>
+                        <option value="9">9° Cuatrimestre</option>
+                        <option value="10">10° Cuatrimestre</option>
+                    </select>
+                </div>
             </div>
             
             <button id="assign-btn" disabled>Asignar Asiento</button>
+            <button id="change-seat-btn" class="btn-secondary" disabled>Cambiar de Asiento</button>
             <button id="clear-btn">Limpiar Selección</button>
             
-            <h3>Pasajeros Asignados</h3>
+            <h3>Estudiantes Asignados</h3>
             <div class="passenger-list" id="passenger-list">
                 <div class="passenger-item">Cargando...</div>
             </div>
@@ -407,20 +684,54 @@
             const seats = document.querySelectorAll('.seat:not(.operator)');
             const seatNumberInput = document.getElementById('seat-number');
             const passengerNameInput = document.getElementById('passenger-name');
+            const studentIdInput = document.getElementById('student-id');
+            const careerSelect = document.getElementById('career');
+            const semesterSelect = document.getElementById('semester');
             const assignBtn = document.getElementById('assign-btn');
+            const changeSeatBtn = document.getElementById('change-seat-btn');
             const clearBtn = document.getElementById('clear-btn');
+            const releaseSeatBtn = document.getElementById('release-seat-btn');
             const passengerList = document.getElementById('passenger-list');
             const emptySeatsInfo = document.getElementById('empty-seats');
             const statusIndicator = document.getElementById('status-indicator');
             const userIdElement = document.getElementById('user-id');
+            const mySeatInfo = document.getElementById('my-seat-info');
+            const currentSeatNumber = document.getElementById('current-seat-number');
             const anticipoVerification = document.getElementById('anticipo-verification');
+            const adminPasswordInput = document.getElementById('admin-password');
+            const adminLoginBtn = document.getElementById('admin-login-btn');
+            const adminControls = document.getElementById('admin-controls');
+            const clearAllBtn = document.getElementById('clear-all-btn');
             
             let selectedSeat = null;
             let currentUser = generarUsuarioUnico();
             let anticipoConfirmado = false;
+            let isAdmin = false;
+            let myCurrentSeat = null;
+
+            // 🔐 CONTRASEÑA DE ADMINISTRADOR
+            const ADMIN_PASSWORD = "SABES2025";
+
+            // Mapeo de carreras para mostrar nombres completos
+            const careerNames = {
+                'industrial_2020': 'LICENCIATURA EN INGENIERIA INDUSTRIAL Plan 2020',
+                'industrial_2025': 'LICENCIATURA EN INGENIERIA INDUSTRIAL Plan 2025',
+                'ti_2020': 'LICENCIATURA EN INGENIERIA TECNOLOGÍAS DE INFORMACIÓN Plan 2020',
+                'administracion_2020': 'LICENCIATURA EN ADMINISTRACIÓN Y DESARROLLO DE NEGOCIOS Plan 2020',
+                'mercadotecnia_2020': 'LICENCIATURA EN MERCADOTÉCNIA Plan 2020',
+                'administracion_2025': 'LICENCIATURA EN ADMINISTRACIÓN Y DESARROLLO DE NEGOCIOS Plan 2025',
+                'logistica_2023': 'LICENCIATURA EN INGENIERIA EN LOGÍSTICA Plan 2023',
+                'sistemas_2025': 'LICENCIATURA EN INGENIERIA EN TECNOLOGÍAS Y SISTEMAS COMPUTACIONALES Plan 2025'
+            };
 
             // Mostrar ID de usuario
             userIdElement.textContent = `ID de sesión: ${currentUser}`;
+
+            // Validar formato de matrícula
+            function validateMatricula(matricula) {
+                const matriculaRegex = /^[Uu]\d{7}[Nn]\d{4}$/;
+                return matriculaRegex.test(matricula);
+            }
 
             // Verificación de anticipo
             anticipoVerification.addEventListener('change', function() {
@@ -428,7 +739,7 @@
                     anticipoConfirmado = true;
                     // Habilitar todos los asientos
                     seats.forEach(seat => {
-                        if (!seat.classList.contains('occupied')) {
+                        if (!seat.classList.contains('occupied') && !seat.classList.contains('my-seat')) {
                             seat.classList.remove('disabled');
                             seat.style.cursor = 'pointer';
                         }
@@ -436,19 +747,176 @@
                     // Habilitar botón de asignar si hay asiento seleccionado
                     if (selectedSeat) {
                         assignBtn.disabled = false;
+                        changeSeatBtn.disabled = false;
                     }
                 } else {
                     anticipoConfirmado = false;
                     // Deshabilitar todos los asientos
                     seats.forEach(seat => {
-                        if (!seat.classList.contains('occupied')) {
+                        if (!seat.classList.contains('occupied') && !seat.classList.contains('my-seat')) {
                             seat.classList.add('disabled');
                             seat.style.cursor = 'not-allowed';
                         }
                     });
                     assignBtn.disabled = true;
+                    changeSeatBtn.disabled = true;
                 }
             });
+
+            // Login de administrador
+            adminLoginBtn.addEventListener('click', function() {
+                if (adminPasswordInput.value === ADMIN_PASSWORD) {
+                    isAdmin = true;
+                    adminControls.style.display = 'block';
+                    adminLoginBtn.disabled = true;
+                    adminPasswordInput.disabled = true;
+                    alert('✅ Acceso de administrador concedido');
+                    // Recargar datos para mostrar controles administrativos
+                    database.ref('asientos').once('value').then((snapshot) => {
+                        updatePassengerList(snapshot.val() || {});
+                    });
+                } else {
+                    alert('❌ Contraseña incorrecta');
+                    adminPasswordInput.value = '';
+                    adminPasswordInput.focus();
+                }
+            });
+
+            // Liberar todos los asientos (admin)
+            clearAllBtn.addEventListener('click', function() {
+                if (confirm('⚠️ ¿Estás seguro de que quieres liberar TODOS los asientos? Esta acción no se puede deshacer.')) {
+                    database.ref('asientos').remove()
+                        .then(() => {
+                            alert('✅ Todos los asientos han sido liberados');
+                        })
+                        .catch((error) => {
+                            alert('❌ Error: ' + error.message);
+                        });
+                }
+            });
+
+            // Liberar mi asiento
+            releaseSeatBtn.addEventListener('click', function() {
+                if (myCurrentSeat) {
+                    if (confirm(`¿Estás seguro de que quieres liberar el asiento ${myCurrentSeat}?`)) {
+                        database.ref('asientos/' + myCurrentSeat).remove()
+                            .then(() => {
+                                myCurrentSeat = null;
+                                mySeatInfo.style.display = 'none';
+                                alert('✅ Asiento liberado correctamente');
+                            })
+                            .catch((error) => {
+                                alert('❌ Error: ' + error.message);
+                            });
+                    }
+                }
+            });
+
+            // Cambiar de asiento
+            changeSeatBtn.addEventListener('click', function() {
+                if (!selectedSeat) {
+                    alert('Por favor, seleccione un nuevo asiento primero.');
+                    return;
+                }
+
+                if (!anticipoConfirmado) {
+                    alert('Debes confirmar que ya diste tu anticipo antes de cambiar de asiento.');
+                    return;
+                }
+
+                const newSeatNum = selectedSeat.getAttribute('data-seat');
+                
+                if (!validateStudentInfo()) {
+                    return;
+                }
+
+                // Primero liberar el asiento actual
+                if (myCurrentSeat) {
+                    database.ref('asientos/' + myCurrentSeat).remove();
+                }
+
+                // Luego asignar el nuevo asiento
+                assignSeat(newSeatNum, true);
+            });
+
+            // Validar información del estudiante
+            function validateStudentInfo() {
+                const passengerName = passengerNameInput.value.trim();
+                const studentId = studentIdInput.value.trim();
+                const career = careerSelect.value;
+                const semester = semesterSelect.value;
+
+                if (!passengerName) {
+                    alert('❌ Por favor, ingrese su nombre completo.');
+                    passengerNameInput.focus();
+                    return false;
+                }
+
+                if (!studentId) {
+                    alert('❌ Por favor, ingrese su matrícula.');
+                    studentIdInput.focus();
+                    return false;
+                }
+
+                if (!validateMatricula(studentId)) {
+                    alert('❌ Formato de matrícula incorrecto. Debe ser: U + 7 dígitos + N + 4 dígitos\nEjemplo: U2303057N0061');
+                    studentIdInput.focus();
+                    return false;
+                }
+
+                if (!career) {
+                    alert('❌ Por favor, seleccione su carrera.');
+                    careerSelect.focus();
+                    return false;
+                }
+
+                if (!semester) {
+                    alert('❌ Por favor, seleccione su cuatrimestre.');
+                    semesterSelect.focus();
+                    return false;
+                }
+
+                return true;
+            }
+
+            // Asignar asiento (función reutilizable)
+            function assignSeat(seatNum, isChange = false) {
+                const passengerName = passengerNameInput.value.trim();
+                const studentId = studentIdInput.value.trim();
+                const career = careerSelect.value;
+                const semester = semesterSelect.value;
+
+                const seatData = {
+                    nombre: passengerName,
+                    matricula: studentId.toUpperCase(), // Guardar en mayúsculas
+                    carrera: career,
+                    carrera_nombre: careerNames[career] || career,
+                    cuatrimestre: semester,
+                    usuario: currentUser,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    anticipoConfirmado: true
+                };
+
+                database.ref('asientos/' + seatNum).set(seatData)
+                    .then(() => {
+                        if (selectedSeat) {
+                            selectedSeat.classList.remove('selected');
+                            selectedSeat = null;
+                        }
+                        seatNumberInput.value = '';
+                        assignBtn.disabled = true;
+                        changeSeatBtn.disabled = false;
+                        
+                        if (isChange) {
+                            alert(`✅ Asiento cambiado correctamente al ${seatNum}`);
+                        } else {
+                            alert(`✅ Asiento ${seatNum} asignado correctamente`);
+                        }
+                    })
+                    .catch((error) => {
+                        alert('❌ Error al asignar asiento: ' + error.message);
+                    });
+            }
 
             // Escuchar cambios en tiempo real
             database.ref('asientos').on('value', (snapshot) => {
@@ -456,6 +924,7 @@
                 actualizarVistaAsientos(asientosData);
                 updatePassengerList(asientosData);
                 updateEmptySeatsInfo(asientosData);
+                updateMySeatInfo(asientosData);
             });
 
             // Manejar clic en asientos
@@ -470,8 +939,9 @@
                     const seatNum = this.getAttribute('data-seat');
                     
                     database.ref('asientos/' + seatNum).once('value').then((snapshot) => {
-                        if (snapshot.exists()) {
-                            alert(`El asiento ${seatNum} ya está ocupado por ${snapshot.val().nombre}`);
+                        // 🔒 SEGURIDAD: Solo permitir seleccionar si está disponible o es tu propio asiento
+                        if (snapshot.exists() && snapshot.val().usuario !== currentUser && !isAdmin) {
+                            alert(`❌ El asiento ${seatNum} ya está ocupado por ${snapshot.val().nombre}`);
                             return;
                         }
                         
@@ -482,7 +952,20 @@
                         this.classList.add('selected');
                         selectedSeat = this;
                         seatNumberInput.value = seatNum;
-                        assignBtn.disabled = false;
+                        
+                        // Si es tu propio asiento, cargar la información
+                        if (snapshot.exists() && snapshot.val().usuario === currentUser) {
+                            const data = snapshot.val();
+                            passengerNameInput.value = data.nombre || '';
+                            studentIdInput.value = data.matricula || '';
+                            careerSelect.value = data.carrera || '';
+                            semesterSelect.value = data.cuatrimestre || '';
+                            assignBtn.disabled = true;
+                            changeSeatBtn.disabled = false;
+                        } else {
+                            assignBtn.disabled = false;
+                            changeSeatBtn.disabled = !!myCurrentSeat;
+                        }
                     });
                 });
             });
@@ -500,33 +983,19 @@
                 }
                 
                 const seatNum = selectedSeat.getAttribute('data-seat');
-                const passengerName = passengerNameInput.value.trim();
                 
-                if (!passengerName) {
-                    alert('Por favor, ingrese su nombre completo.');
+                if (!validateStudentInfo()) {
                     return;
                 }
 
                 database.ref('asientos/' + seatNum).once('value').then((snapshot) => {
-                    if (snapshot.exists()) {
-                        alert(`El asiento ${seatNum} ya está ocupado por ${snapshot.val().nombre}`);
+                    // 🔒 SEGURIDAD: Verificar que el asiento no esté ocupado por otro usuario
+                    if (snapshot.exists() && snapshot.val().usuario !== currentUser && !isAdmin) {
+                        alert(`❌ El asiento ${seatNum} ya está ocupado por ${snapshot.val().nombre}`);
                         return;
                     }
 
-                    database.ref('asientos/' + seatNum).set({
-                        nombre: passengerName,
-                        usuario: currentUser,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP,
-                        anticipoConfirmado: true
-                    }).then(() => {
-                        selectedSeat.classList.remove('selected');
-                        selectedSeat = null;
-                        seatNumberInput.value = '';
-                        passengerNameInput.value = '';
-                        assignBtn.disabled = true;
-                    }).catch((error) => {
-                        alert('Error al asignar asiento: ' + error.message);
-                    });
+                    assignSeat(seatNum);
                 });
             });
             
@@ -538,17 +1007,26 @@
                 }
                 seatNumberInput.value = '';
                 passengerNameInput.value = '';
+                studentIdInput.value = '';
+                careerSelect.value = '';
+                semesterSelect.value = '';
                 assignBtn.disabled = true;
+                changeSeatBtn.disabled = !myCurrentSeat;
             });
 
             function actualizarVistaAsientos(asientosData) {
                 seats.forEach(seat => {
                     const seatNum = seat.getAttribute('data-seat');
-                    seat.classList.remove('selected', 'occupied');
+                    seat.classList.remove('selected', 'occupied', 'my-seat');
                     
                     if (asientosData[seatNum]) {
-                        seat.classList.add('occupied');
-                        seat.title = `Ocupado por: ${asientosData[seatNum].nombre}`;
+                        if (asientosData[seatNum].usuario === currentUser) {
+                            seat.classList.add('my-seat');
+                            seat.title = `Tu asiento: ${asientosData[seatNum].nombre}`;
+                        } else {
+                            seat.classList.add('occupied');
+                            seat.title = `Ocupado por: ${asientosData[seatNum].nombre} (${asientosData[seatNum].matricula})`;
+                        }
                     } else if (anticipoConfirmado) {
                         seat.classList.remove('disabled');
                         seat.style.cursor = 'pointer';
@@ -559,6 +1037,25 @@
                         seat.title = `Confirma tu anticipo para seleccionar`;
                     }
                 });
+            }
+
+            function updateMySeatInfo(asientosData) {
+                myCurrentSeat = null;
+                for (const seatNum in asientosData) {
+                    if (asientosData[seatNum].usuario === currentUser) {
+                        myCurrentSeat = seatNum;
+                        break;
+                    }
+                }
+
+                if (myCurrentSeat) {
+                    currentSeatNumber.textContent = myCurrentSeat;
+                    mySeatInfo.style.display = 'block';
+                    changeSeatBtn.disabled = false;
+                } else {
+                    mySeatInfo.style.display = 'none';
+                    changeSeatBtn.disabled = true;
+                }
             }
 
             function generarUsuarioUnico() {
@@ -576,7 +1073,7 @@
                 const asientosOcupados = Object.keys(asientosData);
                 
                 if (asientosOcupados.length === 0) {
-                    passengerList.innerHTML = '<div class="passenger-item">No hay pasajeros asignados</div>';
+                    passengerList.innerHTML = '<div class="passenger-item">No hay estudiantes asignados</div>';
                     return;
                 }
                 
@@ -585,9 +1082,18 @@
                 asientosOcupados.forEach(seatNum => {
                     const passengerItem = document.createElement('div');
                     passengerItem.className = 'passenger-item';
+                    
+                    const data = asientosData[seatNum];
+                    const isMySeat = data.usuario === currentUser;
+                    const canDelete = isMySeat || isAdmin;
+                    
                     passengerItem.innerHTML = `
-                        <span>Asiento ${seatNum}: ${asientosData[seatNum].nombre}</span>
-                        ${asientosData[seatNum].usuario === currentUser ? 
+                        <div>
+                            <strong>Asiento ${seatNum}: ${data.nombre}</strong><br>
+                            <small>Matrícula: ${data.matricula} | ${data.carrera_nombre || careerNames[data.carrera] || data.carrera} | ${data.cuatrimestre}° Cuat.</small>
+                            ${isMySeat ? '<br><small style="color: #FF9800;">← TÚ</small>' : ''}
+                        </div>
+                        ${canDelete ? 
                             `<button class="remove-btn" data-seat="${seatNum}">Eliminar</button>` : 
                             ''
                         }
@@ -598,16 +1104,18 @@
                 document.querySelectorAll('.remove-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const seatToRemove = this.getAttribute('data-seat');
-                        database.ref('asientos/' + seatToRemove).remove()
-                            .catch((error) => {
-                                alert('Error al eliminar: ' + error.message);
-                            });
+                        if (confirm(`¿Estás seguro de que quieres eliminar el asiento ${seatToRemove}?`)) {
+                            database.ref('asientos/' + seatToRemove).remove()
+                                .catch((error) => {
+                                    alert('Error al eliminar: ' + error.message);
+                                });
+                        }
                     });
                 });
             }
             
             function updateEmptySeatsInfo(asientosData) {
-                const totalSeats = 36; // 37 asientos - 1 operador
+                const totalSeats = 36; // 37 asientos totales - 1 operador
                 const occupiedSeats = Object.keys(asientosData).length;
                 const emptySeats = totalSeats - occupiedSeats;
                 
