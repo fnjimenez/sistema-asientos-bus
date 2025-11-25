@@ -19,6 +19,8 @@
         
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
@@ -73,6 +75,12 @@
             margin-top: 0;
             padding-bottom: 10px;
             border-bottom: 2px solid #eaeaea;
+            margin-bottom: 20px;
+        }
+        
+        h3 {
+            color: var(--primary);
+            margin: 20px 0 10px 0;
         }
         
         .seat {
@@ -87,6 +95,7 @@
             transition: all 0.3s;
             font-weight: bold;
             font-size: 12px;
+            user-select: none;
         }
         
         .seat:hover {
@@ -143,54 +152,88 @@
             margin-bottom: 10px;
             text-align: center;
             background-color: #f0f0f0;
-            padding: 5px;
-            border-radius: 5px;
+            padding: 8px;
+            border-radius: 6px;
+            color: var(--dark);
         }
         
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
         
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #555;
         }
         
         input, select {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+        }
+        
+        input:read-only {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
         }
         
         .btn {
-            background-color: var(--primary);
-            color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
+            padding: 12px 18px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
             width: 100%;
             margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
         .btn:hover {
-            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
-        .btn:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3d5d8a;
         }
         
         .btn-secondary {
             background-color: #6c757d;
+            color: white;
         }
         
         .btn-secondary:hover {
             background-color: #5a6268;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #3d8b40;
         }
         
         .btn-warning {
@@ -199,17 +242,36 @@
         }
         
         .btn-warning:hover {
-            background-color: #e0a800;
+            background-color: #e68900;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+        
+        .btn:disabled {
+            background-color: #cccccc;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
         .passenger-list {
             margin-top: 20px;
             max-height: 300px;
             overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 6px;
         }
         
         .passenger-item {
-            padding: 10px;
+            padding: 12px 15px;
             border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
@@ -220,34 +282,43 @@
             background-color: #f9f9f9;
         }
         
+        .passenger-item:last-child {
+            border-bottom: none;
+        }
+        
         .empty-seats {
             margin-top: 20px;
             font-style: italic;
             color: #666;
+            text-align: center;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
         }
         
         .door {
             text-align: center;
             font-weight: bold;
-            margin: 10px 0;
-            padding: 5px;
+            margin: 15px 0;
+            padding: 8px;
             background-color: #e0e0e0;
-            border-radius: 5px;
+            border-radius: 6px;
+            color: #555;
         }
         
         .remove-btn {
             background-color: var(--danger);
             color: white;
             border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
+            padding: 6px 12px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 13px;
             width: auto;
         }
         
         .remove-btn:hover {
-            background-color: #cc0000;
+            background-color: #d32f2f;
         }
         
         .bus-container {
@@ -260,7 +331,7 @@
         .column {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 8px;
             align-items: center;
         }
         
@@ -269,10 +340,11 @@
             margin-bottom: 10px;
             text-align: center;
             background-color: #e9ecef;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 6px 12px;
+            border-radius: 6px;
             width: 100%;
-            font-size: 11px;
+            font-size: 12px;
+            color: #555;
         }
         
         .aisle {
@@ -289,18 +361,22 @@
         .real-time-indicator {
             background-color: var(--success);
             color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
             margin-left: 10px;
             animation: pulse 2s infinite;
+        }
+        
+        .connection-status.offline .real-time-indicator {
+            background-color: var(--danger);
         }
         
         .verification-section {
             background-color: #fff3cd;
             border: 1px solid #ffeaa7;
-            border-radius: 5px;
-            padding: 15px;
+            border-radius: 8px;
+            padding: 18px;
             margin-bottom: 20px;
         }
         
@@ -322,43 +398,44 @@
         }
         
         .row-label {
-            font-size: 10px;
+            font-size: 11px;
             color: #666;
-            width: 20px;
+            width: 22px;
             text-align: center;
         }
         
         .seat-with-label {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
         
         .empty-space {
             width: 45px;
             height: 45px;
+            visibility: hidden;
         }
         
         .admin-controls {
             background-color: #e8f5e8;
             border: 1px solid var(--success);
-            border-radius: 5px;
-            padding: 15px;
+            border-radius: 8px;
+            padding: 18px;
             margin-top: 20px;
         }
         
         .admin-title {
             font-weight: bold;
             color: #2e7d32;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             text-align: center;
         }
         
         .my-seat-info {
             background-color: #fff3cd;
             border: 1px solid #ffeaa7;
-            border-radius: 5px;
-            padding: 10px;
+            border-radius: 8px;
+            padding: 12px;
             margin-bottom: 15px;
             text-align: center;
         }
@@ -366,14 +443,14 @@
         .student-info-section {
             background-color: #e3f2fd;
             border: 1px solid var(--primary);
-            border-radius: 5px;
-            padding: 15px;
+            border-radius: 8px;
+            padding: 18px;
             margin-bottom: 15px;
         }
         
         .form-row {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
         
         .form-row .form-group {
@@ -381,9 +458,9 @@
         }
         
         .matricula-format {
-            font-size: 11px;
+            font-size: 12px;
             color: #666;
-            margin-top: 2px;
+            margin-top: 4px;
         }
         
         .status-legend {
@@ -397,14 +474,14 @@
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 12px;
+            gap: 6px;
+            font-size: 13px;
         }
         
         .legend-color {
-            width: 15px;
-            height: 15px;
-            border-radius: 3px;
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
             border: 1px solid #ccc;
         }
         
@@ -417,23 +494,23 @@
         .hospedaje-section {
             background-color: #fff3e0;
             border: 1px solid #ffb74d;
-            border-radius: 5px;
-            padding: 15px;
+            border-radius: 8px;
+            padding: 18px;
             margin-bottom: 15px;
         }
         
         .habitacion-info {
             background: #e8f5e8;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: 6px;
             margin-bottom: 15px;
             font-size: 14px;
         }
         
         .mi-hospedaje-info {
             background: #e3f2fd;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: 6px;
             margin-top: 10px;
             font-size: 14px;
         }
@@ -444,9 +521,10 @@
         
         /* ESTILOS PARA SISTEMA DUAL DE HOTELES */
         .alumno-disponible {
-            padding: 5px;
+            padding: 8px;
             border-bottom: 1px solid #eee;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
         
         .alumno-disponible:hover {
@@ -454,22 +532,23 @@
         }
         
         .alumno-disponible input[type="checkbox"] {
-            margin-right: 8px;
+            margin-right: 10px;
         }
         
         .chip-companero {
             display: inline-block;
             background: var(--success);
             color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            margin: 2px;
-            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 16px;
+            margin: 3px;
+            font-size: 13px;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
         
         .chip-companero:hover {
-            background: #388E3C;
+            background: #3d8b40;
         }
         
         .error-message {
@@ -479,21 +558,85 @@
             display: none;
         }
         
+        .success-message {
+            color: var(--success);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background-color: var(--success);
+        }
+        
+        .notification.error {
+            background-color: var(--danger);
+        }
+        
+        .notification.warning {
+            background-color: var(--warning);
+            color: #212529;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
             }
+            
             .bus-container {
                 flex-direction: column;
                 gap: 20px;
             }
+            
             .form-row {
                 flex-direction: column;
+            }
+            
+            .status-legend {
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .notification {
+                left: 20px;
+                right: 20px;
+                transform: translateY(-100%);
+            }
+            
+            .notification.show {
+                transform: translateY(0);
             }
         }
     </style>
 </head>
 <body>
+    <!-- Sistema de notificaciones -->
+    <div id="notification" class="notification" style="display: none;"></div>
+    
     <div class="header">
         <h1>Viaje académico Guanajuato - San Luis Potosí</h1>
         <div class="subtitle">Miércoles 10 y Jueves 11 de Diciembre del 2025</div>
@@ -501,9 +644,9 @@
         <div class="subtitle">Transporte Oficial del Municipio de San Felipe Guanajuato</div>
     </div>
 
-    <div class="connection-status">
+    <div class="connection-status" id="connection-status">
         <h2>Sistema de Selección de Asientos <span class="real-time-indicator" id="status-indicator">Conectando...</span></h2>
-        <div id="user-id" style="font-size: 12px; color: #666;"></div>
+        <div id="user-id" style="font-size: 13px; color: #666;"></div>
         <div id="my-seat-info" class="my-seat-info" style="display: none;">
             <strong>Tu asiento actual: <span id="current-seat-number">-</span></strong>
             <button id="release-seat-btn" class="remove-btn" style="margin-left: 10px;">Liberar mi asiento</button>
@@ -760,9 +903,9 @@
                     <label for="admin-password">Contraseña de administrador:</label>
                     <input type="password" id="admin-password" placeholder="Ingrese contraseña de administrador">
                 </div>
-                <button id="admin-login-btn" class="btn-secondary">Acceder como administrador</button>
+                <button id="admin-login-btn" class="btn btn-secondary">Acceder como administrador</button>
                 <div id="admin-controls" style="display: none; margin-top: 15px;">
-                    <button id="clear-all-btn" class="btn-warning">Liberar TODOS los asientos</button>
+                    <button id="clear-all-btn" class="btn btn-warning">Liberar TODOS los asientos</button>
                     <div style="font-size: 12px; color: #666; margin-top: 10px;">
                         <strong>Contraseña actual:</strong> SABES2025<br>
                         <strong>Nota:</strong> Como administrador puedes eliminar cualquier asiento
@@ -845,7 +988,7 @@
                 </div>
 
                 <!-- Información del Hotel Seleccionado -->
-                <div id="info-hotel" style="display: none; background: #e8f5e8; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                <div id="info-hotel" style="display: none; background: #e8f5e8; padding: 12px; border-radius: 6px; margin-bottom: 15px;">
                     <strong id="nombre-hotel"></strong>
                     <div id="caracteristicas-hotel"></div>
                     <small id="ubicacion-hotel" style="color: #666;"></small>
@@ -860,31 +1003,35 @@
                 </div>
 
                 <!-- Información de la Habitación -->
-                <div id="info-habitacion-detalle" style="display: none; background: #fff3cd; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                <div id="info-habitacion-detalle" style="display: none; background: #fff3cd; padding: 12px; border-radius: 6px; margin-bottom: 15px;">
                     <strong>Detalles de la habitación:</strong>
                     <div id="detalles-habitacion"></div>
-                    <div id="precio-habitacion" style="font-weight: bold; color: #2e7d32;"></div>
+                    <div id="precio-habitacion" style="font-weight: bold; color: #2e7d32; margin-top: 8px;"></div>
                 </div>
 
                 <!-- Selección de Compañeros -->
                 <div id="seleccion-companeros" style="display: none;">
                     <div class="form-group">
                         <label>👥 Seleccionar compañeros de habitación:</label>
-                        <small style="color: #666;">Solo alumnos con asiento asignado</small>
+                        <small style="color: #666; display: block; margin-bottom: 8px;">Solo alumnos con asiento asignado</small>
                         
                         <!-- Lista de alumnos disponibles -->
-                        <div id="lista-alumnos-disponibles" style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 5px; margin-top: 5px;">
+                        <div id="lista-alumnos-disponibles" style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 5px; margin-top: 5px; background: white;">
                             <!-- Se llenará dinámicamente con alumnos que tienen asiento -->
                         </div>
                         
-                        <div style="margin-top: 10px;">
+                        <div style="margin-top: 15px;">
                             <strong>Compañeros seleccionados:</strong>
-                            <div id="companeros-seleccionados" style="min-height: 40px; border: 1px dashed #ccc; padding: 8px; border-radius: 5px; margin-top: 5px;"></div>
+                            <div id="companeros-seleccionados" style="min-height: 50px; border: 1px dashed #ccc; padding: 10px; border-radius: 5px; margin-top: 8px; background: #f9f9f9;"></div>
                         </div>
                     </div>
 
-                    <button id="confirmar-hospedaje-btn" class="btn-secondary">✅ Confirmar Reservación</button>
-                    <button id="liberar-hospedaje-btn" class="remove-btn" style="display: none; width: auto;">🚫 Liberar Reservación</button>
+                    <button id="confirmar-hospedaje-btn" class="btn btn-success">
+                        <span>✅</span> Confirmar Reservación
+                    </button>
+                    <button id="liberar-hospedaje-btn" class="btn btn-danger" style="display: none;">
+                        <span>🚫</span> Liberar Reservación
+                    </button>
                 </div>
 
                 <!-- Mi Reservación Actual -->
@@ -894,13 +1041,19 @@
                 </div>
             </div>
             
-            <button id="assign-btn" class="btn" disabled>Asignar Asiento</button>
-            <button id="change-seat-btn" class="btn-secondary" disabled>Cambiar de Asiento</button>
-            <button id="clear-btn" class="btn-warning">Limpiar Selección</button>
+            <button id="assign-btn" class="btn btn-primary" disabled>
+                <span>✅</span> Asignar Asiento
+            </button>
+            <button id="change-seat-btn" class="btn btn-secondary" disabled>
+                <span>🔄</span> Cambiar de Asiento
+            </button>
+            <button id="clear-btn" class="btn btn-warning">
+                <span>🗑️</span> Limpiar Selección
+            </button>
             
             <h3>Estudiantes Asignados</h3>
             <div class="passenger-list" id="passenger-list">
-                <div class="passenger-item">Cargando...</div>
+                <div class="passenger-item">Cargando información...</div>
             </div>
             
             <div class="empty-seats" id="empty-seats">
@@ -923,14 +1076,33 @@
         };
 
         // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
+        try {
+            firebase.initializeApp(firebaseConfig);
+            console.log("✅ Firebase inicializado correctamente");
+        } catch (error) {
+            console.error("❌ Error inicializando Firebase:", error);
+            showNotification("Error de conexión con la base de datos", "error");
+        }
+        
         const database = firebase.database();
 
-        // ... (el resto del código JavaScript se mantiene igual que en la versión anterior)
-        // Solo copiaré una parte del JS para que no sea demasiado largo, pero manteniendo la funcionalidad completa
-        
+        // Sistema de notificaciones
+        function showNotification(message, type = "success") {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 300);
+            }, 4000);
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Elementos del DOM - se mantiene igual
+            // Elementos del DOM
             const seats = document.querySelectorAll('.seat:not(.operator)');
             const seatNumberInput = document.getElementById('seat-number');
             const passengerNameInput = document.getElementById('passenger-name');
@@ -952,8 +1124,9 @@
             const adminLoginBtn = document.getElementById('admin-login-btn');
             const adminControls = document.getElementById('admin-controls');
             const clearAllBtn = document.getElementById('clear-all-btn');
+            const connectionStatus = document.getElementById('connection-status');
             
-            // Elementos de hospedaje DUAL
+            // Elementos de hospedaje
             const hospedajeSection = document.getElementById('hospedaje-section');
             const hotelSelect = document.getElementById('hotel-select');
             const infoHotel = document.getElementById('info-hotel');
@@ -983,37 +1156,778 @@
             // 🔐 CONTRASEÑA DE ADMINISTRADOR
             const ADMIN_PASSWORD = "SABES2025";
 
+            // Datos de los hoteles
+            const hotelesData = {
+                hotelSands: {
+                    nombre: "Hotel Sand's",
+                    ubicacion: "Junto a la Terminal Terrestre Potosina", 
+                    caracteristicas: ["Alberca climatizada", "Estacionamiento gratuito", "Internet gratuito"],
+                    habitaciones: {
+                        "Sencilla/Doble": { precio: 890, capacidad: 2, disponibles: 10 },
+                        "Triple": { precio: 1040, capacidad: 3, disponibles: 8 },
+                        "Cuádruple": { precio: 1190, capacidad: 4, disponibles: 6 }
+                    }
+                },
+                hotelPaz: {
+                    nombre: "Hotel La Paz",
+                    ubicacion: "Carretera 57, Querétaro San Luis Potosí",
+                    caracteristicas: ["Alberca (dependiendo del clima)", "Estacionamiento gratuito"],
+                    habitaciones: {
+                        "1 Cama King": { precio: 480, capacidad: 2, disponibles: 8 },
+                        "2 Camas Matrimoniales": { precio: 720, capacidad: 4, disponibles: 6 },
+                        "3 Camas King": { precio: 960, capacidad: 6, disponibles: 4 }
+                    }
+                }
+            };
+
             // Mostrar ID de usuario
             userIdElement.textContent = `ID de sesión: ${currentUser}`;
 
-            // ... (el resto del código JavaScript se mantiene exactamente igual)
-            // Incluyendo todas las funciones del sistema de hospedaje y asientos
+            // =============================================
+            // SISTEMA DUAL DE HOTELES - FUNCIÓN COMPLETA
+            // =============================================
+            function inicializarSistemaHospedajeDual() {
+                let hotelSeleccionado = null;
+                let tipoHabitacionSeleccionado = null;
+                let companerosSeleccionadosArray = [];
+
+                // Mostrar sección de hospedaje solo si tiene asiento
+                database.ref('asientos').on('value', (snapshot) => {
+                    const asientosData = snapshot.val() || {};
+                    let tieneAsiento = false;
+                    
+                    for (const seatNum in asientosData) {
+                        if (asientosData[seatNum].usuario === currentUser) {
+                            tieneAsiento = true;
+                            break;
+                        }
+                    }
+                    
+                    hospedajeSection.style.display = tieneAsiento ? 'block' : 'none';
+                    
+                    if (tieneAsiento) {
+                        cargarAlumnosDisponibles(asientosData);
+                        actualizarMisReservaciones();
+                    }
+                });
+
+                // Selección de hotel
+                hotelSelect.addEventListener('change', function() {
+                    hotelSeleccionado = this.value;
+                    
+                    if (hotelSeleccionado) {
+                        const hotel = hotelesData[hotelSeleccionado];
+                        
+                        // Mostrar información del hotel
+                        document.getElementById('nombre-hotel').textContent = hotel.nombre;
+                        document.getElementById('ubicacion-hotel').textContent = hotel.ubicacion;
+                        document.getElementById('caracteristicas-hotel').innerHTML = 
+                            hotel.caracteristicas.map(c => `• ${c}`).join('<br>');
+                        infoHotel.style.display = 'block';
+                        
+                        // Cargar tipos de habitación
+                        cargarTiposHabitacion(hotel);
+                        tipoHabitacionGroup.style.display = 'block';
+                    } else {
+                        infoHotel.style.display = 'none';
+                        tipoHabitacionGroup.style.display = 'none';
+                        infoHabitacionDetalle.style.display = 'none';
+                        seleccionCompaneros.style.display = 'none';
+                    }
+                    
+                    limpiarSeleccionCompaneros();
+                });
+
+                // Selección de tipo de habitación
+                tipoHabitacionSelect.addEventListener('change', function() {
+                    tipoHabitacionSeleccionado = this.value;
+                    
+                    if (tipoHabitacionSeleccionado && hotelSeleccionado) {
+                        const hotel = hotelesData[hotelSeleccionado];
+                        const habitacion = hotel.habitaciones[tipoHabitacionSeleccionado];
+                        
+                        // Mostrar detalles de la habitación
+                        document.getElementById('detalles-habitacion').innerHTML = `
+                            Tipo: ${tipoHabitacionSeleccionado}<br>
+                            Capacidad: ${habitacion.capacidad} personas<br>
+                            Habitaciones disponibles: ${habitacion.disponibles}
+                        `;
+                        document.getElementById('precio-habitacion').innerHTML = `
+                            Precio total: $${habitacion.precio}<br>
+                            Aprox. por persona: $${Math.ceil(habitacion.precio / habitacion.capacidad)}
+                        `;
+                        infoHabitacionDetalle.style.display = 'block';
+                        seleccionCompaneros.style.display = 'block';
+                    } else {
+                        infoHabitacionDetalle.style.display = 'none';
+                        seleccionCompaneros.style.display = 'none';
+                    }
+                    
+                    limpiarSeleccionCompaneros();
+                });
+
+                function cargarTiposHabitacion(hotel) {
+                    tipoHabitacionSelect.innerHTML = '<option value="">Seleccionar tipo...</option>';
+                    
+                    for (const tipo in hotel.habitaciones) {
+                        const habitacion = hotel.habitaciones[tipo];
+                        const option = document.createElement('option');
+                        option.value = tipo;
+                        option.textContent = `${tipo} - $${habitacion.precio} (Capacidad: ${habitacion.capacidad})`;
+                        tipoHabitacionSelect.appendChild(option);
+                    }
+                }
+
+                function cargarAlumnosDisponibles(asientosData) {
+                    listaAlumnosDisponibles.innerHTML = '';
+                    
+                    for (const seatNum in asientosData) {
+                        const alumno = asientosData[seatNum];
+                        // No mostrar al usuario actual en la lista
+                        if (alumno.usuario !== currentUser) {
+                            const alumnoDiv = document.createElement('div');
+                            alumnoDiv.className = 'alumno-disponible';
+                            
+                            alumnoDiv.innerHTML = `
+                                <input type="checkbox" id="alumno_${alumno.usuario}" value="${alumno.usuario}">
+                                <label for="alumno_${alumno.usuario}">
+                                    ${alumno.nombre} - ${alumno.matricula} (Asiento ${seatNum})
+                                </label>
+                            `;
+                            
+                            alumnoDiv.addEventListener('click', function() {
+                                const checkbox = this.querySelector('input[type="checkbox"]');
+                                checkbox.checked = !checkbox.checked;
+                                manejarSeleccionAlumno(alumno, checkbox.checked);
+                            });
+                            
+                            listaAlumnosDisponibles.appendChild(alumnoDiv);
+                        }
+                    }
+                }
+
+                function manejarSeleccionAlumno(alumno, seleccionado) {
+                    if (!hotelSeleccionado || !tipoHabitacionSeleccionado) {
+                        showNotification('Primero selecciona hotel y tipo de habitación', 'warning');
+                        return;
+                    }
+
+                    const hotel = hotelesData[hotelSeleccionado];
+                    const habitacion = hotel.habitaciones[tipoHabitacionSeleccionado];
+                    const capacidadMaxima = habitacion.capacidad - 1; // -1 por el responsable
+                    
+                    if (seleccionado) {
+                        if (companerosSeleccionadosArray.length >= capacidadMaxima) {
+                            showNotification(`Máximo ${capacidadMaxima} compañeros para esta habitación`, 'error');
+                            document.getElementById(`alumno_${alumno.usuario}`).checked = false;
+                            return;
+                        }
+                        companerosSeleccionadosArray.push(alumno);
+                    } else {
+                        companerosSeleccionadosArray = companerosSeleccionadosArray.filter(a => a.usuario !== alumno.usuario);
+                    }
+                    
+                    actualizarVistaCompaneros();
+                }
+
+                function actualizarVistaCompaneros() {
+                    companerosSeleccionados.innerHTML = '';
+                    
+                    if (companerosSeleccionadosArray.length === 0) {
+                        companerosSeleccionados.innerHTML = '<em style="color: #666;">No hay compañeros seleccionados</em>';
+                    } else {
+                        companerosSeleccionadosArray.forEach(alumno => {
+                            const chip = document.createElement('div');
+                            chip.className = 'chip-companero';
+                            chip.innerHTML = `${alumno.nombre} ❌`;
+                            
+                            chip.addEventListener('click', function() {
+                                companerosSeleccionadosArray = companerosSeleccionadosArray.filter(a => a.usuario !== alumno.usuario);
+                                document.getElementById(`alumno_${alumno.usuario}`).checked = false;
+                                actualizarVistaCompaneros();
+                            });
+                            
+                            companerosSeleccionados.appendChild(chip);
+                        });
+                    }
+                }
+
+                function limpiarSeleccionCompaneros() {
+                    companerosSeleccionadosArray = [];
+                    actualizarVistaCompaneros();
+                    // Desmarcar todos los checkboxes
+                    document.querySelectorAll('#lista-alumnos-disponibles input[type="checkbox"]').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                }
+
+                // Confirmar reservación
+                confirmarHospedajeBtn.addEventListener('click', function() {
+                    if (!hotelSeleccionado || !tipoHabitacionSeleccionado) {
+                        showNotification('Por favor, selecciona hotel y tipo de habitación', 'warning');
+                        return;
+                    }
+
+                    const hotel = hotelesData[hotelSeleccionado];
+                    const habitacion = hotel.habitaciones[tipoHabitacionSeleccionado];
+                    
+                    // Obtener datos del responsable
+                    database.ref('asientos').orderByChild('usuario').equalTo(currentUser).once('value').then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const asientoData = Object.values(snapshot.val())[0];
+                            
+                            const reservaData = {
+                                hotel: hotelSeleccionado,
+                                tipoHabitacion: tipoHabitacionSeleccionado,
+                                responsable: {
+                                    usuario: currentUser,
+                                    nombre: asientoData.nombre,
+                                    matricula: asientoData.matricula,
+                                    asiento: Object.keys(snapshot.val())[0]
+                                },
+                                companeros: companerosSeleccionadosArray,
+                                precioTotal: habitacion.precio,
+                                precioPorPersona: Math.ceil(habitacion.precio / (companerosSeleccionadosArray.length + 1)),
+                                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                                estado: "pendiente"
+                            };
+
+                            // Guardar en Firebase
+                            const reservaId = `${currentUser}_${hotelSeleccionado}`;
+                            database.ref(`reservacionesHospedaje/${reservaId}`).set(reservaData)
+                                .then(() => {
+                                    showNotification(`Reservación confirmada en ${hotel.nombre} - Habitación: ${tipoHabitacionSeleccionado} - Precio total: $${habitacion.precio}`, 'success');
+                                    actualizarMisReservaciones();
+                                    limpiarFormulario();
+                                })
+                                .catch(error => {
+                                    showNotification('Error al confirmar reservación: ' + error.message, 'error');
+                                });
+                        }
+                    });
+                });
+
+                // Liberar reservación
+                liberarHospedajeBtn.addEventListener('click', function() {
+                    if (confirm('¿Estás seguro de que quieres liberar esta reservación?')) {
+                        const reservaId = `${currentUser}_${hotelSeleccionado}`;
+                        database.ref(`reservacionesHospedaje/${reservaId}`).remove()
+                            .then(() => {
+                                showNotification('Reservación liberada correctamente', 'success');
+                                actualizarMisReservaciones();
+                                limpiarFormulario();
+                            })
+                            .catch(error => {
+                                showNotification('Error al liberar reservación: ' + error.message, 'error');
+                            });
+                    }
+                });
+
+                function actualizarMisReservaciones() {
+                    database.ref('reservacionesHospedaje').orderByChild('responsable/usuario').equalTo(currentUser).once('value').then((snapshot) => {
+                        const reservaciones = snapshot.val() || {};
+                        let html = '';
+                        
+                        for (const reservaId in reservaciones) {
+                            const reserva = reservaciones[reservaId];
+                            const hotel = hotelesData[reserva.hotel];
+                            
+                            html += `
+                                <div style="margin-bottom: 10px; padding: 10px; background: #e8f5e8; border-radius: 5px;">
+                                    <strong>${hotel.nombre}</strong><br>
+                                    Habitación: ${reserva.tipoHabitacion}<br>
+                                    Precio total: $${reserva.precioTotal} ($${reserva.precioPorPersona} por persona)<br>
+                                    Compañeros: ${reserva.companeros.length > 0 ? 
+                                        reserva.companeros.map(c => c.nombre).join(', ') : 
+                                        'Ninguno'
+                                    }<br>
+                                    <small>Estado: ${reserva.estado}</small>
+                                    <button class="remove-btn" onclick="liberarReservacion('${reservaId}')" style="margin-top: 5px; width: auto;">Liberar</button>
+                                </div>
+                            `;
+                        }
+                        
+                        if (html) {
+                            document.getElementById('detalles-mi-hospedaje').innerHTML = html;
+                            miHospedajeInfo.style.display = 'block';
+                        } else {
+                            miHospedajeInfo.style.display = 'none';
+                        }
+                    });
+                }
+
+                // Función global para liberar reservación
+                window.liberarReservacion = function(reservaId) {
+                    if (confirm('¿Estás seguro de que quieres liberar esta reservación?')) {
+                        database.ref(`reservacionesHospedaje/${reservaId}`).remove()
+                            .then(() => {
+                                showNotification('Reservación liberada correctamente', 'success');
+                                actualizarMisReservaciones();
+                            })
+                            .catch(error => {
+                                showNotification('Error al liberar reservación: ' + error.message, 'error');
+                            });
+                    }
+                };
+
+                function limpiarFormulario() {
+                    hotelSelect.value = '';
+                    tipoHabitacionSelect.value = '';
+                    hotelSeleccionado = null;
+                    tipoHabitacionSeleccionado = null;
+                    infoHotel.style.display = 'none';
+                    tipoHabitacionGroup.style.display = 'none';
+                    infoHabitacionDetalle.style.display = 'none';
+                    seleccionCompaneros.style.display = 'none';
+                    limpiarSeleccionCompaneros();
+                }
+
+                // Inicializar estructura de datos si no existe
+                database.ref('hospedajes').once('value').then((snapshot) => {
+                    if (!snapshot.exists()) {
+                        database.ref('hospedajes').set(hotelesData);
+                    }
+                });
+            }
+
+            // Validar formato de matrícula
+            function validateMatricula(matricula) {
+                const matriculaRegex = /^[Uu]\d{7}[Nn]\d{4}$/;
+                return matriculaRegex.test(matricula);
+            }
+
+            // Verificación de anticipo
+            anticipoVerification.addEventListener('change', function() {
+                if (this.value === 'si') {
+                    anticipoConfirmado = true;
+                    anticipoError.style.display = 'none';
+                    // Actualizar vista de asientos para habilitar los disponibles
+                    database.ref('asientos').once('value').then((snapshot) => {
+                        actualizarVistaAsientos(snapshot.val() || {});
+                    });
+                    showNotification('Anticipo confirmado. Ya puedes seleccionar un asiento.', 'success');
+                } else {
+                    anticipoConfirmado = false;
+                    anticipoError.style.display = 'block';
+                    // Deshabilitar todos los asientos
+                    seats.forEach(seat => {
+                        seat.classList.remove('available', 'occupied', 'my-seat');
+                        seat.classList.add('disabled');
+                        seat.style.cursor = 'not-allowed';
+                    });
+                    assignBtn.disabled = true;
+                    changeSeatBtn.disabled = true;
+                }
+            });
+
+            // Login de administrador
+            adminLoginBtn.addEventListener('click', function() {
+                if (adminPasswordInput.value === ADMIN_PASSWORD) {
+                    isAdmin = true;
+                    adminControls.style.display = 'block';
+                    adminLoginBtn.disabled = true;
+                    adminPasswordInput.disabled = true;
+                    showNotification('Acceso de administrador concedido', 'success');
+                    // Recargar datos para mostrar controles administrativos
+                    database.ref('asientos').once('value').then((snapshot) => {
+                        updatePassengerList(snapshot.val() || {});
+                    });
+                } else {
+                    showNotification('Contraseña incorrecta', 'error');
+                    adminPasswordInput.value = '';
+                    adminPasswordInput.focus();
+                }
+            });
+
+            // Liberar todos los asientos (admin)
+            clearAllBtn.addEventListener('click', function() {
+                if (confirm('⚠️ ¿Estás seguro de que quieres liberar TODOS los asientos? Esta acción no se puede deshacer.')) {
+                    database.ref('asientos').remove()
+                        .then(() => {
+                            showNotification('Todos los asientos han sido liberados', 'success');
+                        })
+                        .catch((error) => {
+                            showNotification('Error al liberar asientos: ' + error.message, 'error');
+                        });
+                }
+            });
+
+            // Liberar mi asiento
+            releaseSeatBtn.addEventListener('click', function() {
+                if (myCurrentSeat) {
+                    if (confirm(`¿Estás seguro de que quieres liberar el asiento ${myCurrentSeat}?`)) {
+                        database.ref('asientos/' + myCurrentSeat).remove()
+                            .then(() => {
+                                myCurrentSeat = null;
+                                mySeatInfo.style.display = 'none';
+                                showNotification('Asiento liberado correctamente', 'success');
+                            })
+                            .catch((error) => {
+                                showNotification('Error al liberar asiento: ' + error.message, 'error');
+                            });
+                    }
+                }
+            });
+
+            // Cambiar de asiento
+            changeSeatBtn.addEventListener('click', function() {
+                if (!selectedSeat) {
+                    showNotification('Por favor, seleccione un nuevo asiento primero.', 'warning');
+                    return;
+                }
+
+                if (!anticipoConfirmado) {
+                    showNotification('Debes confirmar que ya diste tu anticipo antes de cambiar de asiento.', 'warning');
+                    return;
+                }
+
+                const newSeatNum = selectedSeat.getAttribute('data-seat');
+                
+                if (!validateStudentInfo()) {
+                    return;
+                }
+
+                // Primero liberar el asiento actual
+                if (myCurrentSeat) {
+                    database.ref('asientos/' + myCurrentSeat).remove();
+                }
+
+                // Luego asignar el nuevo asiento
+                assignSeat(newSeatNum, true);
+            });
+
+            // Validar información del estudiante
+            function validateStudentInfo() {
+                const passengerName = passengerNameInput.value.trim();
+                const studentId = studentIdInput.value.trim();
+                const career = careerSelect.value;
+                const semester = semesterSelect.value;
+                let isValid = true;
+
+                // Resetear errores
+                nameError.style.display = 'none';
+                matriculaError.style.display = 'none';
+                careerError.style.display = 'none';
+                semesterError.style.display = 'none';
+
+                if (!passengerName) {
+                    nameError.style.display = 'block';
+                    passengerNameInput.focus();
+                    isValid = false;
+                }
+
+                if (!studentId) {
+                    matriculaError.style.display = 'block';
+                    studentIdInput.focus();
+                    isValid = false;
+                } else if (!validateMatricula(studentId)) {
+                    matriculaError.style.display = 'block';
+                    studentIdInput.focus();
+                    isValid = false;
+                }
+
+                if (!career) {
+                    careerError.style.display = 'block';
+                    careerSelect.focus();
+                    isValid = false;
+                }
+
+                if (!semester) {
+                    semesterError.style.display = 'block';
+                    semesterSelect.focus();
+                    isValid = false;
+                }
+
+                return isValid;
+            }
+
+            // Asignar asiento (función reutilizable)
+            function assignSeat(seatNum, isChange = false) {
+                const passengerName = passengerNameInput.value.trim();
+                const studentId = studentIdInput.value.trim();
+                const career = careerSelect.value;
+                const semester = semesterSelect.value;
+
+                const seatData = {
+                    nombre: passengerName,
+                    matricula: studentId.toUpperCase(),
+                    carrera: career,
+                    carrera_nombre: careerSelect.options[careerSelect.selectedIndex].text,
+                    cuatrimestre: semester,
+                    usuario: currentUser,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    anticipoConfirmado: true
+                };
+
+                database.ref('asientos/' + seatNum).set(seatData)
+                    .then(() => {
+                        if (selectedSeat) {
+                            selectedSeat.classList.remove('selected');
+                            selectedSeat = null;
+                        }
+                        seatNumberInput.value = '';
+                        passengerNameInput.value = '';
+                        studentIdInput.value = '';
+                        careerSelect.value = '';
+                        semesterSelect.value = '';
+                        assignBtn.disabled = true;
+                        changeSeatBtn.disabled = false;
+                        
+                        if (isChange) {
+                            showNotification(`Asiento cambiado correctamente al ${seatNum}`, 'success');
+                        } else {
+                            showNotification(`Asiento ${seatNum} asignado correctamente`, 'success');
+                        }
+                    })
+                    .catch((error) => {
+                        showNotification('Error al asignar asiento: ' + error.message, 'error');
+                    });
+            }
+
+            // Escuchar cambios en tiempo real
+            database.ref('asientos').on('value', (snapshot) => {
+                const asientosData = snapshot.val() || {};
+                actualizarVistaAsientos(asientosData);
+                updatePassengerList(asientosData);
+                updateEmptySeatsInfo(asientosData);
+                updateMySeatInfo(asientosData);
+            });
+
+            // Función para actualizar vista de asientos
+            function actualizarVistaAsientos(asientosData) {
+                seats.forEach(seat => {
+                    const seatNum = seat.getAttribute('data-seat');
+                    
+                    // Remover todas las clases de estado
+                    seat.classList.remove('selected', 'available', 'occupied', 'my-seat', 'disabled');
+                    
+                    if (asientosData[seatNum]) {
+                        // Asiento ocupado
+                        if (asientosData[seatNum].usuario === currentUser) {
+                            // Es MI asiento
+                            seat.classList.add('my-seat');
+                            seat.title = `Tu asiento: ${asientosData[seatNum].nombre}`;
+                            seat.style.cursor = 'pointer';
+                        } else {
+                            // Asiento de otra persona
+                            seat.classList.add('occupied');
+                            seat.title = `Ocupado por: ${asientosData[seatNum].nombre} (${asientosData[seatNum].matricula})`;
+                            seat.style.cursor = 'not-allowed';
+                        }
+                    } else {
+                        // Asiento disponible
+                        if (anticipoConfirmado) {
+                            seat.classList.add('available');
+                            seat.title = `Asiento ${seatNum} - Disponible`;
+                            seat.style.cursor = 'pointer';
+                        } else {
+                            seat.classList.add('disabled');
+                            seat.title = `Confirma tu anticipo para seleccionar`;
+                            seat.style.cursor = 'not-allowed';
+                        }
+                    }
+                });
+            }
+
+            // Manejar clic en asientos
+            seats.forEach(seat => {
+                seat.addEventListener('click', function() {
+                    if (!anticipoConfirmado) {
+                        showNotification('Por favor, confirma primero que ya diste tu anticipo a los organizadores.', 'warning');
+                        anticipoVerification.focus();
+                        return;
+                    }
+
+                    const seatNum = this.getAttribute('data-seat');
+                    
+                    // Verificar si el asiento está ocupado
+                    if (this.classList.contains('occupied') && !this.classList.contains('my-seat') && !isAdmin) {
+                        showNotification(`El asiento ${seatNum} ya está ocupado`, 'error');
+                        return;
+                    }
+                    
+                    if (selectedSeat) {
+                        selectedSeat.classList.remove('selected');
+                    }
+                    
+                    this.classList.add('selected');
+                    selectedSeat = this;
+                    seatNumberInput.value = seatNum;
+                    
+                    // Si es mi asiento, cargar la información existente
+                    if (this.classList.contains('my-seat')) {
+                        database.ref('asientos/' + seatNum).once('value').then((snapshot) => {
+                            if (snapshot.exists()) {
+                                const data = snapshot.val();
+                                passengerNameInput.value = data.nombre || '';
+                                studentIdInput.value = data.matricula || '';
+                                careerSelect.value = data.carrera || '';
+                                semesterSelect.value = data.cuatrimestre || '';
+                            }
+                        });
+                        assignBtn.disabled = true;
+                        changeSeatBtn.disabled = false;
+                    } else {
+                        assignBtn.disabled = false;
+                        changeSeatBtn.disabled = !!myCurrentSeat;
+                    }
+                });
+            });
             
+            // Asignar asiento
+            assignBtn.addEventListener('click', function() {
+                if (!selectedSeat) {
+                    showNotification('Por favor, seleccione un asiento primero.', 'warning');
+                    return;
+                }
+                
+                if (!anticipoConfirmado) {
+                    showNotification('Debes confirmar que ya diste tu anticipo antes de asignar un asiento.', 'warning');
+                    return;
+                }
+                
+                const seatNum = selectedSeat.getAttribute('data-seat');
+                
+                if (!validateStudentInfo()) {
+                    return;
+                }
+
+                // Verificar que el asiento no esté ocupado
+                if (selectedSeat.classList.contains('occupied') && !selectedSeat.classList.contains('my-seat') && !isAdmin) {
+                    showNotification(`El asiento ${seatNum} ya está ocupado`, 'error');
+                    return;
+                }
+
+                assignSeat(seatNum);
+            });
+            
+            // Limpiar selección
+            clearBtn.addEventListener('click', function() {
+                if (selectedSeat) {
+                    selectedSeat.classList.remove('selected');
+                    selectedSeat = null;
+                }
+                seatNumberInput.value = '';
+                passengerNameInput.value = '';
+                studentIdInput.value = '';
+                careerSelect.value = '';
+                semesterSelect.value = '';
+                assignBtn.disabled = true;
+                changeSeatBtn.disabled = !myCurrentSeat;
+                
+                // Resetear mensajes de error
+                nameError.style.display = 'none';
+                matriculaError.style.display = 'none';
+                careerError.style.display = 'none';
+                semesterError.style.display = 'none';
+            });
+
+            function updateMySeatInfo(asientosData) {
+                myCurrentSeat = null;
+                for (const seatNum in asientosData) {
+                    if (asientosData[seatNum].usuario === currentUser) {
+                        myCurrentSeat = seatNum;
+                        break;
+                    }
+                }
+
+                if (myCurrentSeat) {
+                    currentSeatNumber.textContent = myCurrentSeat;
+                    mySeatInfo.style.display = 'block';
+                    changeSeatBtn.disabled = false;
+                } else {
+                    mySeatInfo.style.display = 'none';
+                    changeSeatBtn.disabled = true;
+                }
+            }
+
+            function generarUsuarioUnico() {
+                let usuario = localStorage.getItem('busUsuario');
+                if (!usuario) {
+                    usuario = 'user_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('busUsuario', usuario);
+                }
+                return usuario;
+            }
+
+            function updatePassengerList(asientosData) {
+                passengerList.innerHTML = '';
+                
+                const asientosOcupados = Object.keys(asientosData);
+                
+                if (asientosOcupados.length === 0) {
+                    passengerList.innerHTML = '<div class="passenger-item">No hay estudiantes asignados</div>';
+                    return;
+                }
+                
+                asientosOcupados.sort((a, b) => parseInt(a) - parseInt(b));
+                
+                asientosOcupados.forEach(seatNum => {
+                    const passengerItem = document.createElement('div');
+                    passengerItem.className = 'passenger-item';
+                    
+                    const data = asientosData[seatNum];
+                    const isMySeat = data.usuario === currentUser;
+                    const canDelete = isMySeat || isAdmin;
+                    
+                    passengerItem.innerHTML = `
+                        <div>
+                            <strong>Asiento ${seatNum}: ${data.nombre}</strong><br>
+                            <small>Matrícula: ${data.matricula} | ${data.carrera_nombre} | ${data.cuatrimestre}° Cuat.</small>
+                            ${isMySeat ? '<br><small style="color: #FF9800;">← TÚ</small>' : ''}
+                        </div>
+                        ${canDelete ? 
+                            `<button class="remove-btn" data-seat="${seatNum}">Eliminar</button>` : 
+                            ''
+                        }
+                    `;
+                    passengerList.appendChild(passengerItem);
+                });
+                
+                document.querySelectorAll('.remove-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const seatToRemove = this.getAttribute('data-seat');
+                        if (confirm(`¿Estás seguro de que quieres eliminar el asiento ${seatToRemove}?`)) {
+                            database.ref('asientos/' + seatToRemove).remove()
+                                .catch((error) => {
+                                    showNotification('Error al eliminar asiento: ' + error.message, 'error');
+                                });
+                        }
+                    });
+                });
+            }
+            
+            function updateEmptySeatsInfo(asientosData) {
+                const totalSeats = 36; // 37 asientos totales - 1 operador
+                const occupiedSeats = Object.keys(asientosData).length;
+                const emptySeats = totalSeats - occupiedSeats;
+                
+                emptySeatsInfo.textContent = `Asientos ocupados: ${occupiedSeats} | Asientos disponibles: ${emptySeats}`;
+            }
+
+            // Monitorear estado de conexión
+            database.ref('.info/connected').on('value', (snapshot) => {
+                if (snapshot.val() === true) {
+                    statusIndicator.textContent = "Conectado";
+                    statusIndicator.style.backgroundColor = "#4CAF50";
+                    connectionStatus.classList.remove('offline');
+                    showNotification('Conexión establecida con la base de datos', 'success');
+                } else {
+                    statusIndicator.textContent = "Desconectado";
+                    statusIndicator.style.backgroundColor = "#f44336";
+                    connectionStatus.classList.add('offline');
+                    showNotification('Sin conexión a la base de datos', 'error');
+                }
+            });
+
             // Inicializar sistema DUAL de hospedaje
             inicializarSistemaHospedajeDual();
+
+            // Mostrar notificación de bienvenida
+            setTimeout(() => {
+                showNotification('Sistema de reservaciones cargado correctamente', 'success');
+            }, 1000);
         });
-
-        // Las funciones del sistema de hospedaje se mantienen igual que en la versión anterior
-        function inicializarSistemaHospedajeDual() {
-            // ... (código idéntico al de la versión anterior)
-        }
-
-        // Las demás funciones auxiliares se mantienen igual
-        function validateMatricula(matricula) {
-            const matriculaRegex = /^[Uu]\d{7}[Nn]\d{4}$/;
-            return matriculaRegex.test(matricula);
-        }
-
-        function generarUsuarioUnico() {
-            let usuario = localStorage.getItem('busUsuario');
-            if (!usuario) {
-                usuario = 'user_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('busUsuario', usuario);
-            }
-            return usuario;
-        }
-
-        // ... (resto de funciones)
     </script>
 </body>
 </html>
