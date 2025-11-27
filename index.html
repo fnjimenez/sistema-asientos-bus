@@ -711,6 +711,71 @@
             <!-- TAB 1: INFORMACIÓN -->
             <div class="tab-content active" id="informacion">
                 <div class="card">
+                    
+                    <!-- Cuenta Regresiva -->
+<div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center;">
+    <h2 style="color: white; border-bottom-color: rgba(255,255,255,0.3);">⏰ Cuenta Regresiva para el Viaje</h2>
+    <div id="countdown" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
+            <div style="font-size: 48px; font-weight: bold;" id="days">0</div>
+            <div style="font-size: 14px; opacity: 0.9;">Días</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
+            <div style="font-size: 48px; font-weight: bold;" id="hours">0</div>
+            <div style="font-size: 14px; opacity: 0.9;">Horas</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
+            <div style="font-size: 48px; font-weight: bold;" id="minutes">0</div>
+            <div style="font-size: 14px; opacity: 0.9;">Minutos</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
+            <div style="font-size: 48px; font-weight: bold;" id="seconds">0</div>
+            <div style="font-size: 14px; opacity: 0.9;">Segundos</div>
+        </div>
+    </div>
+    <div id="countdown-message" style="margin-top: 20px; font-size: 18px; font-weight: 600;"></div>
+</div>
+
+<script>
+// Función de cuenta regresiva
+function updateCountdown() {
+    const targetDate = new Date('2025-12-10T08:30:00').getTime();
+    const now = new Date().getTime();
+    const distance = targetDate - now;
+
+    if (distance < 0) {
+        document.getElementById('countdown-message').innerHTML = '🎉 ¡El viaje ya comenzó! ¡Disfrútenlo!';
+        document.getElementById('days').innerHTML = '0';
+        document.getElementById('hours').innerHTML = '0';
+        document.getElementById('minutes').innerHTML = '0';
+        document.getElementById('seconds').innerHTML = '0';
+        return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    document.getElementById('days').innerHTML = days;
+    document.getElementById('hours').innerHTML = hours;
+    document.getElementById('minutes').innerHTML = minutes;
+    document.getElementById('seconds').innerHTML = seconds;
+
+    if (days > 0) {
+        document.getElementById('countdown-message').innerHTML = `Faltan ${days} día${days !== 1 ? 's' : ''} para el viaje 🚌`;
+    } else if (hours > 0) {
+        document.getElementById('countdown-message').innerHTML = '¡Ya casi es hora! Prepara tu mochila 🎒';
+    } else {
+        document.getElementById('countdown-message').innerHTML = '¡Nos vamos muy pronto! 🚀';
+    }
+}
+
+// Actualizar cada segundo
+setInterval(updateCountdown, 1000);
+updateCountdown(); // Ejecutar inmediatamente
+</script>
+                    
                     <h2>📅 Itinerario del Viaje</h2>
                     
                     <div class="itinerario-dia">📍 Miércoles 10 de Diciembre 2025</div>
