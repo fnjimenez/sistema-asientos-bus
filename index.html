@@ -678,11 +678,11 @@
     <div class="main-container">
         <!-- HEADER PRINCIPAL -->
         <div class="header">
-            <h1>🚌 Viaje Académico Guanajuato (Monterrey Mushrooms San Miguel de Allende)- San Luis Potosí (Centro de Tecnología Avanzada CIATEQ San Luis Potosí)</h1>
+            <h1>🚌 Viaje Académico Guanajuato - San Luis Potosí</h1>
             <div class="subtitle">📅 Miércoles 10 y Jueves 11 de Diciembre 2025</div>
             <div class="subtitle">🏫 Universidad del SABES Campus San Felipe</div>
             <div class="subtitle">🚍 Transporta: Municipio de San Felipe</div>
-            <div class="subtitle">📞 Contacto: Prof. Fausto Noé Jiménez (fausto.noej@sabes.edu.mx, 418-101-1904) | Cenobio García Romero (U2303057N0020@sabes.edu.mx, 428-102-6252)</div>
+            <div class="subtitle">📞 Contacto: Prof. Fausto Noé Jiménez (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="85e3e4f0f6f1eaabebeae0efc5f6e4e7e0f6abe0e1f0abe8fd">[email&#160;protected]</a>, 418-101-1904) | Cenobio García Romero (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="782d4a4b484b484d4f3648484a48380b191a1d0b561d1c0d561500">[email&#160;protected]</a>, 428-102-6252)</div>
             <div class="status-badge" id="status-indicator">Conectando...</div>
         </div>
 
@@ -709,72 +709,31 @@
 
             <!-- TAB 1: INFORMACIÓN -->
             <div class="tab-content active" id="informacion">
+                <!-- Cuenta Regresiva -->
+                <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center;">
+                    <h2 style="color: white; border-bottom-color: rgba(255,255,255,0.3);">⏰ Cuenta Regresiva para el Viaje</h2>
+                    <div id="countdown" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
+                            <div style="font-size: 48px; font-weight: bold;" id="days">0</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Días</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
+                            <div style="font-size: 48px; font-weight: bold;" id="hours">0</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Horas</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
+                            <div style="font-size: 48px; font-weight: bold;" id="minutes">0</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Minutos</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
+                            <div style="font-size: 48px; font-weight: bold;" id="seconds">0</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Segundos</div>
+                        </div>
+                    </div>
+                    <div id="countdown-message" style="margin-top: 20px; font-size: 18px; font-weight: 600;"></div>
+                </div>
+
                 <div class="card">
-                    
-                    <!-- Cuenta Regresiva -->
-<div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center;">
-    <h2 style="color: white; border-bottom-color: rgba(255,255,255,0.3);">⏰ Cuenta Regresiva para el Viaje</h2>
-    <div id="countdown" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
-        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
-            <div style="font-size: 48px; font-weight: bold;" id="days">0</div>
-            <div style="font-size: 14px; opacity: 0.9;">Días</div>
-        </div>
-        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
-            <div style="font-size: 48px; font-weight: bold;" id="hours">0</div>
-            <div style="font-size: 14px; opacity: 0.9;">Horas</div>
-        </div>
-        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
-            <div style="font-size: 48px; font-weight: bold;" id="minutes">0</div>
-            <div style="font-size: 14px; opacity: 0.9;">Minutos</div>
-        </div>
-        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
-            <div style="font-size: 48px; font-weight: bold;" id="seconds">0</div>
-            <div style="font-size: 14px; opacity: 0.9;">Segundos</div>
-        </div>
-    </div>
-    <div id="countdown-message" style="margin-top: 20px; font-size: 18px; font-weight: 600;"></div>
-</div>
-
-<script>
-// Función de cuenta regresiva
-function updateCountdown() {
-    const targetDate = new Date('2025-12-10T08:30:00').getTime();
-    const now = new Date().getTime();
-    const distance = targetDate - now;
-
-    if (distance < 0) {
-        document.getElementById('countdown-message').innerHTML = '🎉 ¡El viaje ya comenzó! ¡Disfrútenlo!';
-        document.getElementById('days').innerHTML = '0';
-        document.getElementById('hours').innerHTML = '0';
-        document.getElementById('minutes').innerHTML = '0';
-        document.getElementById('seconds').innerHTML = '0';
-        return;
-    }
-
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    document.getElementById('days').innerHTML = days;
-    document.getElementById('hours').innerHTML = hours;
-    document.getElementById('minutes').innerHTML = minutes;
-    document.getElementById('seconds').innerHTML = seconds;
-
-    if (days > 0) {
-        document.getElementById('countdown-message').innerHTML = `Faltan ${days} día${days !== 1 ? 's' : ''} para el viaje 🚌`;
-    } else if (hours > 0) {
-        document.getElementById('countdown-message').innerHTML = '¡Ya casi es hora! Prepara tu mochila 🎒';
-    } else {
-        document.getElementById('countdown-message').innerHTML = '¡Nos vamos muy pronto! 🚀';
-    }
-}
-
-// Actualizar cada segundo
-setInterval(updateCountdown, 1000);
-updateCountdown(); // Ejecutar inmediatamente
-</script>
-                    
                     <h2>📅 Itinerario del Viaje</h2>
                     
                     <div class="itinerario-dia">📍 Miércoles 10 de Diciembre 2025</div>
@@ -786,60 +745,54 @@ updateCountdown(); // Ejecutar inmediatamente
                         </div>
                     </div>
                     <div class="itinerario-item">
-    <div class="itinerario-hora">08:30 - 9:30</div>
-    <div class="itinerario-descripcion">
-        <strong>🍄 Recepción en Monterrey Mushrooms🍄Recibe: Lic. Montserrat H. </strong><br>
-        <small>Vigilancia - Los Rodríguez, San Miguel de Allende</small>
-    </div>
-</div>
-
-                    
-<div class="itinerario-item">
-    <div class="itinerario-hora">09:30 - 10:00</div>
-    <div class="itinerario-descripcion">
-        <strong>🍄 PLática sobre Cultura y Normas de Seguridad en Monterrey Mushrooms🍄 Lic. Natalia Mendoza y Lic. Maura Pérez </strong><br>
-        <small>Sala de Juntas 1 - OG</small>
-    </div>
-</div>
-                    
-<div class="itinerario-item">
-    <div class="itinerario-hora">10:00 - 10:30</div>
-    <div class="itinerario-descripcion">
-        <strong>🍄  Recorrido Empaque Fresco en Monterrey Mushrooms🍄 Ing. Juán Chávez </strong><br>
-        <small>Empaque Fresco</small>
-    </div>
-</div>
-                    
-<div class="itinerario-item">
-    <div class="itinerario-hora">10:30 - 11:00</div>
-    <div class="itinerario-descripcion">
-        <strong>🍄Recorrido Cosecha en Monterrey Mushrooms 🍄 Lic. Montserrat H. y Lic. Natalia Mendoza </strong><br>
-        <small>Mini Planta</small>
-    </div>
-</div>
-<div class="itinerario-item">
-    <div class="itinerario-hora">11:00 - 11:30</div>
-    <div class="itinerario-descripcion">
-        <strong>🍄 Recorrido de Composta - Sala 🍄 Lic. Montserrat H. y Lic. Natalia Mendoza</strong><br>
-        <small>Área exterior túneles nuevo</small>
-    </div>
-</div>
-                    
-<div class="itinerario-item">
-    <div class="itinerario-hora">11:30 - 12:00</div>
-    <div class="itinerario-descripcion">
-        <strong>🍄 Foto Grupal 🍄Lic. Natalia Mendoza</strong><br>
-        <small>Sala de Juntas</small>
-    </div>
-</div>
-                    
-<div class="itinerario-item">
-    <div class="itinerario-hora">12:00 - 13:00 PM</div>
-    <div class="itinerario-descripcion">
-        <strong>🍄 Clausura 🍄 Lic. Pedro Mario Molina (Director de Operaciones, Gente y Cultura Monterrey Mushrooms México) y Lic. Juan José Seguí</strong><br>
-        <small>Sala de Juntas</small>
-    </div>
-</div>
+                        <div class="itinerario-hora">08:30 - 9:30</div>
+                        <div class="itinerario-descripcion">
+                            <strong>🍄 Recepción en Monterrey Mushrooms 🍄</strong><br>
+                            <small>Recibe: Lic. Montserrat H. - Vigilancia, Los Rodríguez, San Miguel de Allende</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">09:30 - 10:00</div>
+                        <div class="itinerario-descripcion">
+                            <strong>🍄 Plática sobre Cultura y Normas de Seguridad 🍄</strong><br>
+                            <small>Lic. Natalia Mendoza y Lic. Maura Pérez - Sala de Juntas 1 - OG</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">10:00 - 10:30</div>
+                        <div class="itinerario-descripcion">
+                            <strong>🍄 Recorrido Empaque Fresco 🍄</strong><br>
+                            <small>Ing. Juan Chávez - Empaque Fresco</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">10:30 - 11:00</div>
+                        <div class="itinerario-descripcion">
+                            <strong>🍄 Recorrido Cosecha 🍄</strong><br>
+                            <small>Lic. Montserrat H. y Lic. Natalia Mendoza - Mini Planta</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">11:00 - 11:30</div>
+                        <div class="itinerario-descripcion">
+                            <strong>🍄 Recorrido de Composta - Sala 🍄</strong><br>
+                            <small>Lic. Montserrat H. y Lic. Natalia Mendoza - Área exterior túneles nuevo</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">11:30 - 12:00</div>
+                        <div class="itinerario-descripcion">
+                            <strong>🍄 Foto Grupal 🍄</strong><br>
+                            <small>Lic. Natalia Mendoza - Sala de Juntas</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">12:00 - 13:00</div>
+                        <div class="itinerario-descripcion">
+                            <strong>🍄 Clausura 🍄</strong><br>
+                            <small>Lic. Pedro Mario Molina (Director de Operaciones) y Lic. Juan José Seguí - Sala de Juntas</small>
+                        </div>
+                    </div>
                     <div class="itinerario-item">
                         <div class="itinerario-hora">13:00 - 14:00</div>
                         <div class="itinerario-descripcion">
@@ -855,16 +808,16 @@ updateCountdown(); // Ejecutar inmediatamente
                     <div class="itinerario-item">
                         <div class="itinerario-hora">15:00 - 16:00</div>
                         <div class="itinerario-descripcion">
-                            <strong>Espacio libre para comer (opcional por tiempos) </strong>
+                            <strong>Espacio libre para comer (opcional por tiempos)</strong>
                         </div>
                     </div>
                     <div class="itinerario-item">
                         <div class="itinerario-hora">16:00 - 18:00</div>
                         <div class="itinerario-descripcion">
-                            <strong>Traslado a San Luis Potosí / Eje 106 Zona Industrial, Av. Benito Juarez 3243-Carretera 57.  /</strong>
+                            <strong>Traslado a San Luis Potosí</strong><br>
+                            <small>Eje 106 Zona Industrial, Av. Benito Juárez 3243 - Carretera 57</small>
                         </div>
-                    </div> 
-                 
+                    </div>
                     <div class="itinerario-item">
                         <div class="itinerario-hora">18:00</div>
                         <div class="itinerario-descripcion">
@@ -872,88 +825,81 @@ updateCountdown(); // Ejecutar inmediatamente
                         </div>
                     </div>
 
-                   
                     <div class="itinerario-dia">📍 Jueves 11 de Diciembre 2025</div>
                     <div class="itinerario-item">
                         <div class="itinerario-hora">06:00 - 7:30</div>
                         <div class="itinerario-descripcion"><strong>Desayuno</strong></div>
                     </div>
                     <div class="itinerario-item">
-                        <div class="itinerario-hora">08:15-8:45</div>
+                        <div class="itinerario-hora">08:15 - 8:45</div>
                         <div class="itinerario-descripcion"><strong>Traslado a ⚙️🧠 CIATEQ ⚙️🧠, Eje 126 Z.I. San Luis Potosí</strong></div>
                     </div>
                     <div class="itinerario-item">
                         <div class="itinerario-hora">08:45 - 09:00</div>
-                        <div class="itinerario-descripcion"><strong>Recepción en ⚙️🧠 CIATEQ ⚙️🧠, Eje 126 Z.I. San Luis Potos</strong></div>
+                        <div class="itinerario-descripcion"><strong>Recepción en ⚙️🧠 CIATEQ ⚙️🧠</strong></div>
                     </div>
                     <div class="itinerario-item">
                         <div class="itinerario-hora">09:00 - 13:00</div>
-                        <div class="itinerario-descripcion"><strong>Visita guiada en ⚙️🧠 CIATEQ ⚙️🧠, Eje 126 Z.I. San Luis Potos</strong></div>
+                        <div class="itinerario-descripcion"><strong>Visita guiada en ⚙️🧠 CIATEQ ⚙️🧠</strong></div>
                     </div>
                     <div class="itinerario-item">
                         <div class="itinerario-hora">13:00 - 13:30</div>
-                        <div class="itinerario-descripcion"><strong>🌲🦆🌿🚴‍♀️🍃 Traslado a Parque Tangamanga I </strong></div>
+                        <div class="itinerario-descripcion"><strong>🌲🦆🌿 Traslado a Parque Tangamanga I</strong></div>
                     </div>
-
                     <div class="itinerario-item">
                         <div class="itinerario-hora">13:30 - 15:00</div>
-                        <div class="itinerario-descripcion"><strong>Receso para comer / pasear en🌲🦆🌿🚴‍♀️🍃 Parque Tangamanga I </strong></div>
-                          </div>
-                    
+                        <div class="itinerario-descripcion"><strong>Receso para comer / pasear en 🌲🦆🌿 Parque Tangamanga I</strong></div>
+                    </div>
                     <div class="itinerario-item">
                         <div class="itinerario-hora">15:00 - 16:45</div>
-                        <div class="itinerario-descripcion"><strong>Visita guiada al 🧬⚛️ Museo Laberinto de las Artes y las Ciencias de San Luis potosí</strong></div>
+                        <div class="itinerario-descripcion"><strong>Visita guiada al 🧬⚛️ Museo Laberinto de las Artes y las Ciencias</strong></div>
                     </div>
-
-        <div class="itinerario-item">
+                    <div class="itinerario-item">
                         <div class="itinerario-hora">16:45 - 17:15</div>
-                        <div class="itinerario-descripcion"><strong>Traslado al 🦉🔮 Museo Leonora Carrington, Barrio de San Juan de Guadalupe, S.L.P</strong></div>
+                        <div class="itinerario-descripcion"><strong>Traslado al 🦉🔮 Museo Leonora Carrington</strong><br><small>Barrio de San Juan de Guadalupe, S.L.P</small></div>
                     </div>
-                    
-                                        <div class="itinerario-item">
+                    <div class="itinerario-item">
                         <div class="itinerario-hora">17:15 - 18:00</div>
-                        <div class="itinerario-descripcion"><strong>Visita guiada al 🦉🔮 Museo Leonora Carrington, Barrio de San Juan de Guadalupe, S.L.P.</strong></div>
-                    </div>  
-
-                                                            <div class="itinerario-item">
+                        <div class="itinerario-descripcion"><strong>Visita guiada al 🦉🔮 Museo Leonora Carrington</strong></div>
+                    </div>
+                    <div class="itinerario-item">
                         <div class="itinerario-hora">18:00 - 19:00</div>
-                        <div class="itinerario-descripcion"><strong>Receso Centro Histórico S.L.P (🏛️Plaza de Armas - ❄️⛸️ Villa Navideña)</strong></div>
-                    </div>  
-                    
+                        <div class="itinerario-descripcion"><strong>Receso Centro Histórico S.L.P (🏛️ Plaza de Armas - ❄️⛸️ Villa Navideña)</strong></div>
+                    </div>
                     <div class="itinerario-item">
                         <div class="itinerario-hora">19:00 - 20:00</div>
-                        <div class="itinerario-descripcion"><strong>❄️⛸️ Espectáculo Navideño sobre hielo, Plaza de los Fundadores, San Luis Potosí</strong></div>
+                        <div class="itinerario-descripcion"><strong>❄️⛸️ Espectáculo Navideño sobre hielo</strong><br><small>Plaza de los Fundadores, San Luis Potosí</small></div>
                     </div>
-                                                  <div class="itinerario-item">
+                    <div class="itinerario-item">
                         <div class="itinerario-hora">20:00 - 22:00</div>
                         <div class="itinerario-descripcion"><strong>Traslado de regreso a Universidad del SABES, Campus San Felipe</strong></div>
                     </div>
-                                                                  <div class="itinerario-item">
+                    <div class="itinerario-item">
                         <div class="itinerario-hora">22:00</div>
-                        <div class="itinerario-descripcion"><strong>LLegada a Universidad del SABES, Campus San Felipe</strong></div>
+                        <div class="itinerario-descripcion"><strong>Llegada a Universidad del SABES, Campus San Felipe</strong></div>
                     </div>
                 </div>
 
                 <div class="card">
                     <h2>🛡️ Equipo de Protección Personal</h2>
                     
-                    <h3>Monterrey Mushrooms San Miguel de Allende</h3>
+                    <h3>🍄 Monterrey Mushrooms San Miguel de Allende</h3>
                     <div class="alert alert-warning">
                         <strong>Calzado de Seguridad Requerido</strong><br>
                         Calzado industrial de cualquier tipo preferente. Si no cuentas con calzado industrial, verifica con los organizadores si tu calzado actual es adecuado.<br>
                         <em>Recomendación: Calzado industrial de cualquier tipo o burra de piel.</em>
                     </div>
                     
-                    <h3>CIATEQ San Luis Potosí</h3>
+                    <h3>⚙️ CIATEQ San Luis Potosí</h3>
                     <div class="alert alert-info">
                         <strong>Protocolo de Seguridad</strong><br>
                         Se deberá seguir el protocolo de seguridad específico de CIATEQ. Los requisitos se informarán al llegar.<br>
-                        <em>Previo: generalmente calzado cerrado.</em>
+                        <em>Generalmente: bata, lentes de seguridad y calzado cerrado.</em>
                     </div>
                 </div>
 
                 <div class="card">
-                    <h2>🍄 Requisitos de Acceso especial para Monterrey Mushrooms (🦺 EPP - Equipo de Protección Personal)</h2>
+                    <h2>🍄⚠️ Requisitos de Acceso para Monterrey Mushrooms (🦺 EPP)</h2>
                     
                     <div class="requisitos-grid">
                         <div class="requisito-card">
@@ -1136,7 +1082,7 @@ updateCountdown(); // Ejecutar inmediatamente
                                 <option value="industrial_2025">INGENIERÍA INDUSTRIAL Plan 2025</option>
                                 <option value="ti_2020">INGENIERÍA TI Plan 2020</option>
                                 <option value="administracion_2020">ADMINISTRACIÓN Y DESARROLLO DE NEGOCIOS Plan 2020</option>
-                                <option value="mercadotecnia_2020">MERCADOTÉCNIA Plan 2020</option>
+                                <option value="mercadotecnia_2020">MERCADOTÉCNICA Plan 2020</option>
                                 <option value="administracion_2025">ADMINISTRACIÓN Y DESARROLLO DE NEGOCIOS Plan 2025</option>
                                 <option value="logistica_2023">INGENIERÍA EN LOGÍSTICA Plan 2023</option>
                                 <option value="sistemas_2025">INGENIERÍA EN TECNOLOGÍAS Y SISTEMAS COMPUTACIONALES Plan 2025</option>
@@ -1180,87 +1126,87 @@ updateCountdown(); // Ejecutar inmediatamente
                 </div>
             </div>
 
-       <!-- TAB 3: HOSPEDAJE -->
-<div class="tab-content" id="hospedaje">
-    <div id="hospedaje-section">
-        <div class="alert alert-info">
-            <strong>ℹ️ Importante:</strong> Debes tener un asiento asignado para poder gestionar hospedaje.
-        </div>
+            <!-- TAB 3: HOSPEDAJE -->
+            <div class="tab-content" id="hospedaje">
+                <div id="hospedaje-section">
+                    <div class="alert alert-info">
+                        <strong>ℹ️ Importante:</strong> Debes tener un asiento asignado para poder gestionar hospedaje.
+                    </div>
 
-        <div class="card" style="background: linear-gradient(135deg, #4a6fa5 0%, #6b8cbc 100%); color: white;">
-            <h2 style="color: white; border-bottom-color: rgba(255,255,255,0.3);">🏨 HOTEL EJECUTIVO JM & SUITES</h2>
-            <p style="margin: 10px 0;">📍 San Luis Potosí</p>
-            <p style="margin: 10px 0;">✨ Habitaciones disponibles para equipos de 2-4 personas</p>
-        </div>
+                    <div class="card" style="background: linear-gradient(135deg, #4a6fa5 0%, #6b8cbc 100%); color: white;">
+                        <h2 style="color: white; border-bottom-color: rgba(255,255,255,0.3);">🏨 HOTEL EJECUTIVO JM & SUITES</h2>
+                        <p style="margin: 10px 0;">📍 San Luis Potosí</p>
+                        <p style="margin: 10px 0;">✨ Habitaciones disponibles para equipos de 2-6 personas</p>
+                    </div>
 
-        <!-- Crear Nueva Habitación -->
-        <div class="card" id="crear-habitacion-card">
-            <h2>🆕 Crear Nueva Habitación (Ser Responsable)</h2>
-            
-            <div class="form-group">
-                <label for="nombre-habitacion">Nombre de la Habitación:</label>
-                <input type="text" id="nombre-habitacion" placeholder="Ej: Habitación de Cenobio, Los Ingenieros, etc.">
-                <small style="color: #666;">Dale un nombre identificable a tu habitación</small>
+                    <!-- Crear Nueva Habitación -->
+                    <div class="card" id="crear-habitacion-card">
+                        <h2>🆕 Crear Nueva Habitación (Ser Responsable)</h2>
+                        
+                        <div class="form-group">
+                            <label for="nombre-habitacion">Nombre de la Habitación:</label>
+                            <input type="text" id="nombre-habitacion" placeholder="Ej: Habitación de Cenobio, Los Ingenieros, etc.">
+                            <small style="color: #666;">Dale un nombre identificable a tu habitación</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="capacidad-habitacion">Capacidad de la Habitación:</label>
+                            <select id="capacidad-habitacion">
+                                <option value="">Seleccionar capacidad...</option>
+                                <option value="2">2 personas (Habitación Doble)</option>
+                                <option value="3">3 personas (Habitación Triple)</option>
+                                <option value="4">4 personas (Habitación Cuádruple)</option>
+                                <option value="5">5 personas (Habitación Quíntuple)</option>
+                                <option value="6">6 personas (Habitación Séxtuple)</option>
+                            </select>
+                        </div>
+
+                        <button id="crear-habitacion-btn" class="btn btn-success btn-block">✅ Crear Habitación como Responsable</button>
+                    </div>
+
+                    <!-- Mi Habitación (cuando soy responsable) -->
+                    <div class="card" id="mi-habitacion-responsable-card" style="display: none; background: linear-gradient(to bottom, #e8f5e8, white);">
+                        <h2>👑 Mi Habitación (Eres el Responsable)</h2>
+                        <div id="info-mi-habitacion-responsable"></div>
+                        
+                        <h3 style="margin-top: 20px;">👥 Agregar Compañeros</h3>
+                        <div id="lista-alumnos-agregar" style="max-height: 200px; overflow-y: auto; border: 2px solid #e9ecef; padding: 15px; border-radius: 8px; background: white; margin-bottom: 15px;">
+                            <!-- Lista dinámica de alumnos disponibles -->
+                        </div>
+
+                        <h3>Compañeros Actuales:</h3>
+                        <div id="companeros-actuales" style="min-height: 60px; border: 2px solid #4CAF50; padding: 15px; border-radius: 8px; background: #f8f9fa; margin-bottom: 15px;">
+                            <em style="color: #666;">Solo tú por ahora</em>
+                        </div>
+
+                        <button id="eliminar-habitacion-btn" class="btn btn-danger btn-block">🗑️ Eliminar Mi Habitación</button>
+                    </div>
+
+                    <!-- Unirme a una Habitación Existente -->
+                    <div class="card" id="unirme-habitacion-card">
+                        <h2>🚪 Unirme a una Habitación Existente</h2>
+                        
+                        <div id="habitaciones-disponibles" style="margin-top: 15px;">
+                            <!-- Lista dinámica de habitaciones disponibles -->
+                        </div>
+                    </div>
+
+                    <!-- Mi Habitación (cuando soy miembro) -->
+                    <div class="card" id="mi-habitacion-miembro-card" style="display: none; background: linear-gradient(to bottom, #fff3e0, white);">
+                        <h2>🏠 Mi Habitación Actual</h2>
+                        <div id="info-mi-habitacion-miembro"></div>
+                        <button id="salir-habitacion-btn" class="btn btn-warning btn-block">🚪 Salir de esta Habitación</button>
+                    </div>
+
+                    <!-- Resumen General -->
+                    <div class="card">
+                        <h2>📊 Resumen de Habitaciones</h2>
+                        <div id="resumen-habitaciones">
+                            <p>Cargando información de habitaciones...</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-<div class="form-group">
-    <label for="capacidad-habitacion">Capacidad de la Habitación:</label>
-    <select id="capacidad-habitacion">
-        <option value="">Seleccionar capacidad...</option>
-        <option value="2">2 personas (Habitación Doble)</option>
-        <option value="3">3 personas (Habitación Triple)</option>
-        <option value="4">4 personas (Habitación Cuádruple)</option>
-        <option value="5">5 personas (Habitación Quíntuple)</option>
-        <option value="6">6 personas (Habitación Séxtuple)</option>
-    </select>
-</div>
-
-            <button id="crear-habitacion-btn" class="btn btn-success btn-block">✅ Crear Habitación como Responsable</button>
-        </div>
-
-        <!-- Mi Habitación (cuando soy responsable) -->
-        <div class="card" id="mi-habitacion-responsable-card" style="display: none; background: linear-gradient(to bottom, #e8f5e8, white);">
-            <h2>👑 Mi Habitación (Eres el Responsable)</h2>
-            <div id="info-mi-habitacion-responsable"></div>
-            
-            <h3 style="margin-top: 20px;">👥 Agregar Compañeros</h3>
-            <div id="lista-alumnos-agregar" style="max-height: 200px; overflow-y: auto; border: 2px solid #e9ecef; padding: 15px; border-radius: 8px; background: white; margin-bottom: 15px;">
-                <!-- Lista dinámica de alumnos disponibles -->
-            </div>
-
-            <h3>Compañeros Actuales:</h3>
-            <div id="companeros-actuales" style="min-height: 60px; border: 2px solid #4CAF50; padding: 15px; border-radius: 8px; background: #f8f9fa; margin-bottom: 15px;">
-                <em style="color: #666;">Solo tú por ahora</em>
-            </div>
-
-            <button id="eliminar-habitacion-btn" class="btn btn-danger btn-block">🗑️ Eliminar Mi Habitación</button>
-        </div>
-
-        <!-- Unirme a una Habitación Existente -->
-        <div class="card" id="unirme-habitacion-card">
-            <h2>🚪 Unirme a una Habitación Existente</h2>
-            
-            <div id="habitaciones-disponibles" style="margin-top: 15px;">
-                <!-- Lista dinámica de habitaciones disponibles -->
-            </div>
-        </div>
-
-        <!-- Mi Habitación (cuando soy miembro) -->
-        <div class="card" id="mi-habitacion-miembro-card" style="display: none; background: linear-gradient(to bottom, #fff3e0, white);">
-            <h2>🏠 Mi Habitación Actual</h2>
-            <div id="info-mi-habitacion-miembro"></div>
-            <button id="salir-habitacion-btn" class="btn btn-warning btn-block">🚪 Salir de esta Habitación</button>
-        </div>
-
-        <!-- Resumen General -->
-        <div class="card">
-            <h2>📊 Resumen de Habitaciones</h2>
-            <div id="resumen-habitaciones">
-                <p>Cargando información de habitaciones...</p>
-            </div>
-        </div>
-    </div>
-</div>
 
             <!-- TAB 4: PARTICIPANTES -->
             <div class="tab-content" id="participantes">
@@ -1279,31 +1225,36 @@ updateCountdown(); // Ejecutar inmediatamente
         </div>
     </div>
 
-    <script>
-        // Variables globales
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // ========================================
+        // VARIABLES GLOBALES (fuera del DOMContentLoaded)
+        // ========================================
         let database;
         let selectedSeat = null;
         let currentUser = null;
         let anticipoConfirmado = false;
         let isAdmin = false;
         let myCurrentSeat = null;
+        let miHabitacionId = null;
+        let soyResponsable = false;
         const ADMIN_PASSWORD = "SABES2025";
 
-        // SISTEMA DE TABS
+        // ========================================
+        // FUNCIONES QUE PUEDEN ESTAR FUERA
+        // ========================================
+        
+        // SISTEMA DE TABS (puede estar fuera del DOMContentLoaded)
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function() {
-                // Remover active de todos
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
-                // Agregar active al seleccionado
                 this.classList.add('active');
                 const tabId = this.getAttribute('data-tab');
                 document.getElementById(tabId).classList.add('active');
             });
         });
 
-        // NOTIFICACIONES
+        // NOTIFICACIONES (puede estar fuera del DOMContentLoaded)
         function showNotification(message, type = "success") {
             const notification = document.getElementById('notification');
             notification.textContent = message;
@@ -1316,11 +1267,49 @@ updateCountdown(); // Ejecutar inmediatamente
             }, 4000);
         }
 
-        // [El resto del código JavaScript se mantiene igual que en el original]
-        // Por brevedad, continuaré con la estructura completa en el siguiente mensaje si lo necesitas
-        
-        // INICIALIZACIÓN
+        // Cuenta regresiva (puede estar fuera del DOMContentLoaded)
+        function updateCountdown() {
+            const targetDate = new Date('2025-12-10T08:30:00').getTime();
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                document.getElementById('countdown-message').innerHTML = '🎉 ¡El viaje ya comenzó! ¡Disfrútenlo!';
+                document.getElementById('days').innerHTML = '0';
+                document.getElementById('hours').innerHTML = '0';
+                document.getElementById('minutes').innerHTML = '0';
+                document.getElementById('seconds').innerHTML = '0';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerHTML = days;
+            document.getElementById('hours').innerHTML = hours;
+            document.getElementById('minutes').innerHTML = minutes;
+            document.getElementById('seconds').innerHTML = seconds;
+
+            if (days > 0) {
+                document.getElementById('countdown-message').innerHTML = `Faltan ${days} día${days !== 1 ? 's' : ''} para el viaje 🚌`;
+            } else if (hours > 0) {
+                document.getElementById('countdown-message').innerHTML = '¡Ya casi es hora! Prepara tu mochila 🎒';
+            } else {
+                document.getElementById('countdown-message').innerHTML = '¡Nos vamos muy pronto! 🚀';
+            }
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // ========================================
+        // TODO LO DEMÁS DEBE ESTAR DENTRO DEL DOMContentLoaded
+        // ========================================
         document.addEventListener('DOMContentLoaded', function() {
+            console.log("🚀 Iniciando sistema...");
+            
             // Verificar que Firebase se haya cargado
             if (typeof firebase === 'undefined') {
                 console.error('❌ Firebase no se cargó correctamente');
@@ -1353,9 +1342,19 @@ updateCountdown(); // Ejecutar inmediatamente
             }
 
             // Generar usuario único
+            function generarUsuarioUnico() {
+                let usuario = localStorage.getItem('busUsuario');
+                if (!usuario) {
+                    usuario = 'user_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('busUsuario', usuario);
+                }
+                return usuario;
+            }
+            
             currentUser = generarUsuarioUnico();
+            console.log("👤 Usuario actual:", currentUser);
 
-            // Elementos del DOM
+            // Elementos del DOM para ASIENTOS
             const seats = document.querySelectorAll('.seat:not(.operator)');
             const seatNumberInput = document.getElementById('seat-number');
             const passengerNameInput = document.getElementById('passenger-name');
@@ -1376,16 +1375,21 @@ updateCountdown(); // Ejecutar inmediatamente
             const adminControls = document.getElementById('admin-controls');
             const clearAllBtn = document.getElementById('clear-all-btn');
 
-            // FUNCIONES AUXILIARES
-            function generarUsuarioUnico() {
-                let usuario = localStorage.getItem('busUsuario');
-                if (!usuario) {
-                    usuario = 'user_' + Math.random().toString(36).substr(2, 9);
-                    localStorage.setItem('busUsuario', usuario);
-                }
-                return usuario;
-            }
+            // Elementos del DOM para HABITACIONES
+            const crearHabitacionBtn = document.getElementById('crear-habitacion-btn');
+            const nombreHabitacionInput = document.getElementById('nombre-habitacion');
+            const capacidadHabitacionSelect = document.getElementById('capacidad-habitacion');
+            const crearHabitacionCard = document.getElementById('crear-habitacion-card');
+            const miHabitacionResponsableCard = document.getElementById('mi-habitacion-responsable-card');
+            const miHabitacionMiembroCard = document.getElementById('mi-habitacion-miembro-card');
+            const unirmeHabitacionCard = document.getElementById('unirme-habitacion-card');
+            const eliminarHabitacionBtn = document.getElementById('eliminar-habitacion-btn');
+            const salirHabitacionBtn = document.getElementById('salir-habitacion-btn');
 
+            // ========================================
+            // FUNCIONES AUXILIARES
+            // ========================================
+            
             function validateMatricula(matricula) {
                 const matriculaRegex = /^[Uu]\d{7}[Nn]\d{4}$/;
                 return matriculaRegex.test(matricula);
@@ -1558,7 +1562,9 @@ updateCountdown(); // Ejecutar inmediatamente
                 }
             }
 
-            // EVENT LISTENERS
+            // ========================================
+            // EVENT LISTENERS PARA ASIENTOS
+            // ========================================
 
             // Verificación de anticipo
             anticipoVerification.addEventListener('change', function() {
@@ -1725,412 +1731,426 @@ updateCountdown(); // Ejecutar inmediatamente
                 }
             });
 
-            // Escuchar cambios en tiempo real
+            // ========================================
+            // MONITOR DE CONEXIÓN FIREBASE
+            // ========================================
+            database.ref('.info/connected').on('value', (snapshot) => {
+                const statusIndicator = document.getElementById('status-indicator');
+                if (snapshot.val() === true) {
+                    statusIndicator.textContent = '✅ Conectado';
+                    statusIndicator.style.background = '#4CAF50';
+                } else {
+                    statusIndicator.textContent = '❌ Desconectado';
+                    statusIndicator.style.background = '#f44336';
+                }
+            });
+
+            // ========================================
+            // MONITOR ASIENTOS EN TIEMPO REAL
+            // ========================================
             database.ref('asientos').on('value', (snapshot) => {
                 const asientosData = snapshot.val() || {};
+                console.log("📊 Asientos actualizados:", Object.keys(asientosData).length);
+                
                 actualizarVistaAsientos(asientosData);
                 updatePassengerList(asientosData);
                 updateEmptySeatsInfo(asientosData);
                 updateMySeatInfo(asientosData);
             });
 
-            // Monitorear conexión
-            database.ref('.info/connected').on('value', (snapshot) => {
-                const indicator = document.getElementById('status-indicator');
-                if (snapshot.val() === true) {
-                    indicator.textContent = "🟢 Conectado";
-                    indicator.style.background = "linear-gradient(135deg, #4CAF50, #45a049)";
-                    showNotification('Sistema cargado correctamente', 'success');
-                } else {
-                    indicator.textContent = "🔴 Desconectado";
-                    indicator.style.background = "linear-gradient(135deg, #f44336, #d32f2f)";
+            // ========================================
+            // SISTEMA DE HABITACIONES - TODO AQUÍ DENTRO
+            // ========================================
+            
+            console.log("🏨 Iniciando sistema de habitaciones...");
+
+            // Crear habitación
+            crearHabitacionBtn.addEventListener('click', function() {
+                console.log("🆕 Intento de crear habitación");
+                const nombreHab = nombreHabitacionInput.value.trim();
+                const capacidad = parseInt(capacidadHabitacionSelect.value);
+
+                if (!nombreHab) {
+                    showNotification('Ingresa un nombre para la habitación', 'error');
+                    return;
+                }
+
+                if (!capacidad) {
+                    showNotification('Selecciona la capacidad de la habitación', 'error');
+                    return;
+                }
+
+                if (!myCurrentSeat) {
+                    showNotification('Debes tener un asiento asignado primero', 'error');
+                    return;
+                }
+
+                database.ref('asientos/' + myCurrentSeat).once('value').then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const alumnoData = snapshot.val();
+                        const habitacionId = 'hab_' + Date.now();
+
+                        const habitacionData = {
+                            nombre: nombreHab,
+                            capacidad: capacidad,
+                            responsable: {
+                                usuario: currentUser,
+                                nombre: alumnoData.nombre,
+                                matricula: alumnoData.matricula,
+                                asiento: myCurrentSeat
+                            },
+                            miembros: {
+                                [currentUser]: {
+                                    nombre: alumnoData.nombre,
+                                    matricula: alumnoData.matricula,
+                                    asiento: myCurrentSeat
+                                }
+                            },
+                            timestamp: firebase.database.ServerValue.TIMESTAMP
+                        };
+
+                        console.log("💾 Guardando habitación:", habitacionData);
+
+                        database.ref('habitaciones/' + habitacionId).set(habitacionData)
+                            .then(() => {
+                                console.log("✅ Habitación creada exitosamente");
+                                showNotification('Habitación creada exitosamente', 'success');
+                                nombreHabitacionInput.value = '';
+                                capacidadHabitacionSelect.value = '';
+                            })
+                            .catch((error) => {
+                                console.error("❌ Error al crear habitación:", error);
+                                showNotification('Error al crear habitación: ' + error.message, 'error');
+                            });
+                    }
+                });
+            });
+
+            // Eliminar habitación (solo responsable)
+            eliminarHabitacionBtn.addEventListener('click', function() {
+                if (confirm('¿Estás seguro de que quieres eliminar tu habitación? Todos los miembros serán removidos.')) {
+                    database.ref('habitaciones/' + miHabitacionId).remove()
+                        .then(() => {
+                            console.log("🗑️ Habitación eliminada");
+                            showNotification('Habitación eliminada correctamente', 'success');
+                        })
+                        .catch((error) => {
+                            showNotification('Error al eliminar: ' + error.message, 'error');
+                        });
                 }
             });
-        });
- 
-    
-    // ========================================
-// SISTEMA DE HABITACIONES
-// ========================================
 
-const crearHabitacionBtn = document.getElementById('crear-habitacion-btn');
-const nombreHabitacionInput = document.getElementById('nombre-habitacion');
-const capacidadHabitacionSelect = document.getElementById('capacidad-habitacion');
-const crearHabitacionCard = document.getElementById('crear-habitacion-card');
-const miHabitacionResponsableCard = document.getElementById('mi-habitacion-responsable-card');
-const miHabitacionMiembroCard = document.getElementById('mi-habitacion-miembro-card');
-const unirmeHabitacionCard = document.getElementById('unirme-habitacion-card');
-const eliminarHabitacionBtn = document.getElementById('eliminar-habitacion-btn');
-const salirHabitacionBtn = document.getElementById('salir-habitacion-btn');
+            // Salir de habitación (solo miembros)
+            salirHabitacionBtn.addEventListener('click', function() {
+                if (confirm('¿Estás seguro de que quieres salir de esta habitación?')) {
+                    database.ref('habitaciones/' + miHabitacionId + '/miembros/' + currentUser).remove()
+                        .then(() => {
+                            console.log("🚪 Saliste de la habitación");
+                            showNotification('Has salido de la habitación', 'success');
+                        })
+                        .catch((error) => {
+                            showNotification('Error: ' + error.message, 'error');
+                        });
+                }
+            });
 
-let miHabitacionId = null;
-let soyResponsable = false;
+            // Agregar compañero a habitación
+            window.agregarCompanero = function(alumnoUsuario, alumnoData) {
+                if (!miHabitacionId || !soyResponsable) return;
 
-// Crear habitación
-crearHabitacionBtn.addEventListener('click', function() {
-    const nombreHab = nombreHabitacionInput.value.trim();
-    const capacidad = parseInt(capacidadHabitacionSelect.value);
-
-    if (!nombreHab) {
-        showNotification('Ingresa un nombre para la habitación', 'error');
-        return;
-    }
-
-    if (!capacidad) {
-        showNotification('Selecciona la capacidad de la habitación', 'error');
-        return;
-    }
-
-    // Verificar que tenga asiento asignado
-    if (!myCurrentSeat) {
-        showNotification('Debes tener un asiento asignado primero', 'error');
-        return;
-    }
-
-    // Obtener datos del alumno
-    database.ref('asientos/' + myCurrentSeat).once('value').then((snapshot) => {
-        if (snapshot.exists()) {
-            const alumnoData = snapshot.val();
-            const habitacionId = 'hab_' + Date.now();
-
-            const habitacionData = {
-                nombre: nombreHab,
-                capacidad: capacidad,
-                responsable: {
-                    usuario: currentUser,
+                database.ref('habitaciones/' + miHabitacionId + '/miembros/' + alumnoUsuario).set({
                     nombre: alumnoData.nombre,
                     matricula: alumnoData.matricula,
-                    asiento: myCurrentSeat
-                },
-                miembros: {
-                    [currentUser]: {
-                        nombre: alumnoData.nombre,
-                        matricula: alumnoData.matricula,
-                        asiento: myCurrentSeat
-                    }
-                },
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            };
-
-            database.ref('habitaciones/' + habitacionId).set(habitacionData)
+                    asiento: alumnoData.asiento
+                })
                 .then(() => {
-                    showNotification('Habitación creada exitosamente', 'success');
-                    nombreHabitacionInput.value = '';
-                    capacidadHabitacionSelect.value = '';
+                    console.log("✅ Compañero agregado");
+                    showNotification(`${alumnoData.nombre} agregado a la habitación`, 'success');
                 })
                 .catch((error) => {
-                    showNotification('Error al crear habitación: ' + error.message, 'error');
+                    showNotification('Error: ' + error.message, 'error');
                 });
-        }
-    });
-});
+            };
 
-// Eliminar habitación (solo responsable)
-eliminarHabitacionBtn.addEventListener('click', function() {
-    if (confirm('¿Estás seguro de que quieres eliminar tu habitación? Todos los miembros serán removidos.')) {
-        database.ref('habitaciones/' + miHabitacionId).remove()
-            .then(() => {
-                showNotification('Habitación eliminada correctamente', 'success');
-            })
-            .catch((error) => {
-                showNotification('Error al eliminar: ' + error.message, 'error');
-            });
-    }
-});
+            // Quitar compañero de habitación
+            window.quitarCompanero = function(alumnoUsuario) {
+                if (!miHabitacionId || !soyResponsable) return;
 
-// Salir de habitación (solo miembros)
-salirHabitacionBtn.addEventListener('click', function() {
-    if (confirm('¿Estás seguro de que quieres salir de esta habitación?')) {
-        database.ref('habitaciones/' + miHabitacionId + '/miembros/' + currentUser).remove()
-            .then(() => {
-                showNotification('Has salido de la habitación', 'success');
-            })
-            .catch((error) => {
-                showNotification('Error: ' + error.message, 'error');
-            });
-    }
-});
+                if (confirm('¿Estás seguro de que quieres quitar a este compañero?')) {
+                    database.ref('habitaciones/' + miHabitacionId + '/miembros/' + alumnoUsuario).remove()
+                        .then(() => {
+                            console.log("🚫 Compañero removido");
+                            showNotification('Compañero removido de la habitación', 'success');
+                        })
+                        .catch((error) => {
+                            showNotification('Error: ' + error.message, 'error');
+                        });
+                }
+            };
 
-// Agregar compañero a habitación
-function agregarCompanero(alumnoUsuario, alumnoData) {
-    if (!miHabitacionId || !soyResponsable) return;
-
-    database.ref('habitaciones/' + miHabitacionId + '/miembros/' + alumnoUsuario).set({
-        nombre: alumnoData.nombre,
-        matricula: alumnoData.matricula,
-        asiento: alumnoData.asiento
-    })
-    .then(() => {
-        showNotification(`${alumnoData.nombre} agregado a la habitación`, 'success');
-    })
-    .catch((error) => {
-        showNotification('Error: ' + error.message, 'error');
-    });
-}
-
-// Quitar compañero de habitación
-function quitarCompanero(alumnoUsuario) {
-    if (!miHabitacionId || !soyResponsable) return;
-
-    if (confirm('¿Estás seguro de que quieres quitar a este compañero?')) {
-        database.ref('habitaciones/' + miHabitacionId + '/miembros/' + alumnoUsuario).remove()
-            .then(() => {
-                showNotification('Compañero removido de la habitación', 'success');
-            })
-            .catch((error) => {
-                showNotification('Error: ' + error.message, 'error');
-            });
-    }
-}
-
-// Unirse a habitación
-function unirseAHabitacion(habitacionId, habitacion) {
-    const miembrosCount = Object.keys(habitacion.miembros || {}).length;
-    
-    if (miembrosCount >= habitacion.capacidad) {
-        showNotification('Esta habitación ya está llena', 'error');
-        return;
-    }
-
-    // Obtener mis datos
-    database.ref('asientos/' + myCurrentSeat).once('value').then((snapshot) => {
-        if (snapshot.exists()) {
-            const alumnoData = snapshot.val();
-            
-            database.ref('habitaciones/' + habitacionId + '/miembros/' + currentUser).set({
-                nombre: alumnoData.nombre,
-                matricula: alumnoData.matricula,
-                asiento: myCurrentSeat
-            })
-            .then(() => {
-                showNotification('Te has unido a la habitación exitosamente', 'success');
-            })
-            .catch((error) => {
-                showNotification('Error: ' + error.message, 'error');
-            });
-        }
-    });
-}
-
-// Monitorear habitaciones en tiempo real
-database.ref('habitaciones').on('value', (snapshot) => {
-    const habitaciones = snapshot.val() || {};
-    
-    // Resetear estados
-    miHabitacionId = null;
-    soyResponsable = false;
-    
-    // Verificar si tengo una habitación
-    for (const habId in habitaciones) {
-        const hab = habitaciones[habId];
-        
-        if (hab.responsable.usuario === currentUser) {
-            // Soy responsable
-            miHabitacionId = habId;
-            soyResponsable = true;
-            mostrarHabitacionResponsable(habId, hab);
-            break;
-        } else if (hab.miembros && hab.miembros[currentUser]) {
-            // Soy miembro
-            miHabitacionId = habId;
-            soyResponsable = false;
-            mostrarHabitacionMiembro(habId, hab);
-            break;
-        }
-    }
-    
-    // Mostrar/ocultar cards según estado
-    if (miHabitacionId) {
-        crearHabitacionCard.style.display = 'none';
-        unirmeHabitacionCard.style.display = 'none';
-        if (soyResponsable) {
-            miHabitacionResponsableCard.style.display = 'block';
-            miHabitacionMiembroCard.style.display = 'none';
-        } else {
-            miHabitacionResponsableCard.style.display = 'none';
-            miHabitacionMiembroCard.style.display = 'block';
-        }
-    } else {
-        crearHabitacionCard.style.display = 'block';
-        unirmeHabitacionCard.style.display = 'block';
-        miHabitacionResponsableCard.style.display = 'none';
-        miHabitacionMiembroCard.style.display = 'none';
-    }
-    
-    // Mostrar habitaciones disponibles
-    mostrarHabitacionesDisponibles(habitaciones);
-    
-    // Mostrar resumen general
-    mostrarResumenHabitaciones(habitaciones);
-});
-
-function mostrarHabitacionResponsable(habId, hab) {
-    const miembros = hab.miembros || {};
-    const miembrosCount = Object.keys(miembros).length;
-    
-    document.getElementById('info-mi-habitacion-responsable').innerHTML = `
-        <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-            <h3 style="margin: 0 0 10px 0; color: #2e7d32;">${hab.nombre}</h3>
-            <p><strong>Capacidad:</strong> ${miembrosCount}/${hab.capacidad} personas</p>
-            <p><strong>Espacios disponibles:</strong> ${hab.capacidad - miembrosCount}</p>
-        </div>
-    `;
-    
-    // Mostrar compañeros actuales
-    let companerosHTML = '';
-    for (const userId in miembros) {
-        const miembro = miembros[userId];
-        const esYo = userId === currentUser;
-        companerosHTML += `
-            <div class="chip" style="background: ${esYo ? '#ff9800' : '#4CAF50'}; display: inline-flex; align-items: center; gap: 5px;">
-                ${miembro.nombre} ${esYo ? '(TÚ)' : ''}
-                ${!esYo ? `<span onclick="quitarCompanero('${userId}')" style="cursor: pointer; font-weight: bold;">❌</span>` : ''}
-            </div>
-        `;
-    }
-    document.getElementById('companeros-actuales').innerHTML = companerosHTML || '<em style="color: #666;">Solo tú por ahora</em>';
-    
-    // Mostrar alumnos disponibles para agregar
-    database.ref('asientos').once('value').then((snapshot) => {
-        const asientos = snapshot.val() || {};
-        let alumnosHTML = '';
-        
-        for (const seatNum in asientos) {
-            const alumno = asientos[seatNum];
-            
-            // No mostrar si ya está en la habitación
-            if (miembros[alumno.usuario]) continue;
-            
-            // No mostrar si ya tiene habitación
-            database.ref('habitaciones').once('value').then((habSnapshot) => {
-                const todasHabs = habSnapshot.val() || {};
-                let tieneHabitacion = false;
+            // Unirse a habitación
+            window.unirseAHabitacion = function(habitacionId, habitacion) {
+                const miembrosCount = Object.keys(habitacion.miembros || {}).length;
                 
-                for (const hId in todasHabs) {
-                    if (todasHabs[hId].miembros && todasHabs[hId].miembros[alumno.usuario]) {
-                        tieneHabitacion = true;
-                        break;
+                if (miembrosCount >= habitacion.capacidad) {
+                    showNotification('Esta habitación ya está llena', 'error');
+                    return;
+                }
+
+                database.ref('asientos/' + myCurrentSeat).once('value').then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const alumnoData = snapshot.val();
+                        
+                        database.ref('habitaciones/' + habitacionId + '/miembros/' + currentUser).set({
+                            nombre: alumnoData.nombre,
+                            matricula: alumnoData.matricula,
+                            asiento: myCurrentSeat
+                        })
+                        .then(() => {
+                            console.log("✅ Te uniste a la habitación");
+                            showNotification('Te has unido a la habitación exitosamente', 'success');
+                        })
+                        .catch((error) => {
+                            showNotification('Error: ' + error.message, 'error');
+                        });
                     }
+                });
+            };
+
+            function mostrarHabitacionResponsable(habId, hab) {
+                console.log("👑 Mostrando habitación como responsable");
+                const miembros = hab.miembros || {};
+                const miembrosCount = Object.keys(miembros).length;
+                
+                document.getElementById('info-mi-habitacion-responsable').innerHTML = `
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <h3 style="margin: 0 0 10px 0; color: #2e7d32;">${hab.nombre}</h3>
+                        <p><strong>Capacidad:</strong> ${miembrosCount}/${hab.capacidad} personas</p>
+                        <p><strong>Espacios disponibles:</strong> ${hab.capacidad - miembrosCount}</p>
+                    </div>
+                `;
+                
+                let companerosHTML = '';
+                for (const userId in miembros) {
+                    const miembro = miembros[userId];
+                    const esYo = userId === currentUser;
+                    companerosHTML += `
+                        <div class="chip" style="background: ${esYo ? '#ff9800' : '#4CAF50'}; display: inline-flex; align-items: center; gap: 5px;">
+                            ${miembro.nombre} ${esYo ? '(TÚ)' : ''}
+                            ${!esYo ? `<span onclick="quitarCompanero('${userId}')" style="cursor: pointer; font-weight: bold;">❌</span>` : ''}
+                        </div>
+                    `;
+                }
+                document.getElementById('companeros-actuales').innerHTML = companerosHTML || '<em style="color: #666;">Solo tú por ahora</em>';
+                
+                // Mostrar alumnos disponibles para agregar
+                database.ref('asientos').once('value').then((snapshot) => {
+                    const asientos = snapshot.val() || {};
+                    let alumnosHTML = '';
+                    
+                    for (const seatNum in asientos) {
+                        const alumno = asientos[seatNum];
+                        
+                        // Si ya está en la habitación, no mostrarlo
+                        if (miembros[alumno.usuario]) continue;
+                        
+                        // Verificar si tiene habitación
+                        database.ref('habitaciones').once('value').then((habSnapshot) => {
+                            const todasHabs = habSnapshot.val() || {};
+                            let tieneHabitacion = false;
+                            
+                            for (const hId in todasHabs) {
+                                if (todasHabs[hId].miembros && todasHabs[hId].miembros[alumno.usuario]) {
+                                    tieneHabitacion = true;
+                                    break;
+                                }
+                            }
+                            
+                            if (!tieneHabitacion && miembrosCount < hab.capacidad) {
+                                alumnosHTML += `
+                                    <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <strong>${alumno.nombre}</strong><br>
+                                            <small>${alumno.matricula} - Asiento ${seatNum}</small>
+                                        </div>
+                                        <button class="btn btn-success" style="min-width: auto; padding: 6px 12px;" onclick="agregarCompanero('${alumno.usuario}', {nombre: '${alumno.nombre}', matricula: '${alumno.matricula}', asiento: '${seatNum}'})">
+                                            Agregar
+                                        </button>
+                                    </div>
+                                `;
+                                document.getElementById('lista-alumnos-agregar').innerHTML = alumnosHTML || '<p style="color: #666;">No hay más alumnos disponibles</p>';
+                            }
+                        });
+                    }
+                });
+            }
+
+            function mostrarHabitacionMiembro(habId, hab) {
+                console.log("🏠 Mostrando habitación como miembro");
+                const miembros = hab.miembros || {};
+                const miembrosCount = Object.keys(miembros).length;
+                
+                let miembrosHTML = '';
+                for (const userId in miembros) {
+                    const miembro = miembros[userId];
+                    const esYo = userId === currentUser;
+                    const esResponsable = userId === hab.responsable.usuario;
+                    miembrosHTML += `
+                        <div class="chip" style="background: ${esYo ? '#ff9800' : esResponsable ? '#4a6fa5' : '#4CAF50'};">
+                            ${miembro.nombre} ${esYo ? '(TÚ)' : ''} ${esResponsable ? '👑' : ''}
+                        </div>
+                    `;
                 }
                 
-                if (!tieneHabitacion && miembrosCount < hab.capacidad) {
-                    alumnosHTML += `
-                        <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <strong>${alumno.nombre}</strong><br>
-                                <small>${alumno.matricula} - Asiento ${seatNum}</small>
-                            </div>
-                            <button class="btn btn-success" style="min-width: auto; padding: 6px 12px;" onclick="agregarCompanero('${alumno.usuario}', ${JSON.stringify(alumno).replace(/"/g, '&quot;')})">
-                                ➕ Agregar
+                document.getElementById('info-mi-habitacion-miembro').innerHTML = `
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <h3 style="margin: 0 0 10px 0; color: #e65100;">${hab.nombre}</h3>
+                        <p><strong>Responsable:</strong> ${hab.responsable.nombre} 👑</p>
+                        <p><strong>Capacidad:</strong> ${miembrosCount}/${hab.capacidad} personas</p>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <strong>Compañeros:</strong><br>
+                        ${miembrosHTML}
+                    </div>
+                `;
+            }
+
+            function mostrarHabitacionesDisponibles(todasHabitaciones) {
+                const container = document.getElementById('habitaciones-disponibles');
+                let html = '';
+                let hayDisponibles = false;
+                
+                for (const habId in todasHabitaciones) {
+                    const hab = todasHabitaciones[habId];
+                    const miembros = hab.miembros || {};
+                    const miembrosCount = Object.keys(miembros).length;
+                    
+                    // No mostrar mi propia habitación (verificar tanto en miembros como en responsable)
+                    if (miembros[currentUser] || hab.responsable.usuario === currentUser) continue;
+                    
+                    // No mostrar habitaciones llenas
+                    if (miembrosCount >= hab.capacidad) continue;
+                    
+                    hayDisponibles = true;
+                    
+                    html += `
+                        <div class="hotel-card">
+                            <h3 style="margin: 0 0 10px 0; color: var(--primary);">${hab.nombre}</h3>
+                            <p><strong>Responsable:</strong> ${hab.responsable.nombre} 👑</p>
+                            <p><strong>Capacidad:</strong> ${miembrosCount}/${hab.capacidad} personas</p>
+                            <p><strong>Espacios disponibles:</strong> ${hab.capacidad - miembrosCount}</p>
+                            <button class="btn btn-success btn-block" onclick="unirseAHabitacion('${habId}', ${JSON.stringify(hab).replace(/"/g, '&quot;')})">
+                                🚪 Unirme a esta Habitación
                             </button>
                         </div>
                     `;
                 }
                 
-                document.getElementById('lista-alumnos-agregar').innerHTML = alumnosHTML || '<p style="text-align: center; color: #666;">No hay alumnos disponibles para agregar</p>';
-            });
-        }
-    });
-}
+                if (!hayDisponibles) {
+                    html = '<div class="alert alert-info"><strong>No hay habitaciones disponibles</strong><br>Todas las habitaciones están llenas o ya estás en una. Si creaste una habitación, busca la sección "Mi Habitación" arriba.</div>';
+                }
+                
+                container.innerHTML = html;
+            }
 
-function mostrarHabitacionMiembro(habId, hab) {
-    const miembros = hab.miembros || {};
-    const miembrosCount = Object.keys(miembros).length;
-    
-    let miembrosHTML = '';
-    for (const userId in miembros) {
-        const miembro = miembros[userId];
-        const esYo = userId === currentUser;
-        const esResponsable = userId === hab.responsable.usuario;
-        miembrosHTML += `
-            <div class="chip" style="background: ${esYo ? '#ff9800' : esResponsable ? '#4a6fa5' : '#4CAF50'};">
-                ${miembro.nombre} ${esYo ? '(TÚ)' : esResponsable ? '(RESPONSABLE)' : ''}
-            </div>
-        `;
-    }
-    
-    document.getElementById('info-mi-habitacion-miembro').innerHTML = `
-        <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-            <h3 style="margin: 0 0 10px 0; color: #EF6C00;">${hab.nombre}</h3>
-            <p><strong>Responsable:</strong> ${hab.responsable.nombre}</p>
-            <p><strong>Capacidad:</strong> ${miembrosCount}/${hab.capacidad} personas</p>
-            <p><strong>Espacios disponibles:</strong> ${hab.capacidad - miembrosCount}</p>
-        </div>
-        <h3>Compañeros:</h3>
-        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
-            ${miembrosHTML}
-        </div>
-    `;
-}
+            function mostrarResumenHabitaciones(todasHabitaciones) {
+                const container = document.getElementById('resumen-habitaciones');
+                let totalAlumnos = 0;
+                let totalHabitaciones = Object.keys(todasHabitaciones).length;
+                let espaciosOcupados = 0;
+                let capacidadTotal = 0;
+                
+                let html = '<div style="margin-bottom: 20px;">';
+                
+                for (const habId in todasHabitaciones) {
+                    const hab = todasHabitaciones[habId];
+                    const miembros = hab.miembros || {};
+                    const miembrosCount = Object.keys(miembros).length;
+                    totalAlumnos += miembrosCount;
+                    espaciosOcupados += miembrosCount;
+                    capacidadTotal += hab.capacidad;
+                    
+                    const porcentaje = (miembrosCount / hab.capacidad) * 100;
+                    const color = porcentaje === 100 ? '#f44336' : porcentaje > 75 ? '#ff9800' : '#4CAF50';
+                    
+                    html += `
+                        <div style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <strong>${hab.nombre}</strong>
+                                <span>${miembrosCount}/${hab.capacidad}</span>
+                            </div>
+                            <div style="width: 100%; height: 20px; background: #e0e0e0; border-radius: 10px; overflow: hidden;">
+                                <div style="width: ${porcentaje}%; height: 100%; background: ${color}; transition: width 0.3s;"></div>
+                            </div>
+                            <small style="color: #666;">Responsable: ${hab.responsable.nombre}</small>
+                        </div>
+                    `;
+                }
+                
+                html += '</div>';
+                
+                html += `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px;">
+                        <div style="background: linear-gradient(135deg, #4a6fa5, #6b8cbc); color: white; padding: 20px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 36px; font-weight: bold;">${totalHabitaciones}</div>
+                            <div style="font-size: 14px;">Habitaciones</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 20px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 36px; font-weight: bold;">${totalAlumnos}</div>
+                            <div style="font-size: 14px;">Alumnos con Habitación</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #ff9800, #f57c00); color: white; padding: 20px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 36px; font-weight: bold;">${capacidadTotal - espaciosOcupados}</div>
+                            <div style="font-size: 14px;">Espacios Disponibles</div>
+                        </div>
+                    </div>
+                `;
+                
+                container.innerHTML = html;
+            }
 
-function mostrarHabitacionesDisponibles(habitaciones) {
-    let habitacionesHTML = '';
-    
-    for (const habId in habitaciones) {
-        const hab = habitaciones[habId];
-        const miembros = hab.miembros || {};
-        const miembrosCount = Object.keys(miembros).length;
-        
-        // No mostrar si ya estoy en una habitación
-        if (miHabitacionId) continue;
-        
-        // No mostrar si está llena
-        if (miembrosCount >= hab.capacidad) continue;
-        
-        habitacionesHTML += `
-            <div class="hotel-card" style="margin-bottom: 15px;">
-                <h3 style="margin: 0 0 10px 0; color: #4a6fa5;">${hab.nombre}</h3>
-                <p><strong>Responsable:</strong> ${hab.responsable.nombre}</p>
-                <p><strong>Ocupación:</strong> ${miembrosCount}/${hab.capacidad} personas</p>
-                <p><strong>Espacios disponibles:</strong> ${hab.capacidad - miembrosCount}</p>
-                <button class="btn btn-primary" onclick="unirseAHabitacion('${habId}', ${JSON.stringify(hab).replace(/"/g, '&quot;')})">
-                    🚪 Unirme a esta habitación
-                </button>
-            </div>
-        `;
-    }
-    
-    document.getElementById('habitaciones-disponibles').innerHTML = habitacionesHTML || '<p style="text-align: center; color: #666; padding: 20px;">No hay habitaciones disponibles. ¡Crea la primera!</p>';
-}
-
-function mostrarResumenHabitaciones(habitaciones) {
-    const totalHabitaciones = Object.keys(habitaciones).length;
-    let totalOcupados = 0;
-    
-    let resumenHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">';
-    
-    for (const habId in habitaciones) {
-        const hab = habitaciones[habId];
-        const miembrosCount = Object.keys(hab.miembros || {}).length;
-        totalOcupados += miembrosCount;
-        
-        resumenHTML += `
-            <div style="background: linear-gradient(to bottom, white, #f8f9fa); padding: 15px; border-radius: 8px; border-left: 4px solid #4a6fa5;">
-                <h4 style="margin: 0 0 10px 0; color: #4a6fa5;">${hab.nombre}</h4>
-                <p style="margin: 5px 0;"><strong>${miembrosCount}/${hab.capacidad}</strong> personas</p>
-                <small>Responsable: ${hab.responsable.nombre}</small>
-            </div>
-        `;
-    }
-    
-    resumenHTML += '</div>';
-    
-    resumenHTML = `
-        <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
-            <h3 style="margin: 0 0 10px 0;">📊 Estadísticas Generales</h3>
-            <p><strong>Total de habitaciones:</strong> ${totalHabitaciones}</p>
-            <p><strong>Total de estudiantes con hospedaje:</strong> ${totalOcupados}</p>
-        </div>
-    ` + resumenHTML;
-    
-    document.getElementById('resumen-habitaciones').innerHTML = resumenHTML;
-}
-
-// Hacer funciones globales
-window.agregarCompanero = agregarCompanero;
-window.quitarCompanero = quitarCompanero;
-window.unirseAHabitacion = unirseAHabitacion;
-    
-    </script>
-</body>
-</html>
+            // ========================================
+            // MONITOR HABITACIONES EN TIEMPO REAL
+            // ========================================
+            database.ref('habitaciones').on('value', (snapshot) => {
+                const habitaciones = snapshot.val() || {};
+                console.log("🏨 Habitaciones actualizadas:", Object.keys(habitaciones).length);
+                
+                // Resetear estado
+                miHabitacionId = null;
+                soyResponsable = false;
+                
+                // Buscar mi habitación
+                for (const habId in habitaciones) {
+                    const hab = habitaciones[habId];
+                    if (hab.miembros && hab.miembros[currentUser]) {
+                        miHabitacionId = habId;
+                        soyResponsable = hab.responsable.usuario === currentUser;
+                        break;
+                    }
+                }
+                
+                console.log("Mi habitación:", miHabitacionId, "Soy responsable:", soyResponsable);
+                
+                // Mostrar/ocultar cards según estado
+                if (miHabitacionId && soyResponsable) {
+                    crearHabitacionCard.style.display = 'none';
+                    miHabitacionResponsableCard.style.display = 'block';
+                    miHabitacionMiembroCard.style.display = 'none';
+                    unirmeHabitacionCard.style.display = 'none';
+                    mostrarHabitacionResponsable(miHabitacionId, habitaciones[miHabitacionId]);
+                    // Scroll automático
+                    setTimeout(() => miHabitacionResponsableCard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+                } else if (miHabitacionId && !soyResponsable) {
+                    crearHabitacionCard.style.display = 'none';
+                    miHabitacionResponsableCard.style.display = 'none';
+                    miHabitacionMiembroCard.style.display = 'block';
+                    unirmeHabitacionCard.style.display = 'none';
+                    mostrarHabitacionMiembro(miHabitacionId, habitaciones[miHabitacionId]);
+                    // Scroll automático
+                    setTimeout(() => miHabitacionMiembroCard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+                } else {
+                    crearHabitacionCard.style.display = 'block';
+                    miHabitacionResponsableCard.style.display = 'none';
+                    miHabitacionMiembroCard.style.display = 'none';
+                    unirmeHabi
