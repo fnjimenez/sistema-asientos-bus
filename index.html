@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Reservación - Viaje Académico</title>
-    <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
+    <!-- Firebase 8.10.0 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
     <style>
         :root {
             --primary: #4a6fa5;
@@ -682,7 +685,7 @@
             <div class="subtitle">📅 Miércoles 10 y Jueves 11 de Diciembre 2025</div>
             <div class="subtitle">🏫 Universidad del SABES Campus San Felipe</div>
             <div class="subtitle">🚍 Transporta: Municipio de San Felipe</div>
-            <div class="subtitle">📞 Contacto: Prof. Fausto Noé Jiménez (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="85e3e4f0f6f1eaabebeae0efc5f6e4e7e0f6abe0e1f0abe8fd">[email&#160;protected]</a>, 418-101-1904) | Cenobio García Romero (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="782d4a4b484b484d4f3648484a48380b191a1d0b561d1c0d561500">[email&#160;protected]</a>, 428-102-6252)</div>
+            <div class="subtitle">📞 Contacto: Prof. Fausto Noé Jiménez (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="82e4e3f7f1f6edacece5eff4c2f1e3e0e7f1ace7e6f7aceffe">[email&#160;protected]</a>, 418-101-1904) | Cenobio García Romero (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1a6f080b080b080d0f7608484a485a697b787f69740f0c1d740615">[email&#160;protected]</a>, 428-102-6252)</div>
             <div class="status-badge" id="status-indicator">Conectando...</div>
         </div>
 
@@ -856,7 +859,9 @@
                     </div>
                     <div class="itinerario-item">
                         <div class="itinerario-hora">16:45 - 17:15</div>
-                        <div class="itinerario-descripcion"><strong>Traslado al 🦉🔮 Museo Leonora Carrington</strong><br><small>Barrio de San Juan de Guadalupe, S.L.P</small></div>
+                        <div class="itinerario-descripcion">
+                            <strong>Traslado al 🦉🔮 Museo Leonora Carrington</strong><br><small>Barrio de San Juan de Guadalupe, S.L.P</small>
+                        </div>
                     </div>
                     <div class="itinerario-item">
                         <div class="itinerario-hora">17:15 - 18:00</div>
@@ -868,7 +873,9 @@
                     </div>
                     <div class="itinerario-item">
                         <div class="itinerario-hora">19:00 - 20:00</div>
-                        <div class="itinerario-descripcion"><strong>❄️⛸️ Espectáculo Navideño sobre hielo</strong><br><small>Plaza de los Fundadores, San Luis Potosí</small></div>
+                        <div class="itinerario-descripcion">
+                            <strong>❄️⛸️ Espectáculo Navideño sobre hielo</strong><br><small>Plaza de los Fundadores, San Luis Potosí</small>
+                        </div>
                     </div>
                     <div class="itinerario-item">
                         <div class="itinerario-hora">20:00 - 22:00</div>
@@ -1225,11 +1232,26 @@
         </div>
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script>
         // ========================================
-        // VARIABLES GLOBALES (fuera del DOMContentLoaded)
+        // CONFIGURACIÓN INMEDIATA DE FIREBASE
         // ========================================
-        let database;
+        
+        // 1. Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDD5VGjxei_BBpYhqTW-JV6laS9Y-KNHjc",
+            authDomain: "asignacion-asientos37.firebaseapp.com",
+            databaseURL: "https://asignacion-asientos37-default-rtdb.firebaseio.com",
+            projectId: "asignacion-asientos37",
+            storageBucket: "asignacion-asientos37.firebasestorage.app",
+            messagingSenderId: "484124660366",
+            appId: "1:484124660366:web:907c6f2d8a202a64e3efdf",
+            measurementId: "G-DRMGWPYVQ"
+        };
+
+        // 2. Variables globales
+        let database = null;
         let selectedSeat = null;
         let currentUser = null;
         let anticipoConfirmado = false;
@@ -1239,24 +1261,138 @@
         let soyResponsable = false;
         const ADMIN_PASSWORD = "SABES2025";
 
-        // ========================================
-        // FUNCIONES QUE PUEDEN ESTAR FUERA
-        // ========================================
-        
-        // SISTEMA DE TABS (puede estar fuera del DOMContentLoaded)
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-                const tabId = this.getAttribute('data-tab');
-                document.getElementById(tabId).classList.add('active');
-            });
-        });
+        // 3. Inicializar Firebase
+        function initFirebase() {
+            try {
+                console.log("🔥 Intentando inicializar Firebase...");
+                
+                // Verificar que Firebase está cargado
+                if (typeof firebase === 'undefined') {
+                    console.error("❌ Firebase no está disponible aún");
+                    setTimeout(initFirebase, 100);
+                    return;
+                }
+                
+                // Verificar que la app no esté ya inicializada
+                if (!firebase.apps.length) {
+                    console.log("📦 Inicializando Firebase App...");
+                    firebase.initializeApp(firebaseConfig);
+                } else {
+                    console.log("✅ Firebase App ya inicializada");
+                }
+                
+                // Obtener referencia a la base de datos
+                database = firebase.database();
+                console.log("✅ Firebase Database inicializado correctamente");
+                
+                // Configurar monitor de conexión
+                setupConnectionMonitor();
+                
+                // Iniciar el resto de la aplicación
+                setupApplication();
+                
+                // Mostrar notificación de éxito
+                showNotification("✅ Sistema conectado correctamente", "success");
+                
+            } catch (error) {
+                console.error("❌ Error crítico inicializando Firebase:", error);
+                showNotification("❌ Error de conexión con Firebase", "error");
+                
+                // Actualizar estado
+                const statusIndicator = document.getElementById('status-indicator');
+                if (statusIndicator) {
+                    statusIndicator.textContent = '❌ Error de conexión';
+                    statusIndicator.style.background = '#f44336';
+                }
+                
+                // Reintentar después de 3 segundos
+                setTimeout(initFirebase, 3000);
+            }
+        }
 
-        // NOTIFICACIONES (puede estar fuera del DOMContentLoaded)
+        // 4. Monitor de conexión
+        function setupConnectionMonitor() {
+            if (!database) {
+                console.error("Database no disponible para monitor");
+                return;
+            }
+            
+            database.ref('.info/connected').on('value', (snapshot) => {
+                const statusIndicator = document.getElementById('status-indicator');
+                if (!statusIndicator) return;
+                
+                if (snapshot.val() === true) {
+                    statusIndicator.textContent = '✅ Conectado';
+                    statusIndicator.style.background = '#4CAF50';
+                    console.log("📡 Conectado a Firebase");
+                } else {
+                    statusIndicator.textContent = '❌ Desconectado';
+                    statusIndicator.style.background = '#f44336';
+                    console.log("📡 Desconectado de Firebase");
+                }
+            });
+        }
+
+        // 5. Función para inicializar toda la aplicación
+        function setupApplication() {
+            if (!database) {
+                console.error("Base de datos no disponible para setupApplication");
+                showNotification("Error: Base de datos no disponible", "error");
+                return;
+            }
+            
+            console.log("🚀 Iniciando aplicación completa...");
+            
+            // Generar usuario único
+            currentUser = generarUsuarioUnico();
+            console.log("👤 Usuario actual:", currentUser);
+            
+            // Configurar elementos básicos
+            setupTabs();
+            setupCountdown();
+            
+            // Configurar sistemas principales
+            setTimeout(() => {
+                setupSeatsSystem();
+                setupHabitacionesSystem();
+            }, 500);
+            
+            console.log("✅ Aplicación inicializada correctamente");
+        }
+
+        // 6. Función para generar usuario único
+        function generarUsuarioUnico() {
+            let usuario = localStorage.getItem('busUsuario');
+            if (!usuario) {
+                usuario = 'user_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('busUsuario', usuario);
+                console.log("🆕 Nuevo usuario generado:", usuario);
+            }
+            return usuario;
+        }
+
+        // 7. Sistema de tabs
+        function setupTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            console.log("📋 Tabs configurados");
+        }
+
+        // 8. Notificaciones
         function showNotification(message, type = "success") {
             const notification = document.getElementById('notification');
+            if (!notification) {
+                console.warn("Elemento de notificación no encontrado");
+                return;
+            }
+            
             notification.textContent = message;
             notification.className = `notification ${type} show`;
             notification.style.display = 'block';
@@ -1265,96 +1401,62 @@
                 notification.classList.remove('show');
                 setTimeout(() => notification.style.display = 'none', 300);
             }, 4000);
+            
+            console.log(`📢 Notificación: ${message}`);
         }
 
-        // Cuenta regresiva (puede estar fuera del DOMContentLoaded)
-        function updateCountdown() {
-            const targetDate = new Date('2025-12-10T08:30:00').getTime();
-            const now = new Date().getTime();
-            const distance = targetDate - now;
+        // 9. Cuenta regresiva
+        function setupCountdown() {
+            function updateCountdown() {
+                const targetDate = new Date('2025-12-10T08:30:00').getTime();
+                const now = new Date().getTime();
+                const distance = targetDate - now;
 
-            if (distance < 0) {
-                document.getElementById('countdown-message').innerHTML = '🎉 ¡El viaje ya comenzó! ¡Disfrútenlo!';
-                document.getElementById('days').innerHTML = '0';
-                document.getElementById('hours').innerHTML = '0';
-                document.getElementById('minutes').innerHTML = '0';
-                document.getElementById('seconds').innerHTML = '0';
-                return;
+                if (distance < 0) {
+                    const message = document.getElementById('countdown-message');
+                    if (message) message.innerHTML = '🎉 ¡El viaje ya comenzó! ¡Disfrútenlo!';
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                const daysEl = document.getElementById('days');
+                const hoursEl = document.getElementById('hours');
+                const minutesEl = document.getElementById('minutes');
+                const secondsEl = document.getElementById('seconds');
+                const messageEl = document.getElementById('countdown-message');
+                
+                if (daysEl) daysEl.innerHTML = days;
+                if (hoursEl) hoursEl.innerHTML = hours;
+                if (minutesEl) minutesEl.innerHTML = minutes;
+                if (secondsEl) secondsEl.innerHTML = seconds;
+                
+                if (messageEl) {
+                    if (days > 0) {
+                        messageEl.innerHTML = `Faltan ${days} día${days !== 1 ? 's' : ''} para el viaje 🚌`;
+                    } else if (hours > 0) {
+                        messageEl.innerHTML = '¡Ya casi es hora! Prepara tu mochila 🎒';
+                    } else {
+                        messageEl.innerHTML = '¡Nos vamos muy pronto! 🚀';
+                    }
+                }
             }
-
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            document.getElementById('days').innerHTML = days;
-            document.getElementById('hours').innerHTML = hours;
-            document.getElementById('minutes').innerHTML = minutes;
-            document.getElementById('seconds').innerHTML = seconds;
-
-            if (days > 0) {
-                document.getElementById('countdown-message').innerHTML = `Faltan ${days} día${days !== 1 ? 's' : ''} para el viaje 🚌`;
-            } else if (hours > 0) {
-                document.getElementById('countdown-message').innerHTML = '¡Ya casi es hora! Prepara tu mochila 🎒';
-            } else {
-                document.getElementById('countdown-message').innerHTML = '¡Nos vamos muy pronto! 🚀';
-            }
+            
+            setInterval(updateCountdown, 1000);
+            updateCountdown();
+            console.log("⏰ Cuenta regresiva iniciada");
         }
 
-        setInterval(updateCountdown, 1000);
-        updateCountdown();
-
         // ========================================
-        // TODO LO DEMÁS DEBE ESTAR DENTRO DEL DOMContentLoaded
+        // SISTEMA DE ASIENTOS
         // ========================================
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("🚀 Iniciando sistema...");
+        function setupSeatsSystem() {
+            console.log("🪑 Configurando sistema de asientos...");
             
-            // Verificar que Firebase se haya cargado
-            if (typeof firebase === 'undefined') {
-                console.error('❌ Firebase no se cargó correctamente');
-                showNotification('Error: Firebase no disponible. Recarga la página.', 'error');
-                return;
-            }
-
-            // 🔥 INICIALIZAR FIREBASE
-            const firebaseConfig = {
-                apiKey: "AIzaSyDD5VGjxei_BBpYhqTW-JV6laS9Y-KNHjc",
-                authDomain: "asignacion-asientos37.firebaseapp.com",
-                databaseURL: "https://asignacion-asientos37-default-rtdb.firebaseio.com",
-                projectId: "asignacion-asientos37",
-                storageBucket: "asignacion-asientos37.firebasestorage.app",
-                messagingSenderId: "484124660366",
-                appId: "1:484124660366:web:907c6f2d8a202a64e3efdf",
-                measurementId: "G-DRMGWPYVQ"
-            };
-
-            try {
-                if (!firebase.apps.length) {
-                    firebase.initializeApp(firebaseConfig);
-                }
-                database = firebase.database();
-                console.log("✅ Firebase inicializado correctamente");
-            } catch (error) {
-                console.error("❌ Error inicializando Firebase:", error);
-                showNotification("Error de conexión con la base de datos", "error");
-                return;
-            }
-
-            // Generar usuario único
-            function generarUsuarioUnico() {
-                let usuario = localStorage.getItem('busUsuario');
-                if (!usuario) {
-                    usuario = 'user_' + Math.random().toString(36).substr(2, 9);
-                    localStorage.setItem('busUsuario', usuario);
-                }
-                return usuario;
-            }
-            
-            currentUser = generarUsuarioUnico();
-            console.log("👤 Usuario actual:", currentUser);
-
-            // Elementos del DOM para ASIENTOS
+            // Elementos del DOM
             const seats = document.querySelectorAll('.seat:not(.operator)');
             const seatNumberInput = document.getElementById('seat-number');
             const passengerNameInput = document.getElementById('passenger-name');
@@ -1375,26 +1477,13 @@
             const adminControls = document.getElementById('admin-controls');
             const clearAllBtn = document.getElementById('clear-all-btn');
 
-            // Elementos del DOM para HABITACIONES
-            const crearHabitacionBtn = document.getElementById('crear-habitacion-btn');
-            const nombreHabitacionInput = document.getElementById('nombre-habitacion');
-            const capacidadHabitacionSelect = document.getElementById('capacidad-habitacion');
-            const crearHabitacionCard = document.getElementById('crear-habitacion-card');
-            const miHabitacionResponsableCard = document.getElementById('mi-habitacion-responsable-card');
-            const miHabitacionMiembroCard = document.getElementById('mi-habitacion-miembro-card');
-            const unirmeHabitacionCard = document.getElementById('unirme-habitacion-card');
-            const eliminarHabitacionBtn = document.getElementById('eliminar-habitacion-btn');
-            const salirHabitacionBtn = document.getElementById('salir-habitacion-btn');
-
-            // ========================================
-            // FUNCIONES AUXILIARES
-            // ========================================
-            
+            // Validación de matrícula
             function validateMatricula(matricula) {
                 const matriculaRegex = /^[Uu]\d{7}[Nn]\d{4}$/;
                 return matriculaRegex.test(matricula);
             }
 
+            // Validación de información del estudiante
             function validateStudentInfo() {
                 const passengerName = passengerNameInput.value.trim();
                 const studentId = studentIdInput.value.trim();
@@ -1408,7 +1497,7 @@
                 }
 
                 if (!studentId || !validateMatricula(studentId)) {
-                    showNotification('Formato de matrícula incorrecto', 'error');
+                    showNotification('Formato de matrícula incorrecto. Ej: U2303057N0061', 'error');
                     studentIdInput.focus();
                     return false;
                 }
@@ -1428,6 +1517,7 @@
                 return true;
             }
 
+            // Asignar asiento
             function assignSeat(seatNum, isChange = false) {
                 const passengerName = passengerNameInput.value.trim();
                 const studentId = studentIdInput.value.trim();
@@ -1459,20 +1549,23 @@
                         assignBtn.disabled = true;
                         changeSeatBtn.disabled = false;
                         
-                        const msg = isChange ? `Asiento cambiado correctamente al ${seatNum}` : `Asiento ${seatNum} asignado correctamente`;
+                        const msg = isChange ? 
+                            `✅ Asiento cambiado correctamente al ${seatNum}` : 
+                            `✅ Asiento ${seatNum} asignado correctamente`;
                         showNotification(msg, 'success');
                     })
                     .catch((error) => {
-                        showNotification('Error al asignar asiento: ' + error.message, 'error');
+                        showNotification('❌ Error al asignar asiento: ' + error.message, 'error');
                     });
             }
 
+            // Actualizar vista de asientos
             function actualizarVistaAsientos(asientosData) {
                 seats.forEach(seat => {
                     const seatNum = seat.getAttribute('data-seat');
                     seat.classList.remove('selected', 'available', 'occupied', 'my-seat', 'disabled');
                     
-                    if (asientosData[seatNum]) {
+                    if (asientosData && asientosData[seatNum]) {
                         if (asientosData[seatNum].usuario === currentUser) {
                             seat.classList.add('my-seat');
                             seat.title = `Tu asiento: ${asientosData[seatNum].nombre}`;
@@ -1496,9 +1589,12 @@
                 });
             }
 
+            // Actualizar lista de pasajeros
             function updatePassengerList(asientosData) {
+                if (!passengerList) return;
+                
                 passengerList.innerHTML = '';
-                const asientosOcupados = Object.keys(asientosData);
+                const asientosOcupados = asientosData ? Object.keys(asientosData) : [];
                 
                 if (asientosOcupados.length === 0) {
                     passengerList.innerHTML = '<div class="passenger-item">No hay estudiantes asignados</div>';
@@ -1525,30 +1621,40 @@
                     passengerList.appendChild(passengerItem);
                 });
                 
+                // Agregar event listeners a los botones de eliminar
                 document.querySelectorAll('.passenger-list .btn-danger').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const seatToRemove = this.getAttribute('data-seat');
-                        if (confirm(`¿Estás seguro de que quieres eliminar el asiento ${seatToRemove}?`)) {
+                        if (confirm(`⚠️ ¿Estás seguro de que quieres eliminar el asiento ${seatToRemove}?`)) {
                             database.ref('asientos/' + seatToRemove).remove()
-                                .catch((error) => showNotification('Error: ' + error.message, 'error'));
+                                .then(() => showNotification(`✅ Asiento ${seatToRemove} eliminado`, 'success'))
+                                .catch((error) => showNotification('❌ Error: ' + error.message, 'error'));
                         }
                     });
                 });
             }
 
+            // Actualizar información de asientos vacíos
             function updateEmptySeatsInfo(asientosData) {
+                if (!emptySeatsInfo) return;
+                
                 const totalSeats = 36;
-                const occupiedSeats = Object.keys(asientosData).length;
+                const occupiedSeats = asientosData ? Object.keys(asientosData).length : 0;
                 const emptySeats = totalSeats - occupiedSeats;
                 emptySeatsInfo.textContent = `Asientos ocupados: ${occupiedSeats} | Asientos disponibles: ${emptySeats}`;
             }
 
+            // Actualizar información de mi asiento
             function updateMySeatInfo(asientosData) {
+                if (!mySeatInfo || !currentSeatNumber) return;
+                
                 myCurrentSeat = null;
-                for (const seatNum in asientosData) {
-                    if (asientosData[seatNum].usuario === currentUser) {
-                        myCurrentSeat = seatNum;
-                        break;
+                if (asientosData) {
+                    for (const seatNum in asientosData) {
+                        if (asientosData[seatNum].usuario === currentUser) {
+                            myCurrentSeat = seatNum;
+                            break;
+                        }
                     }
                 }
 
@@ -1567,38 +1673,40 @@
             // ========================================
 
             // Verificación de anticipo
-            anticipoVerification.addEventListener('change', function() {
-                if (this.value === 'si') {
-                    anticipoConfirmado = true;
-                    database.ref('asientos').once('value').then((snapshot) => {
-                        actualizarVistaAsientos(snapshot.val() || {});
-                    });
-                    showNotification('Anticipo confirmado. Ya puedes seleccionar un asiento.', 'success');
-                } else {
-                    anticipoConfirmado = false;
-                    seats.forEach(seat => {
-                        seat.classList.remove('available', 'occupied', 'my-seat');
-                        seat.classList.add('disabled');
-                        seat.style.cursor = 'not-allowed';
-                    });
-                    assignBtn.disabled = true;
-                    changeSeatBtn.disabled = true;
-                }
-            });
+            if (anticipoVerification) {
+                anticipoVerification.addEventListener('change', function() {
+                    if (this.value === 'si') {
+                        anticipoConfirmado = true;
+                        database.ref('asientos').once('value').then((snapshot) => {
+                            actualizarVistaAsientos(snapshot.val());
+                        });
+                        showNotification('✅ Anticipo confirmado. Ya puedes seleccionar un asiento.', 'success');
+                    } else {
+                        anticipoConfirmado = false;
+                        seats.forEach(seat => {
+                            seat.classList.remove('available', 'occupied', 'my-seat');
+                            seat.classList.add('disabled');
+                            seat.style.cursor = 'not-allowed';
+                        });
+                        assignBtn.disabled = true;
+                        changeSeatBtn.disabled = true;
+                    }
+                });
+            }
 
             // Clic en asientos
             seats.forEach(seat => {
                 seat.addEventListener('click', function() {
                     if (!anticipoConfirmado) {
-                        showNotification('Confirma primero tu anticipo', 'warning');
-                        anticipoVerification.focus();
+                        showNotification('⚠️ Confirma primero tu anticipo', 'warning');
+                        if (anticipoVerification) anticipoVerification.focus();
                         return;
                     }
 
                     const seatNum = this.getAttribute('data-seat');
                     
                     if (this.classList.contains('occupied') && !this.classList.contains('my-seat') && !isAdmin) {
-                        showNotification(`El asiento ${seatNum} ya está ocupado`, 'error');
+                        showNotification(`❌ El asiento ${seatNum} ya está ocupado`, 'error');
                         return;
                     }
                     
@@ -1606,151 +1714,149 @@
                     
                     this.classList.add('selected');
                     selectedSeat = this;
-                    seatNumberInput.value = seatNum;
+                    if (seatNumberInput) seatNumberInput.value = seatNum;
                     
                     if (this.classList.contains('my-seat')) {
                         database.ref('asientos/' + seatNum).once('value').then((snapshot) => {
                             if (snapshot.exists()) {
                                 const data = snapshot.val();
-                                passengerNameInput.value = data.nombre || '';
-                                studentIdInput.value = data.matricula || '';
-                                careerSelect.value = data.carrera || '';
-                                semesterSelect.value = data.cuatrimestre || '';
+                                if (passengerNameInput) passengerNameInput.value = data.nombre || '';
+                                if (studentIdInput) studentIdInput.value = data.matricula || '';
+                                if (careerSelect) careerSelect.value = data.carrera || '';
+                                if (semesterSelect) semesterSelect.value = data.cuatrimestre || '';
                             }
                         });
-                        assignBtn.disabled = true;
-                        changeSeatBtn.disabled = false;
+                        if (assignBtn) assignBtn.disabled = true;
+                        if (changeSeatBtn) changeSeatBtn.disabled = false;
                     } else {
-                        assignBtn.disabled = false;
-                        changeSeatBtn.disabled = !!myCurrentSeat;
+                        if (assignBtn) assignBtn.disabled = false;
+                        if (changeSeatBtn) changeSeatBtn.disabled = !!myCurrentSeat;
                     }
                 });
             });
 
             // Asignar asiento
-            assignBtn.addEventListener('click', function() {
-                if (!selectedSeat) {
-                    showNotification('Seleccione un asiento primero', 'warning');
-                    return;
-                }
-                
-                if (!anticipoConfirmado) {
-                    showNotification('Confirma tu anticipo primero', 'warning');
-                    return;
-                }
-                
-                const seatNum = selectedSeat.getAttribute('data-seat');
-                
-                if (!validateStudentInfo()) return;
+            if (assignBtn) {
+                assignBtn.addEventListener('click', function() {
+                    if (!selectedSeat) {
+                        showNotification('⚠️ Seleccione un asiento primero', 'warning');
+                        return;
+                    }
+                    
+                    if (!anticipoConfirmado) {
+                        showNotification('⚠️ Confirma tu anticipo primero', 'warning');
+                        return;
+                    }
+                    
+                    const seatNum = selectedSeat.getAttribute('data-seat');
+                    
+                    if (!validateStudentInfo()) return;
 
-                if (selectedSeat.classList.contains('occupied') && !selectedSeat.classList.contains('my-seat') && !isAdmin) {
-                    showNotification(`El asiento ${seatNum} ya está ocupado`, 'error');
-                    return;
-                }
+                    if (selectedSeat.classList.contains('occupied') && !selectedSeat.classList.contains('my-seat') && !isAdmin) {
+                        showNotification(`❌ El asiento ${seatNum} ya está ocupado`, 'error');
+                        return;
+                    }
 
-                assignSeat(seatNum);
-            });
+                    assignSeat(seatNum);
+                });
+            }
 
             // Cambiar de asiento
-            changeSeatBtn.addEventListener('click', function() {
-                if (!selectedSeat) {
-                    showNotification('Selecciona un nuevo asiento primero', 'warning');
-                    return;
-                }
+            if (changeSeatBtn) {
+                changeSeatBtn.addEventListener('click', function() {
+                    if (!selectedSeat) {
+                        showNotification('⚠️ Selecciona un nuevo asiento primero', 'warning');
+                        return;
+                    }
 
-                if (!anticipoConfirmado) {
-                    showNotification('Confirma tu anticipo primero', 'warning');
-                    return;
-                }
+                    if (!anticipoConfirmado) {
+                        showNotification('⚠️ Confirma tu anticipo primero', 'warning');
+                        return;
+                    }
 
-                const newSeatNum = selectedSeat.getAttribute('data-seat');
-                
-                if (!validateStudentInfo()) return;
+                    const newSeatNum = selectedSeat.getAttribute('data-seat');
+                    
+                    if (!validateStudentInfo()) return;
 
-                if (myCurrentSeat) {
-                    database.ref('asientos/' + myCurrentSeat).remove();
-                }
+                    if (myCurrentSeat) {
+                        database.ref('asientos/' + myCurrentSeat).remove();
+                    }
 
-                assignSeat(newSeatNum, true);
-            });
+                    assignSeat(newSeatNum, true);
+                });
+            }
 
             // Limpiar selección
-            clearBtn.addEventListener('click', function() {
-                if (selectedSeat) {
-                    selectedSeat.classList.remove('selected');
-                    selectedSeat = null;
-                }
-                seatNumberInput.value = '';
-                passengerNameInput.value = '';
-                studentIdInput.value = '';
-                careerSelect.value = '';
-                semesterSelect.value = '';
-                assignBtn.disabled = true;
-                changeSeatBtn.disabled = !myCurrentSeat;
-            });
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function() {
+                    if (selectedSeat) {
+                        selectedSeat.classList.remove('selected');
+                        selectedSeat = null;
+                    }
+                    if (seatNumberInput) seatNumberInput.value = '';
+                    if (passengerNameInput) passengerNameInput.value = '';
+                    if (studentIdInput) studentIdInput.value = '';
+                    if (careerSelect) careerSelect.value = '';
+                    if (semesterSelect) semesterSelect.value = '';
+                    if (assignBtn) assignBtn.disabled = true;
+                    if (changeSeatBtn) changeSeatBtn.disabled = !myCurrentSeat;
+                });
+            }
 
             // Liberar mi asiento
-            releaseSeatBtn.addEventListener('click', function() {
-                if (myCurrentSeat) {
-                    if (confirm(`¿Seguro que quieres liberar el asiento ${myCurrentSeat}?`)) {
-                        database.ref('asientos/' + myCurrentSeat).remove()
-                            .then(() => {
-                                myCurrentSeat = null;
-                                mySeatInfo.style.display = 'none';
-                                showNotification('Asiento liberado correctamente', 'success');
-                            })
-                            .catch((error) => showNotification('Error: ' + error.message, 'error'));
+            if (releaseSeatBtn) {
+                releaseSeatBtn.addEventListener('click', function() {
+                    if (myCurrentSeat) {
+                        if (confirm(`⚠️ ¿Seguro que quieres liberar el asiento ${myCurrentSeat}?`)) {
+                            database.ref('asientos/' + myCurrentSeat).remove()
+                                .then(() => {
+                                    myCurrentSeat = null;
+                                    mySeatInfo.style.display = 'none';
+                                    showNotification('✅ Asiento liberado correctamente', 'success');
+                                })
+                                .catch((error) => showNotification('❌ Error: ' + error.message, 'error'));
+                        }
                     }
-                }
-            });
+                });
+            }
 
             // Login de administrador
-            adminLoginBtn.addEventListener('click', function() {
-                if (adminPasswordInput.value === ADMIN_PASSWORD) {
-                    isAdmin = true;
-                    adminControls.style.display = 'block';
-                    adminLoginBtn.disabled = true;
-                    adminPasswordInput.disabled = true;
-                    showNotification('Acceso de administrador concedido', 'success');
-                    database.ref('asientos').once('value').then((snapshot) => {
-                        updatePassengerList(snapshot.val() || {});
-                    });
-                } else {
-                    showNotification('Contraseña incorrecta', 'error');
-                    adminPasswordInput.value = '';
-                    adminPasswordInput.focus();
-                }
-            });
+            if (adminLoginBtn && adminPasswordInput) {
+                adminLoginBtn.addEventListener('click', function() {
+                    if (adminPasswordInput.value === ADMIN_PASSWORD) {
+                        isAdmin = true;
+                        if (adminControls) adminControls.style.display = 'block';
+                        adminLoginBtn.disabled = true;
+                        adminPasswordInput.disabled = true;
+                        showNotification('🔐 Acceso de administrador concedido', 'success');
+                        database.ref('asientos').once('value').then((snapshot) => {
+                            updatePassengerList(snapshot.val());
+                        });
+                    } else {
+                        showNotification('❌ Contraseña incorrecta', 'error');
+                        adminPasswordInput.value = '';
+                        adminPasswordInput.focus();
+                    }
+                });
+            }
 
             // Liberar todos los asientos (admin)
-            clearAllBtn.addEventListener('click', function() {
-                if (confirm('⚠️ ¿Seguro que quieres liberar TODOS los asientos? Esta acción no se puede deshacer.')) {
-                    database.ref('asientos').remove()
-                        .then(() => showNotification('Todos los asientos liberados', 'success'))
-                        .catch((error) => showNotification('Error: ' + error.message, 'error'));
-                }
-            });
-
-            // ========================================
-            // MONITOR DE CONEXIÓN FIREBASE
-            // ========================================
-            database.ref('.info/connected').on('value', (snapshot) => {
-                const statusIndicator = document.getElementById('status-indicator');
-                if (snapshot.val() === true) {
-                    statusIndicator.textContent = '✅ Conectado';
-                    statusIndicator.style.background = '#4CAF50';
-                } else {
-                    statusIndicator.textContent = '❌ Desconectado';
-                    statusIndicator.style.background = '#f44336';
-                }
-            });
+            if (clearAllBtn) {
+                clearAllBtn.addEventListener('click', function() {
+                    if (confirm('⚠️ ¿Seguro que quieres liberar TODOS los asientos?\n\nEsta acción NO se puede deshacer.')) {
+                        database.ref('asientos').remove()
+                            .then(() => showNotification('✅ Todos los asientos liberados', 'success'))
+                            .catch((error) => showNotification('❌ Error: ' + error.message, 'error'));
+                    }
+                });
+            }
 
             // ========================================
             // MONITOR ASIENTOS EN TIEMPO REAL
             // ========================================
             database.ref('asientos').on('value', (snapshot) => {
-                const asientosData = snapshot.val() || {};
-                console.log("📊 Asientos actualizados:", Object.keys(asientosData).length);
+                const asientosData = snapshot.val();
+                console.log("📊 Asientos actualizados:", asientosData ? Object.keys(asientosData).length : 0);
                 
                 actualizarVistaAsientos(asientosData);
                 updatePassengerList(asientosData);
@@ -1758,103 +1864,116 @@
                 updateMySeatInfo(asientosData);
             });
 
-            // ========================================
-            // SISTEMA DE HABITACIONES - TODO AQUÍ DENTRO
-            // ========================================
+            console.log("✅ Sistema de asientos configurado");
+        }
+
+        // ========================================
+        // SISTEMA DE HABITACIONES
+        // ========================================
+        function setupHabitacionesSystem() {
+            console.log("🏨 Configurando sistema de habitaciones...");
             
-            console.log("🏨 Iniciando sistema de habitaciones...");
+            // Elementos del DOM
+            const crearHabitacionBtn = document.getElementById('crear-habitacion-btn');
+            const nombreHabitacionInput = document.getElementById('nombre-habitacion');
+            const capacidadHabitacionSelect = document.getElementById('capacidad-habitacion');
+            const crearHabitacionCard = document.getElementById('crear-habitacion-card');
+            const miHabitacionResponsableCard = document.getElementById('mi-habitacion-responsable-card');
+            const miHabitacionMiembroCard = document.getElementById('mi-habitacion-miembro-card');
+            const unirmeHabitacionCard = document.getElementById('unirme-habitacion-card');
+            const eliminarHabitacionBtn = document.getElementById('eliminar-habitacion-btn');
+            const salirHabitacionBtn = document.getElementById('salir-habitacion-btn');
 
             // Crear habitación
-            crearHabitacionBtn.addEventListener('click', function() {
-                console.log("🆕 Intento de crear habitación");
-                const nombreHab = nombreHabitacionInput.value.trim();
-                const capacidad = parseInt(capacidadHabitacionSelect.value);
+            if (crearHabitacionBtn && nombreHabitacionInput && capacidadHabitacionSelect) {
+                crearHabitacionBtn.addEventListener('click', function() {
+                    const nombreHab = nombreHabitacionInput.value.trim();
+                    const capacidad = parseInt(capacidadHabitacionSelect.value);
 
-                if (!nombreHab) {
-                    showNotification('Ingresa un nombre para la habitación', 'error');
-                    return;
-                }
+                    if (!nombreHab) {
+                        showNotification('⚠️ Ingresa un nombre para la habitación', 'error');
+                        return;
+                    }
 
-                if (!capacidad) {
-                    showNotification('Selecciona la capacidad de la habitación', 'error');
-                    return;
-                }
+                    if (!capacidad) {
+                        showNotification('⚠️ Selecciona la capacidad de la habitación', 'error');
+                        return;
+                    }
 
-                if (!myCurrentSeat) {
-                    showNotification('Debes tener un asiento asignado primero', 'error');
-                    return;
-                }
+                    if (!myCurrentSeat) {
+                        showNotification('⚠️ Debes tener un asiento asignado primero', 'error');
+                        return;
+                    }
 
-                database.ref('asientos/' + myCurrentSeat).once('value').then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const alumnoData = snapshot.val();
-                        const habitacionId = 'hab_' + Date.now();
+                    database.ref('asientos/' + myCurrentSeat).once('value').then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const alumnoData = snapshot.val();
+                            const habitacionId = 'hab_' + Date.now();
 
-                        const habitacionData = {
-                            nombre: nombreHab,
-                            capacidad: capacidad,
-                            responsable: {
-                                usuario: currentUser,
-                                nombre: alumnoData.nombre,
-                                matricula: alumnoData.matricula,
-                                asiento: myCurrentSeat
-                            },
-                            miembros: {
-                                [currentUser]: {
+                            const habitacionData = {
+                                nombre: nombreHab,
+                                capacidad: capacidad,
+                                responsable: {
+                                    usuario: currentUser,
                                     nombre: alumnoData.nombre,
                                     matricula: alumnoData.matricula,
                                     asiento: myCurrentSeat
-                                }
-                            },
-                            timestamp: firebase.database.ServerValue.TIMESTAMP
-                        };
+                                },
+                                miembros: {
+                                    [currentUser]: {
+                                        nombre: alumnoData.nombre,
+                                        matricula: alumnoData.matricula,
+                                        asiento: myCurrentSeat
+                                    }
+                                },
+                                timestamp: firebase.database.ServerValue.TIMESTAMP
+                            };
 
-                        console.log("💾 Guardando habitación:", habitacionData);
+                            database.ref('habitaciones/' + habitacionId).set(habitacionData)
+                                .then(() => {
+                                    showNotification('✅ Habitación creada exitosamente', 'success');
+                                    nombreHabitacionInput.value = '';
+                                    capacidadHabitacionSelect.value = '';
+                                })
+                                .catch((error) => {
+                                    showNotification('❌ Error al crear habitación: ' + error.message, 'error');
+                                });
+                        }
+                    });
+                });
+            }
 
-                        database.ref('habitaciones/' + habitacionId).set(habitacionData)
+            // Eliminar habitación (solo responsable)
+            if (eliminarHabitacionBtn) {
+                eliminarHabitacionBtn.addEventListener('click', function() {
+                    if (confirm('⚠️ ¿Estás seguro de que quieres eliminar tu habitación?\n\nTodos los miembros serán removidos.')) {
+                        database.ref('habitaciones/' + miHabitacionId).remove()
                             .then(() => {
-                                console.log("✅ Habitación creada exitosamente");
-                                showNotification('Habitación creada exitosamente', 'success');
-                                nombreHabitacionInput.value = '';
-                                capacidadHabitacionSelect.value = '';
+                                showNotification('🗑️ Habitación eliminada correctamente', 'success');
                             })
                             .catch((error) => {
-                                console.error("❌ Error al crear habitación:", error);
-                                showNotification('Error al crear habitación: ' + error.message, 'error');
+                                showNotification('❌ Error al eliminar: ' + error.message, 'error');
                             });
                     }
                 });
-            });
-
-            // Eliminar habitación (solo responsable)
-            eliminarHabitacionBtn.addEventListener('click', function() {
-                if (confirm('¿Estás seguro de que quieres eliminar tu habitación? Todos los miembros serán removidos.')) {
-                    database.ref('habitaciones/' + miHabitacionId).remove()
-                        .then(() => {
-                            console.log("🗑️ Habitación eliminada");
-                            showNotification('Habitación eliminada correctamente', 'success');
-                        })
-                        .catch((error) => {
-                            showNotification('Error al eliminar: ' + error.message, 'error');
-                        });
-                }
-            });
+            }
 
             // Salir de habitación (solo miembros)
-            salirHabitacionBtn.addEventListener('click', function() {
-                if (confirm('¿Estás seguro de que quieres salir de esta habitación?')) {
-                    database.ref('habitaciones/' + miHabitacionId + '/miembros/' + currentUser).remove()
-                        .then(() => {
-                            console.log("🚪 Saliste de la habitación");
-                            showNotification('Has salido de la habitación', 'success');
-                        })
-                        .catch((error) => {
-                            showNotification('Error: ' + error.message, 'error');
-                        });
-                }
-            });
+            if (salirHabitacionBtn) {
+                salirHabitacionBtn.addEventListener('click', function() {
+                    if (confirm('⚠️ ¿Estás seguro de que quieres salir de esta habitación?')) {
+                        database.ref('habitaciones/' + miHabitacionId + '/miembros/' + currentUser).remove()
+                            .then(() => {
+                                showNotification('🚪 Has salido de la habitación', 'success');
+                            })
+                            .catch((error) => {
+                                showNotification('❌ Error: ' + error.message, 'error');
+                            });
+                    }
+                });
+            }
 
-            // Agregar compañero a habitación
+            // Función global para agregar compañero
             window.agregarCompanero = function(alumnoUsuario, alumnoData) {
                 if (!miHabitacionId || !soyResponsable) return;
 
@@ -1864,36 +1983,34 @@
                     asiento: alumnoData.asiento
                 })
                 .then(() => {
-                    console.log("✅ Compañero agregado");
-                    showNotification(`${alumnoData.nombre} agregado a la habitación`, 'success');
+                    showNotification(`✅ ${alumnoData.nombre} agregado a la habitación`, 'success');
                 })
                 .catch((error) => {
-                    showNotification('Error: ' + error.message, 'error');
+                    showNotification('❌ Error: ' + error.message, 'error');
                 });
             };
 
-            // Quitar compañero de habitación
+            // Función global para quitar compañero
             window.quitarCompanero = function(alumnoUsuario) {
                 if (!miHabitacionId || !soyResponsable) return;
 
-                if (confirm('¿Estás seguro de que quieres quitar a este compañero?')) {
+                if (confirm('⚠️ ¿Estás seguro de que quieres quitar a este compañero?')) {
                     database.ref('habitaciones/' + miHabitacionId + '/miembros/' + alumnoUsuario).remove()
                         .then(() => {
-                            console.log("🚫 Compañero removido");
-                            showNotification('Compañero removido de la habitación', 'success');
+                            showNotification('🚫 Compañero removido de la habitación', 'success');
                         })
                         .catch((error) => {
-                            showNotification('Error: ' + error.message, 'error');
+                            showNotification('❌ Error: ' + error.message, 'error');
                         });
                 }
             };
 
-            // Unirse a habitación
+            // Función global para unirse a habitación
             window.unirseAHabitacion = function(habitacionId, habitacion) {
                 const miembrosCount = Object.keys(habitacion.miembros || {}).length;
                 
                 if (miembrosCount >= habitacion.capacidad) {
-                    showNotification('Esta habitación ya está llena', 'error');
+                    showNotification('❌ Esta habitación ya está llena', 'error');
                     return;
                 }
 
@@ -1907,86 +2024,106 @@
                             asiento: myCurrentSeat
                         })
                         .then(() => {
-                            console.log("✅ Te uniste a la habitación");
-                            showNotification('Te has unido a la habitación exitosamente', 'success');
+                            showNotification('✅ Te has unido a la habitación exitosamente', 'success');
                         })
                         .catch((error) => {
-                            showNotification('Error: ' + error.message, 'error');
+                            showNotification('❌ Error: ' + error.message, 'error');
                         });
                     }
                 });
             };
 
+            // Mostrar habitación como responsable
             function mostrarHabitacionResponsable(habId, hab) {
-                console.log("👑 Mostrando habitación como responsable");
                 const miembros = hab.miembros || {};
                 const miembrosCount = Object.keys(miembros).length;
                 
-                document.getElementById('info-mi-habitacion-responsable').innerHTML = `
-                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                        <h3 style="margin: 0 0 10px 0; color: #2e7d32;">${hab.nombre}</h3>
-                        <p><strong>Capacidad:</strong> ${miembrosCount}/${hab.capacidad} personas</p>
-                        <p><strong>Espacios disponibles:</strong> ${hab.capacidad - miembrosCount}</p>
-                    </div>
-                `;
-                
-                let companerosHTML = '';
-                for (const userId in miembros) {
-                    const miembro = miembros[userId];
-                    const esYo = userId === currentUser;
-                    companerosHTML += `
-                        <div class="chip" style="background: ${esYo ? '#ff9800' : '#4CAF50'}; display: inline-flex; align-items: center; gap: 5px;">
-                            ${miembro.nombre} ${esYo ? '(TÚ)' : ''}
-                            ${!esYo ? `<span onclick="quitarCompanero('${userId}')" style="cursor: pointer; font-weight: bold;">❌</span>` : ''}
+                const infoContainer = document.getElementById('info-mi-habitacion-responsable');
+                if (infoContainer) {
+                    infoContainer.innerHTML = `
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                            <h3 style="margin: 0 0 10px 0; color: #2e7d32;">${hab.nombre}</h3>
+                            <p><strong>Capacidad:</strong> ${miembrosCount}/${hab.capacidad} personas</p>
+                            <p><strong>Espacios disponibles:</strong> ${hab.capacidad - miembrosCount}</p>
                         </div>
                     `;
                 }
-                document.getElementById('companeros-actuales').innerHTML = companerosHTML || '<em style="color: #666;">Solo tú por ahora</em>';
+                
+                // Actualizar compañeros actuales
+                const companerosContainer = document.getElementById('companeros-actuales');
+                if (companerosContainer) {
+                    let companerosHTML = '';
+                    for (const userId in miembros) {
+                        const miembro = miembros[userId];
+                        const esYo = userId === currentUser;
+                        companerosHTML += `
+                            <div class="chip" style="background: ${esYo ? '#ff9800' : '#4CAF50'}; display: inline-flex; align-items: center; gap: 5px;">
+                                ${miembro.nombre} ${esYo ? '(TÚ)' : ''}
+                                ${!esYo ? `<span onclick="quitarCompanero('${userId}')" style="cursor: pointer; font-weight: bold;">❌</span>` : ''}
+                            </div>
+                        `;
+                    }
+                    companerosContainer.innerHTML = companerosHTML || '<em style="color: #666;">Solo tú por ahora</em>';
+                }
                 
                 // Mostrar alumnos disponibles para agregar
-                database.ref('asientos').once('value').then((snapshot) => {
-                    const asientos = snapshot.val() || {};
-                    let alumnosHTML = '';
-                    
-                    for (const seatNum in asientos) {
-                        const alumno = asientos[seatNum];
+                const alumnosContainer = document.getElementById('lista-alumnos-agregar');
+                if (alumnosContainer) {
+                    database.ref('asientos').once('value').then((snapshot) => {
+                        const asientos = snapshot.val() || {};
+                        let alumnosHTML = '';
+                        let contador = 0;
                         
-                        // Si ya está en la habitación, no mostrarlo
-                        if (miembros[alumno.usuario]) continue;
-                        
-                        // Verificar si tiene habitación
-                        database.ref('habitaciones').once('value').then((habSnapshot) => {
-                            const todasHabs = habSnapshot.val() || {};
-                            let tieneHabitacion = false;
+                        for (const seatNum in asientos) {
+                            const alumno = asientos[seatNum];
                             
-                            for (const hId in todasHabs) {
-                                if (todasHabs[hId].miembros && todasHabs[hId].miembros[alumno.usuario]) {
-                                    tieneHabitacion = true;
-                                    break;
+                            // Si ya está en la habitación, no mostrarlo
+                            if (miembros[alumno.usuario]) continue;
+                            
+                            // Verificar si tiene habitación
+                            database.ref('habitaciones').once('value').then((habSnapshot) => {
+                                const todasHabs = habSnapshot.val() || {};
+                                let tieneHabitacion = false;
+                                
+                                for (const hId in todasHabs) {
+                                    if (todasHabs[hId].miembros && todasHabs[hId].miembros[alumno.usuario]) {
+                                        tieneHabitacion = true;
+                                        break;
+                                    }
                                 }
-                            }
-                            
-                            if (!tieneHabitacion && miembrosCount < hab.capacidad) {
-                                alumnosHTML += `
-                                    <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
-                                        <div>
-                                            <strong>${alumno.nombre}</strong><br>
-                                            <small>${alumno.matricula} - Asiento ${seatNum}</small>
+                                
+                                if (!tieneHabitacion && miembrosCount < hab.capacidad) {
+                                    contador++;
+                                    alumnosHTML += `
+                                        <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                                            <div>
+                                                <strong>${alumno.nombre}</strong><br>
+                                                <small>${alumno.matricula} - Asiento ${seatNum}</small>
+                                            </div>
+                                            <button class="btn btn-success" style="min-width: auto; padding: 6px 12px;" 
+                                                    onclick="agregarCompanero('${alumno.usuario}', 
+                                                            {nombre: '${alumno.nombre.replace(/'/g, "\\'")}', 
+                                                             matricula: '${alumno.matricula}', 
+                                                             asiento: '${seatNum}'})">
+                                                Agregar
+                                            </button>
                                         </div>
-                                        <button class="btn btn-success" style="min-width: auto; padding: 6px 12px;" onclick="agregarCompanero('${alumno.usuario}', {nombre: '${alumno.nombre}', matricula: '${alumno.matricula}', asiento: '${seatNum}'})">
-                                            Agregar
-                                        </button>
-                                    </div>
-                                `;
-                                document.getElementById('lista-alumnos-agregar').innerHTML = alumnosHTML || '<p style="color: #666;">No hay más alumnos disponibles</p>';
-                            }
-                        });
-                    }
-                });
+                                    `;
+                                }
+                                
+                                if (contador === 0) {
+                                    alumnosContainer.innerHTML = '<p style="color: #666; padding: 20px; text-align: center;">No hay más alumnos disponibles</p>';
+                                } else {
+                                    alumnosContainer.innerHTML = alumnosHTML;
+                                }
+                            });
+                        }
+                    });
+                }
             }
 
+            // Mostrar habitación como miembro
             function mostrarHabitacionMiembro(habId, hab) {
-                console.log("🏠 Mostrando habitación como miembro");
                 const miembros = hab.miembros || {};
                 const miembrosCount = Object.keys(miembros).length;
                 
@@ -2002,21 +2139,27 @@
                     `;
                 }
                 
-                document.getElementById('info-mi-habitacion-miembro').innerHTML = `
-                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                        <h3 style="margin: 0 0 10px 0; color: #e65100;">${hab.nombre}</h3>
-                        <p><strong>Responsable:</strong> ${hab.responsable.nombre} 👑</p>
-                        <p><strong>Capacidad:</strong> ${miembrosCount}/${hab.capacidad} personas</p>
-                    </div>
-                    <div style="margin-top: 15px;">
-                        <strong>Compañeros:</strong><br>
-                        ${miembrosHTML}
-                    </div>
-                `;
+                const infoContainer = document.getElementById('info-mi-habitacion-miembro');
+                if (infoContainer) {
+                    infoContainer.innerHTML = `
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                            <h3 style="margin: 0 0 10px 0; color: #e65100;">${hab.nombre}</h3>
+                            <p><strong>Responsable:</strong> ${hab.responsable.nombre} 👑</p>
+                            <p><strong>Capacidad:</strong> ${miembrosCount}/${hab.capacidad} personas</p>
+                        </div>
+                        <div style="margin-top: 15px;">
+                            <strong>Compañeros:</strong><br>
+                            ${miembrosHTML}
+                        </div>
+                    `;
+                }
             }
 
+            // Mostrar habitaciones disponibles
             function mostrarHabitacionesDisponibles(todasHabitaciones) {
                 const container = document.getElementById('habitaciones-disponibles');
+                if (!container) return;
+                
                 let html = '';
                 let hayDisponibles = false;
                 
@@ -2025,7 +2168,7 @@
                     const miembros = hab.miembros || {};
                     const miembrosCount = Object.keys(miembros).length;
                     
-                    // No mostrar mi propia habitación (verificar tanto en miembros como en responsable)
+                    // No mostrar mi propia habitación
                     if (miembros[currentUser] || hab.responsable.usuario === currentUser) continue;
                     
                     // No mostrar habitaciones llenas
@@ -2039,7 +2182,8 @@
                             <p><strong>Responsable:</strong> ${hab.responsable.nombre} 👑</p>
                             <p><strong>Capacidad:</strong> ${miembrosCount}/${hab.capacidad} personas</p>
                             <p><strong>Espacios disponibles:</strong> ${hab.capacidad - miembrosCount}</p>
-                            <button class="btn btn-success btn-block" onclick="unirseAHabitacion('${habId}', ${JSON.stringify(hab).replace(/"/g, '&quot;')})">
+                            <button class="btn btn-success btn-block" 
+                                    onclick="unirseAHabitacion('${habId}', ${JSON.stringify(hab).replace(/"/g, '&quot;').replace(/'/g, "\\'")})">
                                 🚪 Unirme a esta Habitación
                             </button>
                         </div>
@@ -2047,14 +2191,17 @@
                 }
                 
                 if (!hayDisponibles) {
-                    html = '<div class="alert alert-info"><strong>No hay habitaciones disponibles</strong><br>Todas las habitaciones están llenas o ya estás en una. Si creaste una habitación, busca la sección "Mi Habitación" arriba.</div>';
+                    html = '<div class="alert alert-info"><strong>No hay habitaciones disponibles</strong><br>Todas las habitaciones están llenas o ya estás en una.</div>';
                 }
                 
                 container.innerHTML = html;
             }
 
+            // Mostrar resumen de habitaciones
             function mostrarResumenHabitaciones(todasHabitaciones) {
                 const container = document.getElementById('resumen-habitaciones');
+                if (!container) return;
+                
                 let totalAlumnos = 0;
                 let totalHabitaciones = Object.keys(todasHabitaciones).length;
                 let espaciosOcupados = 0;
@@ -2130,27 +2277,47 @@
                     }
                 }
                 
-                console.log("Mi habitación:", miHabitacionId, "Soy responsable:", soyResponsable);
-                
                 // Mostrar/ocultar cards según estado
                 if (miHabitacionId && soyResponsable) {
-                    crearHabitacionCard.style.display = 'none';
-                    miHabitacionResponsableCard.style.display = 'block';
-                    miHabitacionMiembroCard.style.display = 'none';
-                    unirmeHabitacionCard.style.display = 'none';
+                    if (crearHabitacionCard) crearHabitacionCard.style.display = 'none';
+                    if (miHabitacionResponsableCard) miHabitacionResponsableCard.style.display = 'block';
+                    if (miHabitacionMiembroCard) miHabitacionMiembroCard.style.display = 'none';
+                    if (unirmeHabitacionCard) unirmeHabitacionCard.style.display = 'none';
                     mostrarHabitacionResponsable(miHabitacionId, habitaciones[miHabitacionId]);
-                    // Scroll automático
-                    setTimeout(() => miHabitacionResponsableCard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
                 } else if (miHabitacionId && !soyResponsable) {
-                    crearHabitacionCard.style.display = 'none';
-                    miHabitacionResponsableCard.style.display = 'none';
-                    miHabitacionMiembroCard.style.display = 'block';
-                    unirmeHabitacionCard.style.display = 'none';
+                    if (crearHabitacionCard) crearHabitacionCard.style.display = 'none';
+                    if (miHabitacionResponsableCard) miHabitacionResponsableCard.style.display = 'none';
+                    if (miHabitacionMiembroCard) miHabitacionMiembroCard.style.display = 'block';
+                    if (unirmeHabitacionCard) unirmeHabitacionCard.style.display = 'none';
                     mostrarHabitacionMiembro(miHabitacionId, habitaciones[miHabitacionId]);
-                    // Scroll automático
-                    setTimeout(() => miHabitacionMiembroCard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
                 } else {
-                    crearHabitacionCard.style.display = 'block';
-                    miHabitacionResponsableCard.style.display = 'none';
-                    miHabitacionMiembroCard.style.display = 'none';
-                    unirmeHabi
+                    if (crearHabitacionCard) crearHabitacionCard.style.display = 'block';
+                    if (miHabitacionResponsableCard) miHabitacionResponsableCard.style.display = 'none';
+                    if (miHabitacionMiembroCard) miHabitacionMiembroCard.style.display = 'none';
+                    if (unirmeHabitacionCard) unirmeHabitacionCard.style.display = 'block';
+                    mostrarHabitacionesDisponibles(habitaciones);
+                }
+                
+                // Siempre mostrar resumen
+                mostrarResumenHabitaciones(habitaciones);
+            });
+
+            console.log("✅ Sistema de habitaciones configurado");
+        }
+
+        // ========================================
+        // INICIAR TODO CUANDO LA PÁGINA CARGUE
+        // ========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("📄 DOM completamente cargado");
+            initFirebase();
+        });
+
+        // También intentar inicializar si Firebase ya está cargado
+        if (typeof firebase !== 'undefined') {
+            console.log("🔥 Firebase ya está disponible, intentando inicializar...");
+            setTimeout(initFirebase, 100);
+        }
+    </script>
+</body>
+</html>
