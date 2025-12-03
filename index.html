@@ -467,6 +467,116 @@
             border-bottom: none;
         }
         
+        /* ITINERARIO */
+        .itinerario-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .itinerario-hora {
+            font-weight: bold;
+            min-width: 100px;
+            color: var(--primary);
+            font-size: 16px;
+        }
+        
+        .itinerario-descripcion {
+            flex: 1;
+        }
+        
+        .itinerario-dia {
+            font-weight: bold;
+            color: var(--success);
+            margin: 25px 0 15px 0;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border-radius: 8px;
+            font-size: 18px;
+        }
+        
+        /* REQUISITOS */
+        .requisitos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .requisito-card {
+            background: linear-gradient(to bottom, white, #f8f9fa);
+            border-radius: 12px;
+            padding: 20px;
+            border-top: 4px solid var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+        
+        .requisito-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        
+        .requisito-card h4 {
+            margin: 0 0 12px 0;
+            color: var(--primary);
+            font-size: 16px;
+        }
+        
+        /* NOTIFICACIONES */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 18px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            transform: translateX(120%);
+            transition: transform 0.4s ease;
+            max-width: 400px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success { background: linear-gradient(135deg, #4CAF50, #45a049); }
+        .notification.error { background: linear-gradient(135deg, #f44336, #d32f2f); }
+        .notification.warning { background: linear-gradient(135deg, #ff9800, #f57c00); }
+        
+        /* ALERT BOXES */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+        
+        .alert-info {
+            background: #e3f2fd;
+            border-color: var(--primary);
+            color: #1976d2;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border-color: var(--warning);
+            color: #856404;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-color: var(--success);
+            color: #155724;
+        }
+        
         /* HOSPEDAJE - ESTILOS MEJORADOS */
         .hotel-card {
             background: white;
@@ -629,6 +739,11 @@
             .grid-2 {
                 grid-template-columns: 1fr;
             }
+            
+            .notification {
+                left: 20px;
+                right: 20px;
+            }
         }
         
         @keyframes pulse {
@@ -652,6 +767,16 @@
             border-radius: 12px;
             margin-bottom: 20px;
         }
+        
+        .section-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: var(--dark);
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -665,7 +790,7 @@
             <div class="subtitle">📅 Miércoles 10 y Jueves 11 de Diciembre 2025</div>
             <div class="subtitle">🏫 Universidad del SABES Campus San Felipe</div>
             <div class="subtitle">🚍 Transporta: Municipio de San Felipe</div>
-            <div class="subtitle">📞 Contacto: Prof. Fausto Noé Jiménez (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="78160d0917180b1c4d4a494a494a4f4d340a0a080a380b191a1d0b561d1c0d561100">[email&#160;protected]</a>, 418-101-1904) | Cenobio García Romero (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fc9b988c898f989fb2959889939e929a93bc8f9d9e998fd29f9e8fd28590">[email&#160;protected]</a>, 428-102-6252)</div>
+            <div class="subtitle">📞 Contacto: Prof. Fausto Noé Jiménez (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b7d8d3c3dad1dfc5d8dfc2f7c4d6d5d2c499d2d3c299dacf">[email&#160;protected]</a>, 418-101-1904) | Cenobio García Romero (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="127d7c7c7367667d3c7b787b787b7e7c257b7b797b52617370776538737465386675">[email&#160;protected]</a>, 428-102-6252)</div>
             <div class="status-badge" id="status-indicator">Conectando...</div>
         </div>
 
@@ -690,7 +815,430 @@
                 </button>
             </div>
 
-            <!-- TAB 3: HOSPEDAJE - COMPLETO -->
+            <!-- TAB 1: INFORMACIÓN COMPLETA -->
+            <div class="tab-content active" id="informacion">
+                <!-- Cuenta Regresiva -->
+                <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center;">
+                    <h2 style="color: white; border-bottom-color: rgba(255,255,255,0.3);">⏰ Cuenta Regresiva para el Viaje</h2>
+                    <div id="countdown" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
+                            <div style="font-size: 48px; font-weight: bold;" id="days">0</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Días</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
+                            <div style="font-size: 48px; font-weight: bold;" id="hours">0</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Horas</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
+                            <div style="font-size: 48px; font-weight: bold;" id="minutes">0</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Minutos</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px; min-width: 100px;">
+                            <div style="font-size: 48px; font-weight: bold;" id="seconds">0</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Segundos</div>
+                        </div>
+                    </div>
+                    <div id="countdown-message" style="margin-top: 20px; font-size: 18px; font-weight: 600;"></div>
+                </div>
+
+                <div class="card">
+                    <h2>📅 Itinerario del Viaje</h2>
+                    
+                    <div class="itinerario-dia">📍 Miércoles 10 de Diciembre 2025</div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">06:00 - 8:30</div>
+                        <div class="itinerario-descripcion">
+                            <strong>Salida de Universidad del SABES Campus San Felipe</strong><br>
+                            <small>Av. Universidad 300, Col. Ojos Zarcos, San Felipe, Gto.</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">08:30 - 9:30</div>
+                        <div class="itinerario-descripcion">
+                            <strong>🍄 Recepción en Monterrey Mushrooms 🍄</strong><br>
+                            <small>Recibe: Lic. Montserrat H. - Vigilancia, Los Rodríguez, San Miguel de Allende</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">09:30 - 10:00</div>
+                        <div class="itinerario-descripcion">
+                            <strong>🍄 Plática sobre Cultura y Normas de Seguridad 🍄</strong><br>
+                            <small>Lic. Natalia Mendoza y Lic. Maura Pérez - Sala de Juntas 1 - OG</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">10:00 - 10:30</div>
+                        <div class="itinerario-descripcion">
+                            <strong>🍄 Recorrido Empaque Fresco 🍄</strong><br>
+                            <small>Ing. Juan Chávez - Empaque Fresco</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">10:30 - 11:00</div>
+                        <div class="itinerario-descripcion">
+                            <strong>🍄 Recorrido Cosecha 🍄</strong><br>
+                            <small>Lic. Montserrat H. y Lic. Natalia Mendoza - Mini Planta</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">11:00 - 11:30</div>
+                        <div class="itinerario-descripcion">
+                            <strong>🍄 Recorrido de Composta - Sala 🍄</strong><br>
+                            <small>Lic. Montserrat H. y Lic. Natalia Mendoza - Área exterior túneles nuevo</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">11:30 - 12:00</div>
+                        <div class="itinerario-descripcion">
+                            <strong>🍄 Foto Grupal 🍄</strong><br>
+                            <small>Lic. Natalia Mendoza - Sala de Juntas</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">12:00 - 13:00</div>
+                        <div class="itinerario-descripcion">
+                            <strong>🍄 Clausura 🍄</strong><br>
+                            <small>Lic. Pedro Mario Molina (Director de Operaciones) y Lic. Juan José Seguí - Sala de Juntas</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">13:00 - 14:00</div>
+                        <div class="itinerario-descripcion">
+                            <strong>Traslado a Mineral de Pozos - Rancho de Lavanda</strong>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">14:00 - 15:00</div>
+                        <div class="itinerario-descripcion">
+                            <strong>Visita - Rancho de Lavanda</strong>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">15:00 - 16:00</div>
+                        <div class="itinerario-descripcion">
+                            <strong>Espacio libre para comer (opcional por tiempos)</strong>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">16:00 - 18:00</div>
+                        <div class="itinerario-descripcion">
+                            <strong>Traslado a San Luis Potosí</strong><br>
+                            <small>Eje 106 Zona Industrial, Av. Benito Juárez 3243 - Carretera 57</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">18:00</div>
+                        <div class="itinerario-descripcion">
+                            <strong>Llegada a Hospedaje en San Luis Potosí</strong>
+                        </div>
+                    </div>
+
+                    <div class="itinerario-dia">📍 Jueves 11 de Diciembre 2025</div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">06:00 - 7:30</div>
+                        <div class="itinerario-descripcion"><strong>Desayuno</strong></div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">08:15 - 8:45</div>
+                        <div class="itinerario-descripcion"><strong>Traslado a ⚙️🧠 CIATEQ ⚙️🧠, Eje 126 Z.I. San Luis Potosí</strong></div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">08:45 - 09:00</div>
+                        <div class="itinerario-descripcion"><strong>Recepción en ⚙️🧠 CIATEQ ⚙️🧠</strong></div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">09:00 - 13:00</div>
+                        <div class="itinerario-descripcion"><strong>Visita guiada en ⚙️🧠 CIATEQ ⚙️🧠</strong></div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">13:00 - 13:30</div>
+                        <div class="itinerario-descripcion"><strong>🌲🦆🌿 Traslado a Parque Tangamanga I</strong></div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">13:30 - 15:00</div>
+                        <div class="itinerario-descripcion"><strong>Receso para comer / pasear en 🌲🦆🌿 Parque Tangamanga I</strong></div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">15:00 - 16:45</div>
+                        <div class="itinerario-descripcion"><strong>Visita guiada al 🧬⚛️ Museo Laberinto de las Artes y las Ciencias</strong></div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">16:45 - 17:15</div>
+                        <div class="itinerario-descripcion">
+                            <strong>Traslado al 🦉🔮 Museo Leonora Carrington</strong><br><small>Barrio de San Juan de Guadalupe, S.L.P</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">17:15 - 18:00</div>
+                        <div class="itinerario-descripcion"><strong>Visita guiada al 🦉🔮 Museo Leonora Carrington</strong></div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">18:00 - 19:00</div>
+                        <div class="itinerario-descripcion"><strong>Receso Centro Histórico S.L.P (🏛️ Plaza de Armas - ❄️⛸️ Villa Navideña)</strong></div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">19:00 - 20:00</div>
+                        <div class="itinerario-descripcion">
+                            <strong>❄️⛸️ Espectáculo Navideño sobre hielo</strong><br><small>Plaza de los Fundadores, San Luis Potosí</small>
+                        </div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">20:00 - 22:00</div>
+                        <div class="itinerario-descripcion"><strong>Traslado de regreso a Universidad del SABES, Campus San Felipe</strong></div>
+                    </div>
+                    <div class="itinerario-item">
+                        <div class="itinerario-hora">22:00</div>
+                        <div class="itinerario-descripcion"><strong>Llegada a Universidad del SABES, Campus San Felipe</strong></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>🛡️ Equipo de Protección Personal</h2>
+                    
+                    <h3>🍄 Monterrey Mushrooms San Miguel de Allende</h3>
+                    <div class="alert alert-warning">
+                        <strong>Calzado de Seguridad Requerido</strong><br>
+                        Calzado industrial de cualquier tipo preferente. Si no cuentas con calzado industrial, verifica con los organizadores si tu calzado actual es adecuado.<br>
+                        <em>Recomendación: Calzado industrial de cualquier tipo o burra de piel.</em>
+                    </div>
+                    
+                    <h3>⚙️ CIATEQ San Luis Potosí</h3>
+                    <div class="alert alert-info">
+                        <strong>Protocolo de Seguridad</strong><br>
+                        Se deberá seguir el protocolo de seguridad específico de CIATEQ. Los requisitos se informarán al llegar.<br>
+                        <em>Generalmente: bata, lentes de seguridad y calzado cerrado.</em>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>🍄⚠️ Requisitos de Acceso para Monterrey Mushrooms (🦺 EPP)</h2>
+                    
+                    <div class="requisitos-grid">
+                        <div class="requisito-card">
+                            <h4>👟 Zapato de Seguridad</h4>
+                            <p><strong>Calzado Cerrado</strong></p>
+                            <p>No está permitido ingresar con zapato abierto y/o tacón.</p>
+                        </div>
+                        
+                        <div class="requisito-card">
+                            <h4>🆔 Identificación</h4>
+                            <p>Revisión de bolso/mochila, registro en libro de visitas y dejar identificación oficial en caseta.</p>
+                        </div>
+                        
+                        <div class="requisito-card">
+                            <h4>👔 Vestimenta Adecuada</h4>
+                            <p>No permitido: falda, vestido, pants, lycra, short, pantalón rasgado o ropa con brillos/piedras.</p>
+                        </div>
+                        
+                        <div class="requisito-card">
+                            <h4>📱 Uso del Celular</h4>
+                            <p>No está permitido tomar fotos ni grabar. Precaución en camino peatonal.</p>
+                        </div>
+                        
+                        <div class="requisito-card">
+                            <h4>🧼 Higiene</h4>
+                            <p>Ropa limpia, cabello recogido, no maquillaje, no uñas ni pestañas postizas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: ASIENTOS COMPLETO -->
+            <div class="tab-content" id="asientos">
+                <div class="alert alert-warning">
+                    <strong>⚠️ ¿Ya diste tu anticipo a los organizadores?</strong><br>
+                    <select id="anticipo-verification" style="margin-top: 10px;">
+                        <option value="">Selecciona una opción</option>
+                        <option value="si">SÍ, ya di mi anticipo</option>
+                        <option value="no">No, aún no he dado anticipo</option>
+                    </select>
+                </div>
+
+                <div id="my-seat-info" class="alert alert-success" style="display: none;">
+                    <strong>✅ Tu asiento actual: <span id="current-seat-number">-</span></strong>
+                    <button id="release-seat-btn" class="btn btn-danger" style="margin-left: 15px;">Liberar mi asiento</button>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <h2>🚌 Distribución del Camioncito</h2>
+                        
+                        <div class="section-operator">
+                            <div class="section-title">OPERADOR</div>
+                            <div class="seat operator" data-seat="1">1</div>
+                        </div>
+
+                        <div class="door">🚪 PUERTA</div>
+
+                        <div class="bus-layout">
+                            <div class="bus-container">
+                                <!-- COLUMNA IZQUIERDA VENTANA -->
+                                <div class="column">
+                                    <div class="column-label">IZQUIERDA<br>VENTANA</div>
+                                    <div class="seat-with-label"><div class="row-label">1</div><div class="seat disabled" data-seat="1">1</div></div>
+                                    <div class="seat-with-label"><div class="row-label">2</div><div class="seat disabled" data-seat="5">5</div></div>
+                                    <div class="seat-with-label"><div class="row-label">3</div><div class="seat disabled" data-seat="9">9</div></div>
+                                    <div class="seat-with-label"><div class="row-label">4</div><div class="seat disabled" data-seat="13">13</div></div>
+                                    <div class="seat-with-label"><div class="row-label">5</div><div class="seat disabled" data-seat="17">17</div></div>
+                                    <div class="seat-with-label"><div class="row-label">6</div><div class="seat disabled" data-seat="21">21</div></div>
+                                    <div class="seat-with-label"><div class="row-label">7</div><div class="seat disabled" data-seat="25">25</div></div>
+                                    <div class="seat-with-label"><div class="row-label">8</div><div class="seat disabled" data-seat="29">29</div></div>
+                                    <div class="seat-with-label"><div class="row-label">9</div><div class="seat disabled" data-seat="31">31</div></div>
+                                    <div class="seat-with-label"><div class="row-label">10</div><div class="seat disabled" data-seat="33">33</div></div>
+                                </div>
+
+                                <!-- COLUMNA IZQUIERDA PASILLO -->
+                                <div class="column">
+                                    <div class="column-label">IZQUIERDA<br>PASILLO</div>
+                                    <div class="seat-with-label"><div class="row-label">1</div><div class="seat disabled" data-seat="2">2</div></div>
+                                    <div class="seat-with-label"><div class="row-label">2</div><div class="seat disabled" data-seat="6">6</div></div>
+                                    <div class="seat-with-label"><div class="row-label">3</div><div class="seat disabled" data-seat="10">10</div></div>
+                                    <div class="seat-with-label"><div class="row-label">4</div><div class="seat disabled" data-seat="14">14</div></div>
+                                    <div class="seat-with-label"><div class="row-label">5</div><div class="seat disabled" data-seat="18">18</div></div>
+                                    <div class="seat-with-label"><div class="row-label">6</div><div class="seat disabled" data-seat="22">22</div></div>
+                                    <div class="seat-with-label"><div class="row-label">7</div><div class="seat disabled" data-seat="26">26</div></div>
+                                    <div class="seat-with-label"><div class="row-label">8</div><div class="seat disabled" data-seat="30">30</div></div>
+                                    <div class="seat-with-label"><div class="row-label">9</div><div class="seat disabled" data-seat="32">32</div></div>
+                                    <div class="seat-with-label"><div class="row-label">10</div><div class="seat disabled" data-seat="34">34</div></div>
+                                </div>
+
+                                <!-- PASILLO CENTRAL -->
+                                <div class="aisle">
+                                    <div>↕</div>
+                                    <div>PASILLO</div>
+                                    <div>↕</div>
+                                </div>
+
+                                <!-- COLUMNA DERECHA PASILLO -->
+                                <div class="column">
+                                    <div class="column-label">DERECHA<br>PASILLO</div>
+                                    <div class="seat-with-label"><div class="row-label">1</div><div class="seat disabled" data-seat="4">4</div></div>
+                                    <div class="seat-with-label"><div class="row-label">2</div><div class="seat disabled" data-seat="8">8</div></div>
+                                    <div class="seat-with-label"><div class="row-label">3</div><div class="seat disabled" data-seat="12">12</div></div>
+                                    <div class="seat-with-label"><div class="row-label">4</div><div class="seat disabled" data-seat="16">16</div></div>
+                                    <div class="seat-with-label"><div class="row-label">5</div><div class="seat disabled" data-seat="20">20</div></div>
+                                    <div class="seat-with-label"><div class="row-label">6</div><div class="seat disabled" data-seat="24">24</div></div>
+                                    <div class="seat-with-label"><div class="row-label">7</div><div class="seat disabled" data-seat="28">28</div></div>
+                                    <div class="seat-with-label"><div class="row-label">8</div><div class="empty-space"></div></div>
+                                    <div class="seat-with-label"><div class="row-label">9</div><div class="empty-space"></div></div>
+                                    <div class="seat-with-label"><div class="row-label">10</div><div class="seat disabled" data-seat="37">37</div></div>
+                                </div>
+
+                                <!-- COLUMNA DERECHA VENTANA -->
+                                <div class="column">
+                                    <div class="column-label">DERECHA<br>VENTANA</div>
+                                    <div class="seat-with-label"><div class="row-label">1</div><div class="seat disabled" data-seat="3">3</div></div>
+                                    <div class="seat-with-label"><div class="row-label">2</div><div class="seat disabled" data-seat="7">7</div></div>
+                                    <div class="seat-with-label"><div class="row-label">3</div><div class="seat disabled" data-seat="11">11</div></div>
+                                    <div class="seat-with-label"><div class="row-label">4</div><div class="seat disabled" data-seat="15">15</div></div>
+                                    <div class="seat-with-label"><div class="row-label">5</div><div class="seat disabled" data-seat="19">19</div></div>
+                                    <div class="seat-with-label"><div class="row-label">6</div><div class="seat disabled" data-seat="23">23</div></div>
+                                    <div class="seat-with-label"><div class="row-label">7</div><div class="seat disabled" data-seat="27">27</div></div>
+                                    <div class="seat-with-label"><div class="row-label">8</div><div class="empty-space"></div></div>
+                                    <div class="seat-with-label"><div class="row-label">9</div><div class="empty-space"></div></div>
+                                    <div class="seat-with-label"><div class="row-label">10</div><div class="seat disabled" data-seat="36">36</div></div>
+                                </div>
+
+                                <!-- COLUMNA EXTRA PARA ASIENTO 35 -->
+                                <div class="column">
+                                    <div class="column-label">EXTRA<br>ASIENTO 35</div>
+                                    <div class="seat-with-label"><div class="row-label">10</div><div class="seat disabled" data-seat="35">35</div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="status-legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);"></div>
+                                <span>Disponible</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);"></div>
+                                <span>Ocupado</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);"></div>
+                                <span>Tu asiento</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: linear-gradient(135deg, #4a6fa5 0%, #6b8cbc 100%);"></div>
+                                <span>Operador</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📝 Información del Estudiante</h2>
+                        
+                        <div class="form-group">
+                            <label for="seat-number">Número de Asiento:</label>
+                            <input type="text" id="seat-number" readonly placeholder="Selecciona un asiento">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="passenger-name">Nombre Completo: *</label>
+                            <input type="text" id="passenger-name" placeholder="Ingrese su nombre completo">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="student-id">Matrícula: *</label>
+                            <input type="text" id="student-id" placeholder="Ej: U2303057N0061" maxlength="13">
+                            <small style="color: #666;">Formato: U + 7 dígitos + N + 4 dígitos</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="career">Carrera: *</label>
+                            <select id="career">
+                                <option value="">Seleccione carrera</option>
+                                <option value="industrial_2020">INGENIERÍA INDUSTRIAL Plan 2020</option>
+                                <option value="industrial_2025">INGENIERÍA INDUSTRIAL Plan 2025</option>
+                                <option value="ti_2020">INGENIERÍA TI Plan 2020</option>
+                                <option value="administracion_2020">ADMINISTRACIÓN Y DESARROLLO DE NEGOCIOS Plan 2020</option>
+                                <option value="mercadotecnia_2020">MERCADOTÉCNICA Plan 2020</option>
+                                <option value="administracion_2025">ADMINISTRACIÓN Y DESARROLLO DE NEGOCIOS Plan 2025</option>
+                                <option value="logistica_2023">INGENIERÍA EN LOGÍSTICA Plan 2023</option>
+                                <option value="sistemas_2025">INGENIERÍA EN TECNOLOGÍAS Y SISTEMAS COMPUTACIONALES Plan 2025</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="semester">Cuatrimestre: *</label>
+                            <select id="semester">
+                                <option value="">Seleccione cuatrimestre</option>
+                                <option value="1">1° Cuatrimestre</option>
+                                <option value="2">2° Cuatrimestre</option>
+                                <option value="3">3° Cuatrimestre</option>
+                                <option value="4">4° Cuatrimestre</option>
+                                <option value="5">5° Cuatrimestre</option>
+                                <option value="6">6° Cuatrimestre</option>
+                                <option value="7">7° Cuatrimestre</option>
+                                <option value="8">8° Cuatrimestre</option>
+                                <option value="9">9° Cuatrimestre</option>
+                                <option value="10">10° Cuatrimestre</option>
+                            </select>
+                        </div>
+
+                        <button id="assign-btn" class="btn btn-primary btn-block" disabled>✅ Asignar Asiento</button>
+                        <button id="change-seat-btn" class="btn btn-secondary btn-block" disabled>🔄 Cambiar de Asiento</button>
+                        <button id="clear-btn" class="btn btn-warning btn-block">🗑️ Limpiar Selección</button>
+
+                        <div class="admin-panel" style="margin-top: 30px;">
+                            <h3 style="margin: 0 0 15px 0; color: #856404;">🔐 Panel de Administrador</h3>
+                            <div class="form-group">
+                                <label for="admin-password">Contraseña:</label>
+                                <input type="password" id="admin-password" placeholder="Contraseña de administrador">
+                            </div>
+                            <button id="admin-login-btn" class="btn btn-secondary btn-block">Acceder</button>
+                            <div id="admin-controls" style="display: none; margin-top: 15px;">
+                                <button id="clear-all-btn" class="btn btn-danger btn-block">⚠️ Liberar TODOS los asientos</button>
+                                <small style="display: block; margin-top: 10px; color: #856404;">Contraseña: SABES2025</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: HOSPEDAJE COMPLETO -->
             <div class="tab-content" id="hospedaje">
                 <div id="hospedaje-section">
                     <div class="alert alert-info">
@@ -761,6 +1309,21 @@
                     </div>
                 </div>
             </div>
+
+            <!-- TAB 4: PARTICIPANTES COMPLETO -->
+            <div class="tab-content" id="participantes">
+                <div class="card">
+                    <h2>👥 Lista de Estudiantes Asignados</h2>
+                    
+                    <div id="empty-seats" class="alert alert-info">
+                        Asientos ocupados: 0 | Asientos disponibles: 36
+                    </div>
+
+                    <div class="passenger-list" id="passenger-list">
+                        <div class="passenger-item">Cargando información...</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -786,6 +1349,9 @@
         let myCurrentSeat = null;
         let miHabitacionId = null;
         let soyResponsable = false;
+        let anticipoConfirmado = false;
+        let isAdmin = false;
+        let selectedSeat = null;
 
         // ========================================
         // FUNCIONES PRINCIPALES - COMPLETAS
@@ -930,6 +1496,422 @@
             
             setInterval(updateCountdown, 1000);
             updateCountdown();
+        }
+
+        // ========================================
+        // SISTEMA DE ASIENTOS - COMPLETO
+        // ========================================
+
+        function setupSeatsSystem() {
+            console.log("🪑 Configurando sistema de asientos...");
+            
+            // Referencias a elementos del DOM
+            const elements = {
+                seats: document.querySelectorAll('.seat:not(.operator)'),
+                seatNumberInput: document.getElementById('seat-number'),
+                passengerNameInput: document.getElementById('passenger-name'),
+                studentIdInput: document.getElementById('student-id'),
+                careerSelect: document.getElementById('career'),
+                semesterSelect: document.getElementById('semester'),
+                assignBtn: document.getElementById('assign-btn'),
+                changeSeatBtn: document.getElementById('change-seat-btn'),
+                clearBtn: document.getElementById('clear-btn'),
+                releaseSeatBtn: document.getElementById('release-seat-btn'),
+                passengerList: document.getElementById('passenger-list'),
+                emptySeatsInfo: document.getElementById('empty-seats'),
+                mySeatInfo: document.getElementById('my-seat-info'),
+                currentSeatNumber: document.getElementById('current-seat-number'),
+                anticipoVerification: document.getElementById('anticipo-verification'),
+                adminPasswordInput: document.getElementById('admin-password'),
+                adminLoginBtn: document.getElementById('admin-login-btn'),
+                adminControls: document.getElementById('admin-controls'),
+                clearAllBtn: document.getElementById('clear-all-btn')
+            };
+
+            // ========================================
+            // FUNCIONES AUXILIARES
+            // ========================================
+
+            function validateMatricula(matricula) {
+                const matriculaRegex = /^[Uu]\d{7}[Nn]\d{4}$/;
+                return matriculaRegex.test(matricula);
+            }
+
+            function validateStudentInfo() {
+                const passengerName = elements.passengerNameInput.value.trim();
+                const studentId = elements.studentIdInput.value.trim();
+                const career = elements.careerSelect.value;
+                const semester = elements.semesterSelect.value;
+
+                if (!passengerName) {
+                    showNotification('El nombre es obligatorio', 'error');
+                    elements.passengerNameInput.focus();
+                    return false;
+                }
+
+                if (!studentId || !validateMatricula(studentId)) {
+                    showNotification('Formato de matrícula incorrecto. Ej: U2303057N0061', 'error');
+                    elements.studentIdInput.focus();
+                    return false;
+                }
+
+                if (!career) {
+                    showNotification('Selecciona una carrera', 'error');
+                    elements.careerSelect.focus();
+                    return false;
+                }
+
+                if (!semester) {
+                    showNotification('Selecciona un cuatrimestre', 'error');
+                    elements.semesterSelect.focus();
+                    return false;
+                }
+
+                return true;
+            }
+
+            function assignSeat(seatNum, isChange = false) {
+                const passengerName = elements.passengerNameInput.value.trim();
+                const studentId = elements.studentIdInput.value.trim();
+                const career = elements.careerSelect.value;
+                const semester = elements.semesterSelect.value;
+
+                const seatData = {
+                    nombre: passengerName,
+                    matricula: studentId.toUpperCase(),
+                    carrera: career,
+                    carrera_nombre: elements.careerSelect.options[elements.careerSelect.selectedIndex].text,
+                    cuatrimestre: semester,
+                    usuario: currentUser,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    anticipoConfirmado: true
+                };
+
+                database.ref('asientos/' + seatNum).set(seatData)
+                    .then(() => {
+                        if (selectedSeat) {
+                            selectedSeat.classList.remove('selected');
+                            selectedSeat = null;
+                        }
+                        elements.seatNumberInput.value = '';
+                        elements.passengerNameInput.value = '';
+                        elements.studentIdInput.value = '';
+                        elements.careerSelect.value = '';
+                        elements.semesterSelect.value = '';
+                        elements.assignBtn.disabled = true;
+                        elements.changeSeatBtn.disabled = false;
+                        
+                        const msg = isChange ? 
+                            `✅ Asiento cambiado correctamente al ${seatNum}` : 
+                            `✅ Asiento ${seatNum} asignado correctamente`;
+                        showNotification(msg, 'success');
+                    })
+                    .catch((error) => {
+                        showNotification('❌ Error al asignar asiento: ' + error.message, 'error');
+                    });
+            }
+
+            function actualizarVistaAsientos(asientosData) {
+                elements.seats.forEach(seat => {
+                    const seatNum = seat.getAttribute('data-seat');
+                    seat.classList.remove('selected', 'available', 'occupied', 'my-seat', 'disabled');
+                    
+                    if (asientosData && asientosData[seatNum]) {
+                        if (asientosData[seatNum].usuario === currentUser) {
+                            seat.classList.add('my-seat');
+                            seat.title = `Tu asiento: ${asientosData[seatNum].nombre}`;
+                            seat.style.cursor = 'pointer';
+                        } else {
+                            seat.classList.add('occupied');
+                            seat.title = `Ocupado por: ${asientosData[seatNum].nombre}`;
+                            seat.style.cursor = 'not-allowed';
+                        }
+                    } else {
+                        if (anticipoConfirmado) {
+                            seat.classList.add('available');
+                            seat.title = `Asiento ${seatNum} - Disponible`;
+                            seat.style.cursor = 'pointer';
+                        } else {
+                            seat.classList.add('disabled');
+                            seat.title = `Confirma tu anticipo para seleccionar`;
+                            seat.style.cursor = 'not-allowed';
+                        }
+                    }
+                });
+            }
+
+            function updatePassengerList(asientosData) {
+                if (!elements.passengerList) return;
+                
+                elements.passengerList.innerHTML = '';
+                const asientosOcupados = asientosData ? Object.keys(asientosData) : [];
+                
+                if (asientosOcupados.length === 0) {
+                    elements.passengerList.innerHTML = '<div class="passenger-item">No hay estudiantes asignados</div>';
+                    return;
+                }
+                
+                asientosOcupados.sort((a, b) => parseInt(a) - parseInt(b));
+                
+                asientosOcupados.forEach(seatNum => {
+                    const passengerItem = document.createElement('div');
+                    passengerItem.className = 'passenger-item';
+                    const data = asientosData[seatNum];
+                    const isMySeat = data.usuario === currentUser;
+                    const canDelete = isMySeat || isAdmin;
+                    
+                    passengerItem.innerHTML = `
+                        <div>
+                            <strong>Asiento ${seatNum}: ${data.nombre}</strong><br>
+                            <small>Matrícula: ${data.matricula} | ${data.carrera_nombre} | ${data.cuatrimestre}° Cuat.</small>
+                            ${isMySeat ? '<br><small style="color: #FF9800;">← TÚ</small>' : ''}
+                        </div>
+                        ${canDelete ? `<button class="btn btn-danger" data-seat="${seatNum}" style="min-width: auto; padding: 8px 16px;">Eliminar</button>` : ''}
+                    `;
+                    elements.passengerList.appendChild(passengerItem);
+                });
+                
+                // Agregar event listeners a los botones de eliminar
+                document.querySelectorAll('.passenger-list .btn-danger').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const seatToRemove = this.getAttribute('data-seat');
+                        if (confirm(`⚠️ ¿Estás seguro de que quieres eliminar el asiento ${seatToRemove}?`)) {
+                            database.ref('asientos/' + seatToRemove).remove()
+                                .then(() => showNotification(`✅ Asiento ${seatToRemove} eliminado`, 'success'))
+                                .catch((error) => showNotification('❌ Error: ' + error.message, 'error'));
+                        }
+                    });
+                });
+            }
+
+            function updateEmptySeatsInfo(asientosData) {
+                if (!elements.emptySeatsInfo) return;
+                
+                const totalSeats = 36;
+                const occupiedSeats = asientosData ? Object.keys(asientosData).length : 0;
+                const emptySeats = totalSeats - occupiedSeats;
+                elements.emptySeatsInfo.textContent = `Asientos ocupados: ${occupiedSeats} | Asientos disponibles: ${emptySeats}`;
+            }
+
+            function updateMySeatInfo(asientosData) {
+                if (!elements.mySeatInfo || !elements.currentSeatNumber) return;
+                
+                myCurrentSeat = null;
+                if (asientosData) {
+                    for (const seatNum in asientosData) {
+                        if (asientosData[seatNum].usuario === currentUser) {
+                            myCurrentSeat = seatNum;
+                            break;
+                        }
+                    }
+                }
+
+                if (myCurrentSeat) {
+                    elements.currentSeatNumber.textContent = myCurrentSeat;
+                    elements.mySeatInfo.style.display = 'block';
+                    elements.changeSeatBtn.disabled = false;
+                } else {
+                    elements.mySeatInfo.style.display = 'none';
+                    elements.changeSeatBtn.disabled = true;
+                }
+            }
+
+            // ========================================
+            // EVENT LISTENERS PARA ASIENTOS
+            // ========================================
+
+            // Verificación de anticipo
+            if (elements.anticipoVerification) {
+                elements.anticipoVerification.addEventListener('change', function() {
+                    if (this.value === 'si') {
+                        anticipoConfirmado = true;
+                        database.ref('asientos').once('value').then((snapshot) => {
+                            actualizarVistaAsientos(snapshot.val());
+                        });
+                        showNotification('✅ Anticipo confirmado. Ya puedes seleccionar un asiento.', 'success');
+                    } else {
+                        anticipoConfirmado = false;
+                        elements.seats.forEach(seat => {
+                            seat.classList.remove('available', 'occupied', 'my-seat');
+                            seat.classList.add('disabled');
+                            seat.style.cursor = 'not-allowed';
+                        });
+                        elements.assignBtn.disabled = true;
+                        elements.changeSeatBtn.disabled = true;
+                    }
+                });
+            }
+
+            // Clic en asientos
+            elements.seats.forEach(seat => {
+                seat.addEventListener('click', function() {
+                    if (!anticipoConfirmado) {
+                        showNotification('⚠️ Confirma primero tu anticipo', 'warning');
+                        if (elements.anticipoVerification) elements.anticipoVerification.focus();
+                        return;
+                    }
+
+                    const seatNum = this.getAttribute('data-seat');
+                    
+                    if (this.classList.contains('occupied') && !this.classList.contains('my-seat') && !isAdmin) {
+                        showNotification(`❌ El asiento ${seatNum} ya está ocupado`, 'error');
+                        return;
+                    }
+                    
+                    if (selectedSeat) selectedSeat.classList.remove('selected');
+                    
+                    this.classList.add('selected');
+                    selectedSeat = this;
+                    if (elements.seatNumberInput) elements.seatNumberInput.value = seatNum;
+                    
+                    if (this.classList.contains('my-seat')) {
+                        database.ref('asientos/' + seatNum).once('value').then((snapshot) => {
+                            if (snapshot.exists()) {
+                                const data = snapshot.val();
+                                if (elements.passengerNameInput) elements.passengerNameInput.value = data.nombre || '';
+                                if (elements.studentIdInput) elements.studentIdInput.value = data.matricula || '';
+                                if (elements.careerSelect) elements.careerSelect.value = data.carrera || '';
+                                if (elements.semesterSelect) elements.semesterSelect.value = data.cuatrimestre || '';
+                            }
+                        });
+                        if (elements.assignBtn) elements.assignBtn.disabled = true;
+                        if (elements.changeSeatBtn) elements.changeSeatBtn.disabled = false;
+                    } else {
+                        if (elements.assignBtn) elements.assignBtn.disabled = false;
+                        if (elements.changeSeatBtn) elements.changeSeatBtn.disabled = !!myCurrentSeat;
+                    }
+                });
+            });
+
+            // Asignar asiento
+            if (elements.assignBtn) {
+                elements.assignBtn.addEventListener('click', function() {
+                    if (!selectedSeat) {
+                        showNotification('⚠️ Seleccione un asiento primero', 'warning');
+                        return;
+                    }
+                    
+                    if (!anticipoConfirmado) {
+                        showNotification('⚠️ Confirma tu anticipo primero', 'warning');
+                        return;
+                    }
+                    
+                    const seatNum = selectedSeat.getAttribute('data-seat');
+                    
+                    if (!validateStudentInfo()) return;
+
+                    if (selectedSeat.classList.contains('occupied') && !selectedSeat.classList.contains('my-seat') && !isAdmin) {
+                        showNotification(`❌ El asiento ${seatNum} ya está ocupado`, 'error');
+                        return;
+                    }
+
+                    assignSeat(seatNum);
+                });
+            }
+
+            // Cambiar de asiento
+            if (elements.changeSeatBtn) {
+                elements.changeSeatBtn.addEventListener('click', function() {
+                    if (!selectedSeat) {
+                        showNotification('⚠️ Selecciona un nuevo asiento primero', 'warning');
+                        return;
+                    }
+
+                    if (!anticipoConfirmado) {
+                        showNotification('⚠️ Confirma tu anticipo primero', 'warning');
+                        return;
+                    }
+
+                    const newSeatNum = selectedSeat.getAttribute('data-seat');
+                    
+                    if (!validateStudentInfo()) return;
+
+                    if (myCurrentSeat) {
+                        database.ref('asientos/' + myCurrentSeat).remove();
+                    }
+
+                    assignSeat(newSeatNum, true);
+                });
+            }
+
+            // Limpiar selección
+            if (elements.clearBtn) {
+                elements.clearBtn.addEventListener('click', function() {
+                    if (selectedSeat) {
+                        selectedSeat.classList.remove('selected');
+                        selectedSeat = null;
+                    }
+                    if (elements.seatNumberInput) elements.seatNumberInput.value = '';
+                    if (elements.passengerNameInput) elements.passengerNameInput.value = '';
+                    if (elements.studentIdInput) elements.studentIdInput.value = '';
+                    if (elements.careerSelect) elements.careerSelect.value = '';
+                    if (elements.semesterSelect) elements.semesterSelect.value = '';
+                    if (elements.assignBtn) elements.assignBtn.disabled = true;
+                    if (elements.changeSeatBtn) elements.changeSeatBtn.disabled = !myCurrentSeat;
+                });
+            }
+
+            // Liberar mi asiento
+            if (elements.releaseSeatBtn) {
+                elements.releaseSeatBtn.addEventListener('click', function() {
+                    if (myCurrentSeat) {
+                        if (confirm(`⚠️ ¿Seguro que quieres liberar el asiento ${myCurrentSeat}?`)) {
+                            database.ref('asientos/' + myCurrentSeat).remove()
+                                .then(() => {
+                                    myCurrentSeat = null;
+                                    elements.mySeatInfo.style.display = 'none';
+                                    showNotification('✅ Asiento liberado correctamente', 'success');
+                                })
+                                .catch((error) => showNotification('❌ Error: ' + error.message, 'error'));
+                        }
+                    }
+                });
+            }
+
+            // Login de administrador
+            if (elements.adminLoginBtn && elements.adminPasswordInput) {
+                elements.adminLoginBtn.addEventListener('click', function() {
+                    if (elements.adminPasswordInput.value === "SABES2025") {
+                        isAdmin = true;
+                        if (elements.adminControls) elements.adminControls.style.display = 'block';
+                        elements.adminLoginBtn.disabled = true;
+                        elements.adminPasswordInput.disabled = true;
+                        showNotification('🔐 Acceso de administrador concedido', 'success');
+                        database.ref('asientos').once('value').then((snapshot) => {
+                            updatePassengerList(snapshot.val());
+                        });
+                    } else {
+                        showNotification('❌ Contraseña incorrecta', 'error');
+                        elements.adminPasswordInput.value = '';
+                        elements.adminPasswordInput.focus();
+                    }
+                });
+            }
+
+            // Liberar todos los asientos (admin)
+            if (elements.clearAllBtn) {
+                elements.clearAllBtn.addEventListener('click', function() {
+                    if (confirm('⚠️ ¿Seguro que quieres liberar TODOS los asientos?\n\nEsta acción NO se puede deshacer.')) {
+                        database.ref('asientos').remove()
+                            .then(() => showNotification('✅ Todos los asientos liberados', 'success'))
+                            .catch((error) => showNotification('❌ Error: ' + error.message, 'error'));
+                    }
+                });
+            }
+
+            // ========================================
+            // MONITOR ASIENTOS EN TIEMPO REAL
+            // ========================================
+            database.ref('asientos').on('value', (snapshot) => {
+                const asientosData = snapshot.val();
+                
+                actualizarVistaAsientos(asientosData);
+                updatePassengerList(asientosData);
+                updateEmptySeatsInfo(asientosData);
+                updateMySeatInfo(asientosData);
+            });
+
+            console.log("✅ Sistema de asientos configurado");
         }
 
         // ========================================
@@ -1514,24 +2496,6 @@
             });
 
             console.log("✅ Sistema de habitaciones configurado");
-        }
-
-        // ========================================
-        // SISTEMA DE ASIENTOS (simplificado)
-        // ========================================
-        function setupSeatsSystem() {
-            // Monitorear asiento actual del usuario
-            database.ref('asientos').on('value', (snapshot) => {
-                const asientosData = snapshot.val() || {};
-                myCurrentSeat = null;
-                
-                for (const seatNum in asientosData) {
-                    if (asientosData[seatNum].usuario === currentUser) {
-                        myCurrentSeat = seatNum;
-                        break;
-                    }
-                }
-            });
         }
 
         // ========================================
