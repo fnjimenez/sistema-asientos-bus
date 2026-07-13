@@ -284,7 +284,6 @@ body{
 <div class="tab-content" id="tab-asientos">
   <div class="card">
     <h2>🪑 Selecciona tu Asiento</h2>
-    <div id="alertaAsiento"></div>
 
     <div class="form-group">
       <label><input type="checkbox" id="esPersonalCheck"> Soy personal / coordinador (no soy alumno)</label>
@@ -307,6 +306,8 @@ body{
       <span><span class="box" style="background:var(--warning)"></span>Mi asiento</span>
       <span><span class="box" style="background:#9099ab"></span>Sanitario</span>
     </div>
+
+    <div id="alertaAsiento"></div>
 
     <div class="bus-wrap">
       <div class="bus-dir">▲ FRENTE DEL AUTOBÚS (conductor)</div>
@@ -643,10 +644,12 @@ function seleccionarAsiento(num) {
 
   if (!anticipoConfirmado) {
     alerta.innerHTML = '<div class="alert warning">⚠️ Debes confirmar que entregaste tu anticipo antes de elegir asiento.</div>';
+    showToast("⚠️ Confirma tu anticipo (arriba) antes de elegir asiento");
     return;
   }
   if (!datos) {
     alerta.innerHTML = '<div class="alert danger">❌ Completa tu matrícula (U0000000N0000) o número de empleado, y tu nombre completo.</div>';
+    showToast("❌ Revisa tu matrícula/empleado y nombre (arriba)");
     return;
   }
 
@@ -655,6 +658,7 @@ function seleccionarAsiento(num) {
     const val = snap.val();
     if (val && val.usuario !== currentUser) {
       alerta.innerHTML = '<div class="alert danger">❌ Ese asiento ya está ocupado.</div>';
+      showToast("❌ Ese asiento ya está ocupado");
       return;
     }
     const tareas = [];
