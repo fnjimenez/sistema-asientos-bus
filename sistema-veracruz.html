@@ -323,6 +323,17 @@ body{
       <button class="btn danger" id="adminLoginBtn">Ingresar</button>
       <div id="adminControls" style="display:none;margin-top:12px;">
         <button class="btn danger" id="liberarTodoBtn">🗑️ Liberar TODOS los asientos</button>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--danger);">
+          <label style="font-weight:700;display:block;margin-bottom:6px;">🏨 Configuración de hospedaje (hotel, jueves)</label>
+          <label style="font-weight:400;font-size:.85em;">Número de habitaciones</label>
+          <input type="number" id="habitacionesInput" min="1" max="100" style="width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ccc;">
+          <label style="font-weight:400;font-size:.85em;">Camas por habitación</label>
+          <input type="number" id="camasPorHabInput" min="1" max="10" style="width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ccc;">
+          <label style="font-weight:400;font-size:.85em;">Personas por cama</label>
+          <input type="number" id="personasPorCamaInput" min="1" max="6" style="width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ccc;">
+          <button class="btn warning" id="actualizarCamasBtn">🛏️ Actualizar configuración de hospedaje</button>
+          <p style="font-size:.8em;color:var(--muted);margin-top:6px;">Los alumnos que ya eligieron cama NO se borran al cambiar estos números; solo cambia cuántas habitaciones/camas vacías se muestran.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -358,7 +369,16 @@ body{
 const TRIP_CONFIG = {
   fechaSalida: "2026-08-19T20:00:00", // Miércoles noche de salida (AJUSTAR si cambia)
   totalAsientos: 42,
-  totalCamas: 20, // hotel: 20 camas, 2 personas (pareja) por cama
+  hotel: {
+    habitaciones: 0,         // AÚN NO CONFIRMADO — se configura desde el panel admin cuando se sepa
+    camasPorHabitacion: 0,   // AÚN NO CONFIRMADO
+    personasPorCama: 2       // personas por cama (ej. 2 = pareja/matrimonial, 1 = individual)
+  },
+  campamento: {
+    // Tanto "casa propia" como "Glamping" ahora funcionan igual:
+    // cada alumno crea la suya y define/consulta la capacidad. No hay
+    // número global que configurar aquí.
+  },
   firebaseRoot: "viajeVeracruz2026",
   adminPassword: "SABES2026"
 };
@@ -413,6 +433,25 @@ function initFirebase() {
 
   escucharAsientos();
   escucharHospedaje();
+  escucharConfigCamas();
+}
+
+function escucharConfigCamas() {
+  database.ref(TRIP_CONFIG.firebaseRoot + "/config/hotel").on("value", function (snap) {
+    const val = snap.val();
+    if (val) {
+      TRIP_CONFIG.hotel.habitaciones = val.habitaciones || TRIP_CONFIG.hotel.habitaciones;
+      TRIP_CONFIG.hotel.camasPorHabitacion = val.camasPorHabitacion || TRIP_CONFIG.hotel.camasPorHabitacion;
+      TRIP_CONFIG.hotel.personasPorCama = val.personasPorCama || TRIP_CONFIG.hotel.personasPorCama;
+    }
+    const iH = document.getElementById("habitacionesInput");
+    const iC = document.getElementById("camasPorHabInput");
+    const iP = document.getElementById("personasPorCamaInput");
+    if (iH) iH.value = TRIP_CONFIG.hotel.habitaciones;
+    if (iC) iC.value = TRIP_CONFIG.hotel.camasPorHabitacion;
+    if (iP) iP.value = TRIP_CONFIG.hotel.personasPorCama;
+    if (nocheActual === "hotel") renderHospedaje();
+  });
 }
 
 /* ============================================================
@@ -517,6 +556,20 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!confirm("¿Seguro que quieres liberar TODOS los asientos?")) return;
     database.ref(TRIP_CONFIG.firebaseRoot + "/asientos").remove().then(function () {
       showToast("🗑️ Todos los asientos liberados");
+    });
+  });
+
+  document.getElementById("actualizarCamasBtn").addEventListener("click", function () {
+    const habitaciones = parseInt(document.getElementById("habitacionesInput").value, 10);
+    const camasPorHabitacion = parseInt(document.getElementById("camasPorHabInput").value, 10);
+    const personasPorCama = parseInt(document.getElementById("personasPorCamaInput").value, 10);
+    if (!habitaciones || !camasPorHabitacion || !personasPorCama) { showToast("Completa los 3 valores de hospedaje"); return; }
+    database.ref(TRIP_CONFIG.firebaseRoot + "/config/hotel").set({
+      habitaciones: habitaciones,
+      camasPorHabitacion: camasPorHabitacion,
+      personasPorCama: personasPorCama
+    }).then(function () {
+      showToast("🛏️ Configuración de hospedaje actualizada");
     });
   });
 
@@ -689,7 +742,10 @@ function escucharHospedaje() {
   database.ref(TRIP_CONFIG.firebaseRoot + "/camas_hotel").on("value", function () {
     if (nocheActual === "hotel") renderHospedaje();
   });
-  database.ref(TRIP_CONFIG.firebaseRoot + "/campamento_pref").on("value", function () {
+  database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional").on("value", function () {
+    if (nocheActual === "hotel") renderHospedaje();
+  });
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento").on("value", function () {
     if (nocheActual === "campamento") renderHospedaje();
   });
 }
@@ -704,75 +760,206 @@ function renderHospedaje() {
   else renderCampamento();
 }
 
+function claveCama(hab, cama) { return "h" + hab + "_c" + cama; }
+
 function renderCamas() {
   const cont = document.getElementById("hospedajeContenido");
+  const cfg = TRIP_CONFIG.hotel;
+
+  if (!cfg.habitaciones || !cfg.camasPorHabitacion) {
+    renderParesProvisional();
+    return;
+  }
+
   database.ref(TRIP_CONFIG.firebaseRoot + "/camas_hotel").once("value").then(function (snap) {
     const camas = snap.val() || {};
-    let html = '<h3>🏨 Selecciona una cama (' + TRIP_CONFIG.totalCamas + ' disponibles, 2 personas por cama)</h3>';
+    let html = '<h3>🏨 Selecciona tu cama</h3>';
+    html += '<p style="font-size:.85em;color:var(--muted);margin-bottom:8px;">' + cfg.habitaciones + ' habitaciones · ' + cfg.camasPorHabitacion + ' camas por habitación · ' + cfg.personasPorCama + ' personas por cama</p>';
     html += '<div class="legend">';
     html += '<span><span class="box" style="background:var(--primary-light)"></span>Disponible</span>';
-    html += '<span><span class="box" style="background:#c9852c"></span>1/2 · selecciona a tu pareja</span>';
+    html += '<span><span class="box" style="background:#c9852c"></span>Con espacio · únete</span>';
     html += '<span><span class="box" style="background:#8e44ad"></span>Completa</span>';
     html += '</div>';
-    html += '<div class="beds-grid">';
 
     let miCama = null;
-    for (let i = 1; i <= TRIP_CONFIG.totalCamas; i++) {
-      const c = camas[i];
-      let clase = "bed";
-      let who = "";
-      if (c) {
-        const ocupantes = [c.ocupante1, c.ocupante2].filter(Boolean);
-        const llenos = ocupantes.length;
-        if (ocupantes.some(function (o) { return o.usuario === currentUser; })) { clase += " mia"; miCama = i; }
-        if (llenos >= 2) clase += " completa";
-        else clase += " parcial";
-        who = ocupantes.map(function (o) { return o.nombre.split(" ")[0]; }).join(" / ");
+    for (let h = 1; h <= cfg.habitaciones; h++) {
+      html += '<div class="card" style="box-shadow:none;border:1px solid var(--border);margin-top:12px;">';
+      html += '<h3>🚪 Habitación ' + h + '</h3>';
+      html += '<div class="beds-grid">';
+      for (let c = 1; c <= cfg.camasPorHabitacion; c++) {
+        const key = claveCama(h, c);
+        const cama = camas[key];
+        const miembros = cama && cama.miembros ? Object.values(cama.miembros) : [];
+        let clase = "bed";
+        if (miembros.length > 0 && miembros.length < cfg.personasPorCama) clase += " parcial";
+        if (miembros.length >= cfg.personasPorCama) clase += " completa";
+        if (cama && cama.miembros && cama.miembros[currentUser]) { clase += " mia"; miCama = key; }
+        const who = miembros.map(function (m) { return m.nombre.split(" ")[0]; }).join(" / ");
+        html += '<div class="' + clase + '" onclick="seleccionarCama(\'' + key + '\')"><span class="n">🛏️ ' + c + '</span><span class="who">' + miembros.length + '/' + cfg.personasPorCama + (who ? ' · ' + who : '') + '</span></div>';
       }
-      html += '<div class="' + clase + '" onclick="seleccionarCama(' + i + ')"><span class="n">🛏️ ' + i + '</span><span class="who">' + who + '</span></div>';
+      html += '</div></div>';
     }
-    html += '</div>';
 
     if (miCama) {
-      html += '<button class="btn danger" onclick="salirCama(' + miCama + ')" style="margin-top:10px;">🚪 Salir de mi cama (' + miCama + ')</button>';
+      html += '<button class="btn danger" onclick="salirCama(\'' + miCama + '\')" style="margin-top:14px;">🚪 Salir de mi cama actual</button>';
     }
 
     cont.innerHTML = html;
   });
 }
 
-function seleccionarCama(num) {
+/* ============================================================
+   PARES DE CAMA PROVISIONALES (hotel)
+   Mientras no se confirme la distribución real de habitaciones y
+   camas, los alumnos pueden organizarse por su cuenta en pares:
+   uno crea su "par de cama" y otro se une. Cuando se confirme la
+   distribución final, esta vista se reemplaza automáticamente por
+   la de habitaciones/camas estructurada (renderCamas de arriba).
+   ============================================================ */
+function renderParesProvisional() {
+  const cont = document.getElementById("hospedajeContenido");
+
+  database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional").once("value").then(function (snap) {
+    const pares = snap.val() || {};
+    let miId = null, soyResponsable = false;
+    Object.keys(pares).forEach(function (id) {
+      const p = pares[id];
+      if (p.responsable && p.responsable.usuario === currentUser) { miId = id; soyResponsable = true; }
+      if (p.miembros && p.miembros[currentUser]) miId = id;
+    });
+
+    let html = '<h3>🏨 Hotel (Jueves)</h3>';
+    html += '<div class="alert warning">⏳ La distribución final de habitaciones y camas del hotel aún no está confirmada. Mientras tanto, puedes organizarte en pares con un compañero — cuando se confirme la distribución oficial, aquí aparecerá el cuarto/cama definitivo.</div>';
+
+    if (miId) {
+      const p = pares[miId];
+      const ocupados = 1 + Object.keys(p.miembros || {}).length;
+      html += '<div class="card mine" style="border:2px solid var(--warning);">';
+      html += '<h3>' + (soyResponsable ? "👑 Mi Par de Cama (Responsable)" : "🛏️ Mi Par de Cama") + '</h3>';
+      html += '<p><b>Ocupación:</b> ' + ocupados + '/2 personas</p>';
+      html += '<div class="progress"><div class="progress-fill" style="width:' + (ocupados / 2 * 100) + '%"></div></div>';
+      html += '<p><b>Responsable:</b> ' + p.responsable.nombre + '</p>';
+      if (Object.keys(p.miembros || {}).length) {
+        html += '<p><b>Pareja:</b></p><ul>';
+        Object.values(p.miembros).forEach(function (m) { html += '<li>' + m.nombre + '</li>'; });
+        html += '</ul>';
+      }
+      if (soyResponsable) {
+        html += '<button class="btn danger" onclick="eliminarParProvisional(\'' + miId + '\')" style="margin-top:10px;">🗑️ Eliminar Mi Par de Cama</button>';
+      } else {
+        html += '<button class="btn warning" onclick="salirParProvisional(\'' + miId + '\')" style="margin-top:10px;">🚪 Salir de este Par de Cama</button>';
+      }
+      html += '</div>';
+    } else {
+      html += '<div class="card" style="box-shadow:none;border:1px solid var(--border);">';
+      html += '<h3>➕ Crear mi Par de Cama</h3>';
+      html += '<p style="font-size:.85em;color:var(--muted);margin-bottom:10px;">Al crearlo, otro alumno podrá unirse como tu pareja de cuarto.</p>';
+      html += '<button class="btn success" onclick="crearParProvisional()">Crear mi Par de Cama</button>';
+      html += '</div>';
+
+      const disponibles = Object.keys(pares).filter(function (id) {
+        const p = pares[id];
+        const ocupados = 1 + Object.keys(p.miembros || {}).length;
+        return ocupados < 2;
+      });
+
+      html += '<h3 style="margin-top:16px;">🛏️ Unirme a un Par de Cama Existente</h3>';
+      if (disponibles.length === 0) {
+        html += '<p style="color:#999;">No hay pares con espacio disponible todavía.</p>';
+      } else {
+        disponibles.forEach(function (id) {
+          const p = pares[id];
+          html += '<div class="card" style="box-shadow:none;border:1px solid var(--border);margin-top:10px;">';
+          html += '<p><b>Responsable:</b> ' + p.responsable.nombre + '</p>';
+          html += '<button class="btn success" onclick="unirseParProvisional(\'' + id + '\')">Unirme como su pareja</button>';
+          html += '</div>';
+        });
+      }
+    }
+
+    cont.innerHTML = html;
+  });
+}
+
+function crearParProvisional() {
   const datos = datosAlumno();
   if (!datos) { showToast("Completa tu matrícula y nombre en la pestaña de Asientos primero"); return; }
 
-  const ref = database.ref(TRIP_CONFIG.firebaseRoot + "/camas_hotel/" + num);
-  ref.once("value").then(function (snap) {
-    const c = snap.val() || {};
-    const persona = { usuario: currentUser, nombre: datos.nombre, matricula: datos.matricula };
-
-    if (c.ocupante1 && c.ocupante1.usuario === currentUser) { showToast("Ya estás en esta cama"); return; }
-    if (c.ocupante2 && c.ocupante2.usuario === currentUser) { showToast("Ya estás en esta cama"); return; }
-
-    if (!c.ocupante1) {
-      ref.child("ocupante1").set(persona).then(function () { showToast("🛏️ Cama " + num + " reservada"); renderHospedaje(); });
-    } else if (!c.ocupante2) {
-      ref.child("ocupante2").set(persona).then(function () { showToast("🛏️ Te uniste como pareja en la cama " + num); renderHospedaje(); });
-    } else {
-      showToast("Esa cama ya está completa");
-    }
+  const ref = database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional").push();
+  ref.set({
+    responsable: { usuario: currentUser, nombre: datos.nombre, matricula: datos.matricula },
+    miembros: {},
+    timestamp: firebase.database.ServerValue.TIMESTAMP
+  }).then(function () {
+    showToast("🛏️ Par de cama creado");
+    renderParesProvisional();
   });
 }
 
-function salirCama(num) {
-  const ref = database.ref(TRIP_CONFIG.firebaseRoot + "/camas_hotel/" + num);
-  ref.once("value").then(function (snap) {
-    const c = snap.val() || {};
-    const tareas = [];
-    if (c.ocupante1 && c.ocupante1.usuario === currentUser) tareas.push(ref.child("ocupante1").remove());
-    if (c.ocupante2 && c.ocupante2.usuario === currentUser) tareas.push(ref.child("ocupante2").remove());
-    Promise.all(tareas).then(function () { showToast("Saliste de la cama " + num); renderHospedaje(); });
+function unirseParProvisional(id) {
+  const datos = datosAlumno();
+  if (!datos) { showToast("Completa tu matrícula y nombre en la pestaña de Asientos primero"); return; }
+  database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional/" + id + "/miembros/" + currentUser).set({
+    nombre: datos.nombre, matricula: datos.matricula
+  }).then(function () {
+    showToast("🛏️ Te uniste al par de cama");
+    renderParesProvisional();
   });
 }
+
+function salirParProvisional(id) {
+  database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional/" + id + "/miembros/" + currentUser).remove().then(function () {
+    showToast("Saliste del par de cama");
+    renderParesProvisional();
+  });
+}
+
+function eliminarParProvisional(id) {
+  if (!confirm("¿Eliminar este par de cama por completo?")) return;
+  database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional/" + id).remove().then(function () {
+    showToast("Par de cama eliminado");
+    renderParesProvisional();
+  });
+}
+
+function seleccionarCama(key) {
+  const datos = datosAlumno();
+  if (!datos) { showToast("Completa tu matrícula y nombre en la pestaña de Asientos primero"); return; }
+
+  const ref = database.ref(TRIP_CONFIG.firebaseRoot + "/camas_hotel/" + key + "/miembros");
+  ref.once("value").then(function (snap) {
+    const miembros = snap.val() || {};
+    if (miembros[currentUser]) { showToast("Ya estás en esta cama"); return; }
+    if (Object.keys(miembros).length >= TRIP_CONFIG.hotel.personasPorCama) { showToast("Esa cama ya está completa"); return; }
+
+    // Salir de cualquier otra cama antes de unirse a la nueva
+    database.ref(TRIP_CONFIG.firebaseRoot + "/camas_hotel").once("value").then(function (allSnap) {
+      const all = allSnap.val() || {};
+      const tareas = [];
+      Object.keys(all).forEach(function (k) {
+        if (all[k].miembros && all[k].miembros[currentUser] && k !== key) {
+          tareas.push(database.ref(TRIP_CONFIG.firebaseRoot + "/camas_hotel/" + k + "/miembros/" + currentUser).remove());
+        }
+      });
+      tareas.push(ref.child(currentUser).set({ nombre: datos.nombre, matricula: datos.matricula }));
+      Promise.all(tareas).then(function () { showToast("🛏️ Cama reservada"); renderHospedaje(); });
+    });
+  });
+}
+
+function salirCama(key) {
+  database.ref(TRIP_CONFIG.firebaseRoot + "/camas_hotel/" + key + "/miembros/" + currentUser).remove().then(function () {
+    showToast("Saliste de la cama");
+    renderHospedaje();
+  });
+}
+
+/* ============================================================
+   CAMPAMENTO: casas de campaña propias + Glamping.
+   Mismo patrón que las camas de hotel: números de casa/tienda
+   que se van llenando conforme los alumnos se agregan.
+   ============================================================ */
+let tipoCampamentoActual = "propia";
 
 function renderCampamento() {
   const cont = document.getElementById("hospedajeContenido");
@@ -803,46 +990,313 @@ function renderCampamento() {
   html += '<li>🐢 Liberación de tortugas bebé (actividad por temporada, sujeta a nacimientos del día)</li>';
   html += '</ul>';
 
-  html += '<h3 style="margin-top:18px;">🏕️ ¿Qué opción de hospedaje prefieres para esta noche?</h3>';
+  html += '<h3 style="margin-top:18px;">🏕️ ¿Con qué te vas a quedar esta noche?</h3>';
   html += '<div class="tent-toggle">';
-  html += '<div class="tent-option" id="opt-propia">⛺ Llevo mi propia casa de campaña (default, en grupos)</div>';
-  html += '<div class="tent-option" id="opt-glamping">✨ Glamping (casa de campaña amueblada, sobre tarima y colchoneta)</div>';
+  html += '<div class="tent-option ' + (tipoCampamentoActual === "propia" ? "active" : "") + '" id="opt-propia">⛺ Llevo mi propia casa de campaña (default, en grupos)</div>';
+  html += '<div class="tent-option ' + (tipoCampamentoActual === "glamping" ? "active" : "") + '" id="opt-glamping">✨ Glamping (casa amueblada, sobre tarima y colchoneta)</div>';
   html += '</div>';
-  html += '<p class="amenity-note">✨ El Glamping tiene disponibilidad limitada — pregunta a los coordinadores. Puedes cambiar de opción cuando quieras.</p>';
-  html += '<div id="campamentoResumen" style="margin-top:14px;"></div>';
+  html += '<p class="amenity-note">💰 Las tarifas de Glamping se consultan directamente con los coordinadores. Puedes cambiar de opción cuando quieras.</p>';
+  html += '<div id="casasCampamentoGrid" style="margin-top:14px;"></div>';
 
   cont.innerHTML = html;
 
-  document.getElementById("opt-propia").addEventListener("click", function () { guardarPreferenciaCampamento("propia"); });
-  document.getElementById("opt-glamping").addEventListener("click", function () { guardarPreferenciaCampamento("glamping"); });
+  document.getElementById("opt-propia").addEventListener("click", function () { tipoCampamentoActual = "propia"; renderCampamento(); });
+  document.getElementById("opt-glamping").addEventListener("click", function () { tipoCampamentoActual = "glamping"; renderCampamento(); });
 
-  cargarPreferenciaCampamento();
+  renderCasasCampamento();
 }
 
-function guardarPreferenciaCampamento(tipo) {
-  const datos = datosAlumno();
-  if (!datos) { showToast("Completa tu matrícula y nombre en la pestaña de Asientos primero"); return; }
-  database.ref(TRIP_CONFIG.firebaseRoot + "/campamento_pref/" + currentUser).set({
-    nombre: datos.nombre,
-    matricula: datos.matricula,
-    tipo: tipo
-  }).then(function () {
-    showToast(tipo === "glamping" ? "✨ Preferencia: Glamping" : "⛺ Preferencia: casa de campaña propia");
-    cargarPreferenciaCampamento();
+function renderCasasCampamento() {
+  if (tipoCampamentoActual === "glamping") renderGlamping();
+  else renderCasasPropias();
+}
+
+/* ---------- GLAMPING: dinámico como casas propias, con alerta
+   económica previa (el alumno debe confirmar que ya consultó
+   costos con los coordinadores antes de crear/unirse) ---------- */
+let glampingConfirmado = false;
+
+function renderGlamping() {
+  const grid = document.getElementById("casasCampamentoGrid");
+
+  if (!glampingConfirmado) {
+    grid.innerHTML =
+      '<div class="alert danger">💰 <b>Alerta económica:</b> Glamping tiene un costo adicional sobre la tarifa base de llevar tu propia casa de campaña (varía según el número de personas y el tipo de tienda). Antes de continuar, <b>confirma con los coordinadores cuánto costará por persona</b> y asegúrate de aceptar los términos de pago.</div>' +
+      '<div class="form-group"><label><input type="checkbox" id="glampingConfirmCheck"> Ya consulté el costo por persona con los coordinadores y acepto los términos de pago de Glamping.</label></div>' +
+      '<button class="btn warning" id="glampingContinuarBtn">Continuar con Glamping</button>';
+    document.getElementById("glampingContinuarBtn").addEventListener("click", function () {
+      if (!document.getElementById("glampingConfirmCheck").checked) { showToast("Marca la casilla de confirmación primero"); return; }
+      glampingConfirmado = true;
+      renderGlamping();
+    });
+    return;
+  }
+
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping").once("value").then(function (snap) {
+    const casas = snap.val() || {};
+    let miId = null, soyResponsable = false;
+    Object.keys(casas).forEach(function (id) {
+      const c = casas[id];
+      if (c.responsable && c.responsable.usuario === currentUser) { miId = id; soyResponsable = true; }
+      if (c.miembros && c.miembros[currentUser]) miId = id;
+    });
+
+    let html = '<div class="alert warning">💰 Recuerda: el costo de Glamping ya lo confirmaste con los coordinadores.</div>';
+
+    if (miId) {
+      const c = casas[miId];
+      const ocupados = 1 + Object.keys(c.miembros || {}).length;
+      html += '<div class="card mine" style="border:2px solid var(--warning);">';
+      html += '<h3>' + (soyResponsable ? "👑 Mi Tienda de Glamping (Responsable)" : "✨ Mi Tienda de Glamping") + '</h3>';
+      html += '<p><b>Modalidad:</b> ' + c.nombre + '</p>';
+      html += '<p><b>Ocupación:</b> ' + ocupados + '/' + c.capacidad + ' personas</p>';
+      html += '<div class="progress"><div class="progress-fill" style="width:' + (ocupados / c.capacidad * 100) + '%"></div></div>';
+      html += '<p><b>Responsable:</b> ' + c.responsable.nombre + '</p>';
+      if (Object.keys(c.miembros || {}).length) {
+        html += '<p><b>Compañeros:</b></p><ul>';
+        Object.values(c.miembros).forEach(function (m) { html += '<li>' + m.nombre + '</li>'; });
+        html += '</ul>';
+      }
+      if (soyResponsable) {
+        html += '<div class="form-group" style="margin-top:10px;">';
+        html += '<label>Reconfigurar capacidad (mín. ' + ocupados + ')</label>';
+        html += '<select id="nuevaCapacidadGlampingInput">';
+        [1, 2, 3, 4, 5, 6].forEach(function (n) {
+          html += '<option value="' + n + '"' + (n === c.capacidad ? ' selected' : '') + (n < ocupados ? ' disabled' : '') + '>' + n + ' persona' + (n > 1 ? 's' : '') + '</option>';
+        });
+        html += '</select></div>';
+        html += '<button class="btn warning" onclick="reconfigurarCapacidadGlamping(\'' + miId + '\', ' + ocupados + ')">✏️ Actualizar capacidad</button>';
+        html += '<button class="btn danger" onclick="eliminarGlamping(\'' + miId + '\')" style="margin-top:8px;">🗑️ Eliminar Mi Tienda</button>';
+      } else {
+        html += '<button class="btn warning" onclick="salirGlamping(\'' + miId + '\')" style="margin-top:10px;">🚪 Salir de esta Tienda</button>';
+      }
+      html += '</div>';
+    } else {
+      html += '<div class="card" style="box-shadow:none;border:1px solid var(--border);">';
+      html += '<h3>➕ Crear mi Tienda de Glamping</h3>';
+      html += '<div class="form-group"><label>Tipo de tienda</label><select id="modalidadGlampingInput">';
+      html += '<option value="Tienda para 1 persona" data-cap="1">Tienda para 1 persona</option>';
+      html += '<option value="Tienda para 2 personas" data-cap="2">Tienda para 2 personas</option>';
+      html += '<option value="Tienda para 3 personas" data-cap="3">Tienda para 3 personas</option>';
+      html += '<option value="Tienda básica 4 personas" data-cap="4">Tienda básica para 4 personas</option>';
+      html += '<option value="Tienda premium 4 personas" data-cap="4">Tienda premium 4 personas</option>';
+      html += '<option value="Tienda premium 5 personas" data-cap="5">Tienda premium 5 personas</option>';
+      html += '<option value="Tienda premium 6 personas" data-cap="6">Tienda premium 6 personas</option>';
+      html += '</select></div>';
+      html += '<button class="btn success" onclick="crearGlamping()">Crear Tienda de Glamping</button>';
+      html += '</div>';
+
+      const disponibles = Object.keys(casas).filter(function (id) {
+        const c = casas[id];
+        const ocupados = 1 + Object.keys(c.miembros || {}).length;
+        return ocupados < c.capacidad;
+      });
+
+      html += '<h3 style="margin-top:16px;">✨ Unirme a una Tienda Existente</h3>';
+      if (disponibles.length === 0) {
+        html += '<p style="color:#999;">No hay tiendas con espacio disponible todavía.</p>';
+      } else {
+        disponibles.forEach(function (id) {
+          const c = casas[id];
+          const ocupados = 1 + Object.keys(c.miembros || {}).length;
+          html += '<div class="card" style="box-shadow:none;border:1px solid var(--border);margin-top:10px;">';
+          html += '<h3>' + c.nombre + '</h3>';
+          html += '<p><b>Responsable:</b> ' + c.responsable.nombre + '</p>';
+          html += '<p><b>Ocupación:</b> ' + ocupados + '/' + c.capacidad + '</p>';
+          html += '<button class="btn success" onclick="unirseGlamping(\'' + id + '\')">Unirme a esta Tienda</button>';
+          html += '</div>';
+        });
+      }
+    }
+
+    grid.innerHTML = html;
   });
 }
 
-function cargarPreferenciaCampamento() {
-  database.ref(TRIP_CONFIG.firebaseRoot + "/campamento_pref").once("value").then(function (snap) {
-    const data = snap.val() || {};
-    const mia = data[currentUser];
-    document.getElementById("opt-propia").classList.toggle("active", !mia || mia.tipo === "propia");
-    document.getElementById("opt-glamping").classList.toggle("active", mia && mia.tipo === "glamping");
+function crearGlamping() {
+  const datos = datosAlumno();
+  if (!datos) { showToast("Completa tu matrícula y nombre en la pestaña de Asientos primero"); return; }
+  const select = document.getElementById("modalidadGlampingInput");
+  const nombre = select.options[select.selectedIndex].value;
+  const capacidad = parseInt(select.options[select.selectedIndex].dataset.cap, 10);
 
-    const propias = Object.values(data).filter(function (d) { return d.tipo !== "glamping"; }).length;
-    const glampings = Object.values(data).filter(function (d) { return d.tipo === "glamping"; }).length;
-    document.getElementById("campamentoResumen").innerHTML =
-      '<div class="alert info">📊 Registrados con casa propia: ' + propias + ' · Interesados en Glamping: ' + glampings + '</div>';
+  const ref = database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping").push();
+  ref.set({
+    nombre: nombre,
+    capacidad: capacidad,
+    responsable: { usuario: currentUser, nombre: datos.nombre, matricula: datos.matricula },
+    miembros: {},
+    timestamp: firebase.database.ServerValue.TIMESTAMP
+  }).then(function () {
+    showToast("✨ Tienda de Glamping creada");
+    renderGlamping();
+  });
+}
+
+function unirseGlamping(id) {
+  const datos = datosAlumno();
+  if (!datos) { showToast("Completa tu matrícula y nombre en la pestaña de Asientos primero"); return; }
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping/" + id + "/miembros/" + currentUser).set({
+    nombre: datos.nombre, matricula: datos.matricula
+  }).then(function () {
+    showToast("✨ Te uniste a la tienda de Glamping");
+    renderGlamping();
+  });
+}
+
+function salirGlamping(id) {
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping/" + id + "/miembros/" + currentUser).remove().then(function () {
+    showToast("Saliste de la tienda de Glamping");
+    renderGlamping();
+  });
+}
+
+function eliminarGlamping(id) {
+  if (!confirm("¿Eliminar esta tienda de Glamping por completo?")) return;
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping/" + id).remove().then(function () {
+    showToast("Tienda de Glamping eliminada");
+    renderGlamping();
+  });
+}
+
+function reconfigurarCapacidadGlamping(id, minimo) {
+  const select = document.getElementById("nuevaCapacidadGlampingInput");
+  const nueva = parseInt(select.value, 10);
+  if (!nueva || nueva < minimo) { showToast("La capacidad no puede ser menor a " + minimo + " (los que ya están dentro)"); return; }
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping/" + id + "/capacidad").set(nueva).then(function () {
+    showToast("✏️ Capacidad actualizada a " + nueva);
+    renderGlamping();
+  });
+}
+
+/* ---------- CASAS PROPIAS: cada alumno crea su casa y define su
+   propia capacidad; el responsable puede reconfigurarla después ---------- */
+function renderCasasPropias() {
+  const grid = document.getElementById("casasCampamentoGrid");
+
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia").once("value").then(function (snap) {
+    const casas = snap.val() || {};
+    let miId = null, soyResponsable = false;
+    Object.keys(casas).forEach(function (id) {
+      const c = casas[id];
+      if (c.responsable && c.responsable.usuario === currentUser) { miId = id; soyResponsable = true; }
+      if (c.miembros && c.miembros[currentUser]) miId = id;
+    });
+
+    let html = "";
+
+    if (miId) {
+      const c = casas[miId];
+      const ocupados = 1 + Object.keys(c.miembros || {}).length;
+      html += '<div class="card mine" style="border:2px solid var(--warning);">';
+      html += '<h3>' + (soyResponsable ? "👑 Mi Casa de Campaña (Responsable)" : "⛺ Mi Casa de Campaña") + '</h3>';
+      html += '<p><b>Nombre:</b> ' + c.nombre + '</p>';
+      html += '<p><b>Ocupación:</b> ' + ocupados + '/' + c.capacidad + ' personas</p>';
+      html += '<div class="progress"><div class="progress-fill" style="width:' + (ocupados / c.capacidad * 100) + '%"></div></div>';
+      html += '<p><b>Responsable:</b> ' + c.responsable.nombre + '</p>';
+      if (Object.keys(c.miembros || {}).length) {
+        html += '<p><b>Compañeros:</b></p><ul>';
+        Object.values(c.miembros).forEach(function (m) { html += '<li>' + m.nombre + '</li>'; });
+        html += '</ul>';
+      }
+      if (soyResponsable) {
+        html += '<div class="form-group" style="margin-top:10px;">';
+        html += '<label>Reconfigurar capacidad (mín. ' + ocupados + ')</label>';
+        html += '<input type="number" id="nuevaCapacidadInput" min="' + ocupados + '" max="20" value="' + c.capacidad + '">';
+        html += '</div>';
+        html += '<button class="btn warning" onclick="reconfigurarCapacidadCasa(\'' + miId + '\', ' + ocupados + ')">✏️ Actualizar capacidad</button>';
+        html += '<button class="btn danger" onclick="eliminarCasaPropia(\'' + miId + '\')" style="margin-top:8px;">🗑️ Eliminar Mi Casa</button>';
+      } else {
+        html += '<button class="btn warning" onclick="salirCasaPropia(\'' + miId + '\')" style="margin-top:10px;">🚪 Salir de esta Casa</button>';
+      }
+      html += '</div>';
+    } else {
+      html += '<div class="card" style="box-shadow:none;border:1px solid var(--border);">';
+      html += '<h3>➕ Crear mi Casa de Campaña</h3>';
+      html += '<div class="form-group"><label>Nombre de la casa (opcional)</label><input type="text" id="nombreCasaInput" placeholder="Ej. Casa de Cenobio"></div>';
+      html += '<div class="form-group"><label>¿Cuántas personas caben en tu casa de campaña?</label><input type="number" id="capacidadCasaInput" min="1" max="12" value="4"></div>';
+      html += '<button class="btn success" onclick="crearCasaPropia()">Crear Casa de Campaña</button>';
+      html += '</div>';
+
+      const disponibles = Object.keys(casas).filter(function (id) {
+        const c = casas[id];
+        const ocupados = 1 + Object.keys(c.miembros || {}).length;
+        return ocupados < c.capacidad;
+      });
+
+      html += '<h3 style="margin-top:16px;">⛺ Unirme a una Casa Existente</h3>';
+      if (disponibles.length === 0) {
+        html += '<p style="color:#999;">No hay casas con espacio disponible todavía.</p>';
+      } else {
+        disponibles.forEach(function (id) {
+          const c = casas[id];
+          const ocupados = 1 + Object.keys(c.miembros || {}).length;
+          html += '<div class="card" style="box-shadow:none;border:1px solid var(--border);margin-top:10px;">';
+          html += '<h3>' + c.nombre + '</h3>';
+          html += '<p><b>Responsable:</b> ' + c.responsable.nombre + '</p>';
+          html += '<p><b>Ocupación:</b> ' + ocupados + '/' + c.capacidad + '</p>';
+          html += '<button class="btn success" onclick="unirseCasaPropia(\'' + id + '\')">Unirme a esta Casa</button>';
+          html += '</div>';
+        });
+      }
+    }
+
+    grid.innerHTML = html;
+  });
+}
+
+function crearCasaPropia() {
+  const datos = datosAlumno();
+  if (!datos) { showToast("Completa tu matrícula y nombre en la pestaña de Asientos primero"); return; }
+  const nombre = document.getElementById("nombreCasaInput").value.trim() || ("Casa de " + datos.nombre.split(" ")[0]);
+  const capacidad = parseInt(document.getElementById("capacidadCasaInput").value, 10);
+  if (!capacidad || capacidad < 1) { showToast("Escribe una capacidad válida"); return; }
+
+  const ref = database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia").push();
+  ref.set({
+    nombre: nombre,
+    capacidad: capacidad,
+    responsable: { usuario: currentUser, nombre: datos.nombre, matricula: datos.matricula },
+    miembros: {},
+    timestamp: firebase.database.ServerValue.TIMESTAMP
+  }).then(function () {
+    showToast("⛺ Casa de campaña creada");
+    renderCasasPropias();
+  });
+}
+
+function unirseCasaPropia(id) {
+  const datos = datosAlumno();
+  if (!datos) { showToast("Completa tu matrícula y nombre en la pestaña de Asientos primero"); return; }
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia/" + id + "/miembros/" + currentUser).set({
+    nombre: datos.nombre, matricula: datos.matricula
+  }).then(function () {
+    showToast("⛺ Te uniste a la casa de campaña");
+    renderCasasPropias();
+  });
+}
+
+function salirCasaPropia(id) {
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia/" + id + "/miembros/" + currentUser).remove().then(function () {
+    showToast("Saliste de la casa de campaña");
+    renderCasasPropias();
+  });
+}
+
+function eliminarCasaPropia(id) {
+  if (!confirm("¿Eliminar esta casa de campaña por completo?")) return;
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia/" + id).remove().then(function () {
+    showToast("Casa de campaña eliminada");
+    renderCasasPropias();
+  });
+}
+
+function reconfigurarCapacidadCasa(id, minimo) {
+  const nueva = parseInt(document.getElementById("nuevaCapacidadInput").value, 10);
+  if (!nueva || nueva < minimo) { showToast("La capacidad no puede ser menor a " + minimo + " (los que ya están dentro)"); return; }
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia/" + id + "/capacidad").set(nueva).then(function () {
+    showToast("✏️ Capacidad actualizada a " + nueva);
+    renderCasasPropias();
   });
 }
 
