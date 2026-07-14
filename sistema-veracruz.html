@@ -378,6 +378,16 @@ const TRIP_CONFIG = {
     // Tanto "casa propia" como "Glamping" ahora funcionan igual:
     // cada alumno crea la suya y define/consulta la capacidad. No hay
     // número global que configurar aquí.
+    tarifaBase: 150, // tarifa base por persona (casa de campaña propia), YA incluida en la cuota general
+    tarifasGlamping: [
+      { label: "Tienda para 1 persona",       cap: 1, precio: 400  },
+      { label: "Tienda para 2 personas",      cap: 2, precio: 600  },
+      { label: "Tienda para 3 personas",      cap: 3, precio: 800  },
+      { label: "Tienda básica 4 personas",    cap: 4, precio: 1000 },
+      { label: "Tienda premium 4 personas",   cap: 4, precio: 1200 },
+      { label: "Tienda premium 5 personas",   cap: 5, precio: 1400 },
+      { label: "Tienda premium 6 personas",   cap: 6, precio: 1500 }
+    ]
   },
   firebaseRoot: "viajeVeracruz2026",
   adminPassword: "SABES2026"
@@ -486,10 +496,17 @@ function esPersonal() {
   return chk && chk.checked;
 }
 
+function formatearNombre(str) {
+  return str.trim().replace(/\s+/g, " ").split(" ").map(function (w) {
+    return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+  }).join(" ");
+}
+
 function datosAlumno() {
   const valor = document.getElementById("matriculaInput").value.trim().toUpperCase();
-  const nombre = document.getElementById("nombreInput").value.trim();
-  if (!nombre) return null;
+  let nombreCrudo = document.getElementById("nombreInput").value.trim().replace(/\s+/g, " ");
+  if (!nombreCrudo || nombreCrudo.split(" ").length < 2) return null; // exige nombre y apellido
+  const nombre = formatearNombre(nombreCrudo);
   if (esPersonal()) {
     if (!validarEmpleado(valor)) return null;
     return { matricula: "EMP-" + valor, nombre: nombre };
@@ -701,7 +718,7 @@ function seleccionarAsiento(num) {
     return;
   }
   if (!datos) {
-    alerta.innerHTML = '<div class="alert danger">❌ Completa tu matrícula (U0000000N0000) o número de empleado, y tu nombre completo.</div>';
+    alerta.innerHTML = '<div class="alert danger">❌ Completa tu matrícula (U0000000N0000) o número de empleado, y tu nombre completo (nombre y apellido).</div>';
     showToast("❌ Revisa tu matrícula/empleado y nombre (arriba)");
     return;
   }
@@ -967,6 +984,7 @@ function renderCampamento() {
   let html = '<h3>🐢 Campamento Tortuguero "Vida Milenaria" (Tecolutla)</h3>';
   html += '<p style="font-size:.9em;color:var(--muted);margin-bottom:10px;">Vive la experiencia de acampar en un lugar mágico ✨ — bosque 🌳 frente al mar 🌊🌴</p>';
 
+  html += '<div class="alert success">💰 <b>Tarifa base:</b> $' + TRIP_CONFIG.campamento.tarifaBase + ' por persona (llevando tu propia casa de campaña) — ya está incluida en tu cuota general del viaje, no pagas nada extra.</div>';
   html += '<div class="alert warning">⛺ Cada alumno (o grupo) debe llevar su propia casa de campaña e implementos para armarla. El pago del espacio por persona incluye lo siguiente:</div>';
 
   html += '<ul class="amenity-list">';
@@ -1021,7 +1039,7 @@ function renderGlamping() {
 
   if (!glampingConfirmado) {
     grid.innerHTML =
-      '<div class="alert danger">💰 <b>Alerta económica:</b> Glamping tiene un costo adicional sobre la tarifa base de llevar tu propia casa de campaña (varía según el número de personas y el tipo de tienda). Antes de continuar, <b>confirma con los coordinadores cuánto costará por persona</b> y asegúrate de aceptar los términos de pago.</div>' +
+      '<div class="alert danger">💰 <b>Alerta económica:</b> la tarifa base de camping ($' + TRIP_CONFIG.campamento.tarifaBase + ' por persona) ya está incluida en tu cuota general. Si eliges Glamping, pagarás un <b>diferencial extra por persona</b> sobre esa tarifa base (se calcula automáticamente al elegir el tipo de tienda). Antes de continuar, confirma con los coordinadores que aceptas ese costo adicional y sus términos de pago.</div>' +
       '<div class="form-group"><label><input type="checkbox" id="glampingConfirmCheck"> Ya consulté el costo por persona con los coordinadores y acepto los términos de pago de Glamping.</label></div>' +
       '<button class="btn warning" id="glampingContinuarBtn">Continuar con Glamping</button>';
     document.getElementById("glampingContinuarBtn").addEventListener("click", function () {
@@ -1074,15 +1092,12 @@ function renderGlamping() {
     } else {
       html += '<div class="card" style="box-shadow:none;border:1px solid var(--border);">';
       html += '<h3>➕ Crear mi Tienda de Glamping</h3>';
-      html += '<div class="form-group"><label>Tipo de tienda</label><select id="modalidadGlampingInput">';
-      html += '<option value="Tienda para 1 persona" data-cap="1">Tienda para 1 persona</option>';
-      html += '<option value="Tienda para 2 personas" data-cap="2">Tienda para 2 personas</option>';
-      html += '<option value="Tienda para 3 personas" data-cap="3">Tienda para 3 personas</option>';
-      html += '<option value="Tienda básica 4 personas" data-cap="4">Tienda básica para 4 personas</option>';
-      html += '<option value="Tienda premium 4 personas" data-cap="4">Tienda premium 4 personas</option>';
-      html += '<option value="Tienda premium 5 personas" data-cap="5">Tienda premium 5 personas</option>';
-      html += '<option value="Tienda premium 6 personas" data-cap="6">Tienda premium 6 personas</option>';
+      html += '<div class="form-group"><label>Tipo de tienda</label><select id="modalidadGlampingInput" onchange="mostrarDiferencialGlamping()">';
+      TRIP_CONFIG.campamento.tarifasGlamping.forEach(function (t) {
+        html += '<option value="' + t.label + '" data-cap="' + t.cap + '" data-precio="' + t.precio + '">' + t.label + ' — $' + t.precio + ' total</option>';
+      });
       html += '</select></div>';
+      html += '<div id="diferencialGlampingBox" class="alert info" style="margin-top:8px;"></div>';
       html += '<button class="btn success" onclick="crearGlamping()">Crear Tienda de Glamping</button>';
       html += '</div>';
 
@@ -1110,7 +1125,23 @@ function renderGlamping() {
     }
 
     grid.innerHTML = html;
+    mostrarDiferencialGlamping();
   });
+}
+
+function mostrarDiferencialGlamping() {
+  const select = document.getElementById("modalidadGlampingInput");
+  const box = document.getElementById("diferencialGlampingBox");
+  if (!select || !box) return;
+  const opt = select.options[select.selectedIndex];
+  const cap = parseInt(opt.dataset.cap, 10);
+  const precio = parseInt(opt.dataset.precio, 10);
+  const porPersona = precio / cap;
+  const base = TRIP_CONFIG.campamento.tarifaBase;
+  const diferencial = porPersona - base;
+  box.innerHTML =
+    '💵 Precio total: <b>$' + precio + '</b> (' + cap + ' persona' + (cap > 1 ? 's' : '') + ') → <b>$' + porPersona.toFixed(2) + ' por persona</b>. ' +
+    'Diferencial sobre la tarifa base ($' + base + '): <b>+$' + diferencial.toFixed(2) + ' por persona</b> extra a pagar por Glamping.';
 }
 
 function crearGlamping() {
