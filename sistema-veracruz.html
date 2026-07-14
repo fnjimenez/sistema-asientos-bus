@@ -297,6 +297,10 @@ body{
       <input type="text" id="nombreInput" placeholder="Nombre y apellidos">
     </div>
     <div class="form-group">
+      <button class="btn warning" id="corregirNombreBtn" type="button">✏️ Corregir mi nombre en todos lados (asiento, cama, casa/tienda)</button>
+      <p style="font-size:.78em;color:var(--muted);margin-top:4px;">Usa esto si ya te registraste con el nombre mal escrito (mayúsculas, incompleto, etc.). Corrige arriba tu nombre completo y da clic aquí.</p>
+    </div>
+    <div class="form-group">
       <label><input type="checkbox" id="anticipoCheck"> Confirmo que ya entregué mi anticipo</label>
     </div>
 
@@ -502,6 +506,95 @@ function formatearNombre(str) {
   }).join(" ");
 }
 
+/* ============================================================
+   CORREGIR NOMBRE EN TODOS LADOS
+   Busca al usuario actual en asientos, cama de hotel, par
+   provisional, casa propia y Glamping, y actualiza el nombre
+   (con el formato ya corregido) en cada lugar donde aparezca.
+   ============================================================ */
+function corregirNombreEnTodosLados() {
+  const datos = datosAlumno();
+  if (!datos) { showToast("❌ Escribe tu nombre completo (nombre y apellido) arriba primero"); return; }
+  if (!database) { showToast("Esperando conexión con la base de datos..."); return; }
+
+  const root = TRIP_CONFIG.firebaseRoot;
+  const tareas = [];
+
+  // 1) Asiento
+  tareas.push(
+    database.ref(root + "/asientos").once("value").then(function (snap) {
+      const data = snap.val() || {};
+      const subTareas = [];
+      Object.keys(data).forEach(function (num) {
+        if (data[num].usuario === currentUser) {
+          subTareas.push(database.ref(root + "/asientos/" + num + "/nombre").set(datos.nombre));
+        }
+      });
+      return Promise.all(subTareas);
+    })
+  );
+
+  // 2) Cama de hotel (estructurada)
+  tareas.push(
+    database.ref(root + "/camas_hotel").once("value").then(function (snap) {
+      const data = snap.val() || {};
+      const subTareas = [];
+      Object.keys(data).forEach(function (key) {
+        if (data[key].miembros && data[key].miembros[currentUser]) {
+          subTareas.push(database.ref(root + "/camas_hotel/" + key + "/miembros/" + currentUser + "/nombre").set(datos.nombre));
+        }
+      });
+      return Promise.all(subTareas);
+    })
+  );
+
+  // 3) Par de cama provisional
+  tareas.push(
+    database.ref(root + "/pares_cama_provisional").once("value").then(function (snap) {
+      const data = snap.val() || {};
+      const subTareas = [];
+      Object.keys(data).forEach(function (id) {
+        const p = data[id];
+        if (p.responsable && p.responsable.usuario === currentUser) {
+          subTareas.push(database.ref(root + "/pares_cama_provisional/" + id + "/responsable/nombre").set(datos.nombre));
+        }
+        if (p.miembros && p.miembros[currentUser]) {
+          subTareas.push(database.ref(root + "/pares_cama_provisional/" + id + "/miembros/" + currentUser + "/nombre").set(datos.nombre));
+        }
+      });
+      return Promise.all(subTareas);
+    })
+  );
+
+  // 4) Casas de campamento (propia y Glamping)
+  ["propia", "glamping"].forEach(function (tipo) {
+    tareas.push(
+      database.ref(root + "/casas_campamento/" + tipo).once("value").then(function (snap) {
+        const data = snap.val() || {};
+        const subTareas = [];
+        Object.keys(data).forEach(function (id) {
+          const c = data[id];
+          if (c.responsable && c.responsable.usuario === currentUser) {
+            subTareas.push(database.ref(root + "/casas_campamento/" + tipo + "/" + id + "/responsable/nombre").set(datos.nombre));
+          }
+          if (c.miembros && c.miembros[currentUser]) {
+            subTareas.push(database.ref(root + "/casas_campamento/" + tipo + "/" + id + "/miembros/" + currentUser + "/nombre").set(datos.nombre));
+          }
+        });
+        return Promise.all(subTareas);
+      })
+    );
+  });
+
+  Promise.all(tareas).then(function () {
+    showToast("✅ Nombre corregido a \"" + datos.nombre + "\" en todos tus registros");
+    renderHospedaje();
+  }).catch(function (err) {
+    console.error(err);
+    showToast("⚠️ Hubo un problema al corregir el nombre, revisa la consola");
+  });
+}
+
 function datosAlumno() {
   const valor = document.getElementById("matriculaInput").value.trim().toUpperCase();
   let nombreCrudo = document.getElementById("nombreInput").value.trim().replace(/\s+/g, " ");
@@ -557,6 +650,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     input.value = "";
   });
+
+  document.getElementById("corregirNombreBtn").addEventListener("click", corregirNombreEnTodosLados);
 
   document.getElementById("adminLoginBtn").addEventListener("click", function () {
     const pass = document.getElementById("adminPass").value;
