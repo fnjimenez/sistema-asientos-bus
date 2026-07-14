@@ -519,6 +519,7 @@ function corregirNombreEnTodosLados() {
 
   const root = TRIP_CONFIG.firebaseRoot;
   const tareas = [];
+  let encontrados = 0;
 
   // 1) Asiento
   tareas.push(
@@ -527,6 +528,7 @@ function corregirNombreEnTodosLados() {
       const subTareas = [];
       Object.keys(data).forEach(function (num) {
         if (data[num].usuario === currentUser) {
+          encontrados++;
           subTareas.push(database.ref(root + "/asientos/" + num + "/nombre").set(datos.nombre));
         }
       });
@@ -541,6 +543,7 @@ function corregirNombreEnTodosLados() {
       const subTareas = [];
       Object.keys(data).forEach(function (key) {
         if (data[key].miembros && data[key].miembros[currentUser]) {
+          encontrados++;
           subTareas.push(database.ref(root + "/camas_hotel/" + key + "/miembros/" + currentUser + "/nombre").set(datos.nombre));
         }
       });
@@ -556,9 +559,11 @@ function corregirNombreEnTodosLados() {
       Object.keys(data).forEach(function (id) {
         const p = data[id];
         if (p.responsable && p.responsable.usuario === currentUser) {
+          encontrados++;
           subTareas.push(database.ref(root + "/pares_cama_provisional/" + id + "/responsable/nombre").set(datos.nombre));
         }
         if (p.miembros && p.miembros[currentUser]) {
+          encontrados++;
           subTareas.push(database.ref(root + "/pares_cama_provisional/" + id + "/miembros/" + currentUser + "/nombre").set(datos.nombre));
         }
       });
@@ -575,9 +580,11 @@ function corregirNombreEnTodosLados() {
         Object.keys(data).forEach(function (id) {
           const c = data[id];
           if (c.responsable && c.responsable.usuario === currentUser) {
+            encontrados++;
             subTareas.push(database.ref(root + "/casas_campamento/" + tipo + "/" + id + "/responsable/nombre").set(datos.nombre));
           }
           if (c.miembros && c.miembros[currentUser]) {
+            encontrados++;
             subTareas.push(database.ref(root + "/casas_campamento/" + tipo + "/" + id + "/miembros/" + currentUser + "/nombre").set(datos.nombre));
           }
         });
@@ -587,7 +594,11 @@ function corregirNombreEnTodosLados() {
   });
 
   Promise.all(tareas).then(function () {
-    showToast("✅ Nombre corregido a \"" + datos.nombre + "\" en todos tus registros");
+    if (encontrados === 0) {
+      showToast("⚠️ No encontramos ningún registro tuyo en ESTE navegador/dispositivo. Debes corregirlo desde el mismo navegador donde elegiste tu asiento/cama originalmente.");
+    } else {
+      showToast("✅ Nombre corregido a \"" + datos.nombre + "\" en " + encontrados + " registro(s)");
+    }
     renderHospedaje();
   }).catch(function (err) {
     console.error(err);
@@ -1164,6 +1175,22 @@ function renderGlamping() {
       html += '<p><b>Modalidad:</b> ' + c.nombre + '</p>';
       html += '<p><b>Ocupación:</b> ' + ocupados + '/' + c.capacidad + ' personas</p>';
       html += '<div class="progress"><div class="progress-fill" style="width:' + (ocupados / c.capacidad * 100) + '%"></div></div>';
+
+      // Precio: usa el guardado al crear la tienda; si es una tienda creada
+      // antes de este cálculo, lo busca por el nombre en la lista de tarifas.
+      let precioRef = c.precio;
+      if (!precioRef) {
+        const match = TRIP_CONFIG.campamento.tarifasGlamping.find(function (t) { return t.label === c.nombre; });
+        if (match) precioRef = match.precio;
+      }
+      if (precioRef) {
+        const porPersona = precioRef / c.capacidad;
+        const diferencial = porPersona - TRIP_CONFIG.campamento.tarifaBase;
+        html += '<div class="alert info">💵 Precio total: <b>$' + precioRef + '</b> → <b>$' + porPersona.toFixed(2) + ' por persona</b>. Diferencial sobre la tarifa base ($' + TRIP_CONFIG.campamento.tarifaBase + '): <b>+$' + diferencial.toFixed(2) + ' por persona</b> extra a pagar.</div>';
+      } else {
+        html += '<div class="alert warning">💵 No se pudo calcular el diferencial para esta tienda (fue creada antes de esta actualización). Confirma el costo directamente con los coordinadores.</div>';
+      }
+
       html += '<p><b>Responsable:</b> ' + c.responsable.nombre + '</p>';
       if (Object.keys(c.miembros || {}).length) {
         html += '<p><b>Compañeros:</b></p><ul>';
@@ -1245,11 +1272,13 @@ function crearGlamping() {
   const select = document.getElementById("modalidadGlampingInput");
   const nombre = select.options[select.selectedIndex].value;
   const capacidad = parseInt(select.options[select.selectedIndex].dataset.cap, 10);
+  const precio = parseInt(select.options[select.selectedIndex].dataset.precio, 10);
 
   const ref = database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping").push();
   ref.set({
     nombre: nombre,
     capacidad: capacidad,
+    precio: precio,
     responsable: { usuario: currentUser, nombre: datos.nombre, matricula: datos.matricula },
     miembros: {},
     timestamp: firebase.database.ServerValue.TIMESTAMP
