@@ -283,7 +283,8 @@ body{
 <!-- TAB ASIENTOS -->
 <div class="tab-content" id="tab-asientos">
   <div class="card">
-    <h2>🪑 Selecciona tu Asiento</h2>
+    <h2>🔐 Inicia sesión</h2>
+    <div class="alert info">Tu matrícula/empleado + una contraseña que tú eliges (la creas la primera vez que entras). Así nadie más puede modificar tu asiento, cama o casa aunque sepa tu matrícula.</div>
 
     <div class="form-group">
       <label><input type="checkbox" id="esPersonalCheck"> Soy personal / coordinador (no soy alumno)</label>
@@ -296,6 +297,18 @@ body{
       <label>Nombre completo</label>
       <input type="text" id="nombreInput" placeholder="Nombre y apellidos">
     </div>
+    <div class="form-group">
+      <label>Contraseña (mínimo 4 caracteres)</label>
+      <input type="password" id="passwordInput" placeholder="••••••" maxlength="30">
+      <p style="font-size:.78em;color:var(--muted);margin-top:4px;">Si es tu primera vez, esta contraseña se crea automáticamente para ti. Si ya tienes una, escribe la misma para entrar.</p>
+    </div>
+    <button class="btn success" id="loginBtn" type="button">🔑 Entrar / Crear mi contraseña</button>
+    <div id="sesionEstadoBox" style="margin-top:10px;"></div>
+  </div>
+
+  <div class="card">
+    <h2>🪑 Selecciona tu Asiento</h2>
+
     <div class="form-group">
       <button class="btn warning" id="corregirNombreBtn" type="button">✏️ Corregir mi nombre en todos lados (asiento, cama, casa/tienda)</button>
       <p style="font-size:.78em;color:var(--muted);margin-top:4px;">Usa esto si ya te registraste con el nombre mal escrito (mayúsculas, incompleto, etc.). Corrige arriba tu nombre completo y da clic aquí.</p>
@@ -412,7 +425,6 @@ const firebaseConfig = {
    ESTADO GLOBAL
    ============================================================ */
 let database;
-let currentUser = null;
 let myCurrentSeat = null;
 let anticipoConfirmado = false;
 let isAdmin = false;
@@ -483,13 +495,103 @@ function showToast(msg) {
   setTimeout(function () { t.classList.remove("show"); }, 2600);
 }
 
-function getUserId() {
-  let uid = localStorage.getItem("veracruzUserId");
-  if (!uid) {
-    uid = "user_" + Math.random().toString(36).substring(2, 10);
-    localStorage.setItem("veracruzUserId", uid);
+/* ============================================================
+   SESIÓN CON CONTRASEÑA (por matrícula/empleado)
+   La contraseña se guarda como hash SHA-256, nunca en texto
+   plano. La primera vez que alguien entra con su matrícula,
+   la contraseña que escriba se vuelve la suya.
+   ============================================================ */
+let sesionActiva = false;
+let sesionId = null;
+
+async function sha256Hex(texto) {
+  const buf = new TextEncoder().encode(texto);
+  const hashBuf = await crypto.subtle.digest("SHA-256", buf);
+  return Array.from(new Uint8Array(hashBuf)).map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+}
+
+function estaLogueado() {
+  return sesionActiva && sesionId && sesionId === idIdentidad();
+}
+
+function requiereSesion() {
+  if (!estaLogueado()) {
+    showToast("🔒 Primero inicia sesión con tu matrícula/empleado y contraseña (arriba)");
+    return false;
   }
-  return uid;
+  return true;
+}
+
+function actualizarEstadoSesionUI() {
+  const box = document.getElementById("sesionEstadoBox");
+  if (!box) return;
+  if (estaLogueado()) {
+    box.innerHTML = '<div class="alert success">✅ Sesión iniciada como <b>' + sesionId + '</b>. <button class="btn danger" id="logoutBtn" type="button" style="margin-top:8px;">Cerrar sesión</button></div>';
+    const btn = document.getElementById("logoutBtn");
+    if (btn) btn.addEventListener("click", function () {
+      sesionActiva = false; sesionId = null;
+      actualizarEstadoSesionUI();
+      showToast("Sesión cerrada");
+    });
+  } else {
+    box.innerHTML = "";
+  }
+}
+
+function iniciarSesion() {
+  const id = idIdentidad();
+  if (!id) { showToast("Escribe tu matrícula/número de empleado primero"); return; }
+  const pass = document.getElementById("passwordInput").value;
+  if (!pass || pass.length < 4) { showToast("La contraseña debe tener al menos 4 caracteres"); return; }
+  if (!database) { showToast("Esperando conexión con la base de datos..."); return; }
+
+  sha256Hex(pass).then(function (hash) {
+    const ref = database.ref(TRIP_CONFIG.firebaseRoot + "/passwords/" + id);
+    ref.once("value").then(function (snap) {
+      const guardado = snap.val();
+      if (!guardado) {
+        ref.set(hash).then(function () {
+          sesionActiva = true; sesionId = id;
+          showToast("🔑 Contraseña creada. Sesión iniciada como " + id);
+          actualizarEstadoSesionUI();
+        });
+      } else if (guardado === hash) {
+        sesionActiva = true; sesionId = id;
+        showToast("✅ Sesión iniciada");
+        actualizarEstadoSesionUI();
+      } else {
+        showToast("❌ Contraseña incorrecta para " + id);
+      }
+    });
+  });
+}
+
+function idIdentidad() {
+  const valor = document.getElementById("matriculaInput").value.trim().toUpperCase();
+  if (!valor) return null;
+  if (esPersonal()) return "EMP-" + valor;
+  return valor;
+}
+
+function guardarPrellenado() {
+  const m = document.getElementById("matriculaInput").value.trim();
+  const n = document.getElementById("nombreInput").value.trim();
+  const p = document.getElementById("esPersonalCheck").checked;
+  localStorage.setItem("veracruzPrefill", JSON.stringify({ m: m, n: n, p: p }));
+}
+
+function cargarPrellenado() {
+  try {
+    const raw = localStorage.getItem("veracruzPrefill");
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (d.p) {
+      document.getElementById("esPersonalCheck").checked = true;
+      document.getElementById("esPersonalCheck").dispatchEvent(new Event("change"));
+    }
+    document.getElementById("matriculaInput").value = d.m || "";
+    document.getElementById("nombreInput").value = d.n || "";
+  } catch (e) { /* sin datos previos, no pasa nada */ }
 }
 
 function validarMatricula(m) {
@@ -518,6 +620,7 @@ function formatearNombre(str) {
    (con el formato ya corregido) en cada lugar donde aparezca.
    ============================================================ */
 function corregirNombreEnTodosLados() {
+  if (!requiereSesion()) return;
   const datos = datosAlumno();
   if (!datos) { showToast("❌ Escribe tu nombre completo (nombre y apellido) arriba primero"); return; }
   if (!database) { showToast("Esperando conexión con la base de datos..."); return; }
@@ -532,7 +635,7 @@ function corregirNombreEnTodosLados() {
       const data = snap.val() || {};
       const subTareas = [];
       Object.keys(data).forEach(function (num) {
-        if (data[num].usuario === currentUser) {
+        if (data[num].usuario === idIdentidad()) {
           encontrados++;
           subTareas.push(database.ref(root + "/asientos/" + num + "/nombre").set(datos.nombre));
         }
@@ -547,9 +650,9 @@ function corregirNombreEnTodosLados() {
       const data = snap.val() || {};
       const subTareas = [];
       Object.keys(data).forEach(function (key) {
-        if (data[key].miembros && data[key].miembros[currentUser]) {
+        if (data[key].miembros && data[key].miembros[idIdentidad()]) {
           encontrados++;
-          subTareas.push(database.ref(root + "/camas_hotel/" + key + "/miembros/" + currentUser + "/nombre").set(datos.nombre));
+          subTareas.push(database.ref(root + "/camas_hotel/" + key + "/miembros/" + idIdentidad() + "/nombre").set(datos.nombre));
         }
       });
       return Promise.all(subTareas);
@@ -563,13 +666,13 @@ function corregirNombreEnTodosLados() {
       const subTareas = [];
       Object.keys(data).forEach(function (id) {
         const p = data[id];
-        if (p.responsable && p.responsable.usuario === currentUser) {
+        if (p.responsable && p.responsable.usuario === idIdentidad()) {
           encontrados++;
           subTareas.push(database.ref(root + "/pares_cama_provisional/" + id + "/responsable/nombre").set(datos.nombre));
         }
-        if (p.miembros && p.miembros[currentUser]) {
+        if (p.miembros && p.miembros[idIdentidad()]) {
           encontrados++;
-          subTareas.push(database.ref(root + "/pares_cama_provisional/" + id + "/miembros/" + currentUser + "/nombre").set(datos.nombre));
+          subTareas.push(database.ref(root + "/pares_cama_provisional/" + id + "/miembros/" + idIdentidad() + "/nombre").set(datos.nombre));
         }
       });
       return Promise.all(subTareas);
@@ -584,13 +687,13 @@ function corregirNombreEnTodosLados() {
         const subTareas = [];
         Object.keys(data).forEach(function (id) {
           const c = data[id];
-          if (c.responsable && c.responsable.usuario === currentUser) {
+          if (c.responsable && c.responsable.usuario === idIdentidad()) {
             encontrados++;
             subTareas.push(database.ref(root + "/casas_campamento/" + tipo + "/" + id + "/responsable/nombre").set(datos.nombre));
           }
-          if (c.miembros && c.miembros[currentUser]) {
+          if (c.miembros && c.miembros[idIdentidad()]) {
             encontrados++;
-            subTareas.push(database.ref(root + "/casas_campamento/" + tipo + "/" + id + "/miembros/" + currentUser + "/nombre").set(datos.nombre));
+            subTareas.push(database.ref(root + "/casas_campamento/" + tipo + "/" + id + "/miembros/" + idIdentidad() + "/nombre").set(datos.nombre));
           }
         });
         return Promise.all(subTareas);
@@ -628,7 +731,11 @@ function datosAlumno() {
    TABS
    ============================================================ */
 document.addEventListener("DOMContentLoaded", function () {
-  currentUser = getUserId();
+  cargarPrellenado();
+  document.getElementById("matriculaInput").addEventListener("input", guardarPrellenado);
+  document.getElementById("nombreInput").addEventListener("input", guardarPrellenado);
+  document.getElementById("esPersonalCheck").addEventListener("change", guardarPrellenado);
+  document.getElementById("loginBtn").addEventListener("click", iniciarSesion);
 
   document.querySelectorAll(".tab-btn").forEach(function (btn) {
     btn.addEventListener("click", function () {
@@ -796,7 +903,7 @@ function escucharAsientos() {
       const num = el.dataset.seat;
       el.classList.remove("ocupado", "mio");
       if (data[num]) {
-        if (data[num].usuario === currentUser) {
+        if (data[num].usuario === idIdentidad()) {
           el.classList.add("mio");
           myCurrentSeat = num;
         } else {
@@ -818,6 +925,7 @@ function renderMiAsiento(data) {
       '<p style="font-size:.82em;color:var(--muted);margin-bottom:8px;">🔄 ¿Quieres cambiar de asiento? Solo da clic directo en otro cuadro disponible (morado claro) — se libera este automáticamente y se asigna el nuevo.</p>' +
       '<button class="btn danger" id="liberarMiAsientoBtn">Liberar mi asiento</button>';
     document.getElementById("liberarMiAsientoBtn").addEventListener("click", function () {
+      if (!requiereSesion()) return;
       database.ref(TRIP_CONFIG.firebaseRoot + "/asientos/" + myCurrentSeat).remove().then(function () {
         showToast("Asiento liberado");
         myCurrentSeat = null;
@@ -829,6 +937,7 @@ function renderMiAsiento(data) {
 }
 
 function seleccionarAsiento(num) {
+  if (!requiereSesion()) return;
   const alerta = document.getElementById("alertaAsiento");
   const datos = datosAlumno();
 
@@ -846,7 +955,7 @@ function seleccionarAsiento(num) {
   const ref = database.ref(TRIP_CONFIG.firebaseRoot + "/asientos/" + num);
   ref.once("value").then(function (snap) {
     const val = snap.val();
-    if (val && val.usuario !== currentUser) {
+    if (val && val.usuario !== idIdentidad()) {
       alerta.innerHTML = '<div class="alert danger">❌ Ese asiento ya está ocupado.</div>';
       showToast("❌ Ese asiento ya está ocupado");
       return;
@@ -856,7 +965,7 @@ function seleccionarAsiento(num) {
       tareas.push(database.ref(TRIP_CONFIG.firebaseRoot + "/asientos/" + myCurrentSeat).remove());
     }
     tareas.push(ref.set({
-      usuario: currentUser,
+      usuario: idIdentidad(),
       matricula: datos.matricula,
       nombre: datos.nombre,
       timestamp: firebase.database.ServerValue.TIMESTAMP
@@ -930,7 +1039,7 @@ function renderCamas() {
         let clase = "bed";
         if (miembros.length > 0 && miembros.length < cfg.personasPorCama) clase += " parcial";
         if (miembros.length >= cfg.personasPorCama) clase += " completa";
-        if (cama && cama.miembros && cama.miembros[currentUser]) { clase += " mia"; miCama = key; }
+        if (cama && cama.miembros && cama.miembros[idIdentidad()]) { clase += " mia"; miCama = key; }
         const who = miembros.map(function (m) { return m.nombre.split(" ")[0]; }).join(" / ");
         html += '<div class="' + clase + '" onclick="seleccionarCama(\'' + key + '\')"><span class="n">🛏️ ' + c + '</span><span class="who">' + miembros.length + '/' + cfg.personasPorCama + (who ? ' · ' + who : '') + '</span></div>';
       }
@@ -961,8 +1070,8 @@ function renderParesProvisional() {
     let miId = null, soyResponsable = false;
     Object.keys(pares).forEach(function (id) {
       const p = pares[id];
-      if (p.responsable && p.responsable.usuario === currentUser) { miId = id; soyResponsable = true; }
-      if (p.miembros && p.miembros[currentUser]) miId = id;
+      if (p.responsable && p.responsable.usuario === idIdentidad()) { miId = id; soyResponsable = true; }
+      if (p.miembros && p.miembros[idIdentidad()]) miId = id;
     });
 
     let html = '<h3>🏨 Hotel (Jueves)</h3>';
@@ -1019,12 +1128,13 @@ function renderParesProvisional() {
 }
 
 function crearParProvisional() {
+  if (!requiereSesion()) return;
   const datos = datosAlumno();
   if (!datos) { showToast("Completa tu matrícula y nombre en la pestaña de Asientos primero"); return; }
 
   const ref = database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional").push();
   ref.set({
-    responsable: { usuario: currentUser, nombre: datos.nombre, matricula: datos.matricula },
+    responsable: { usuario: idIdentidad(), nombre: datos.nombre, matricula: datos.matricula },
     miembros: {},
     timestamp: firebase.database.ServerValue.TIMESTAMP
   }).then(function () {
@@ -1034,9 +1144,10 @@ function crearParProvisional() {
 }
 
 function unirseParProvisional(id) {
+  if (!requiereSesion()) return;
   const datos = datosAlumno();
   if (!datos) { showToast("Completa tu matrícula y nombre en la pestaña de Asientos primero"); return; }
-  database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional/" + id + "/miembros/" + currentUser).set({
+  database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional/" + id + "/miembros/" + idIdentidad()).set({
     nombre: datos.nombre, matricula: datos.matricula
   }).then(function () {
     showToast("🛏️ Te uniste al par de cama");
@@ -1045,13 +1156,15 @@ function unirseParProvisional(id) {
 }
 
 function salirParProvisional(id) {
-  database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional/" + id + "/miembros/" + currentUser).remove().then(function () {
+  if (!requiereSesion()) return;
+  database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional/" + id + "/miembros/" + idIdentidad()).remove().then(function () {
     showToast("Saliste del par de cama");
     renderParesProvisional();
   });
 }
 
 function eliminarParProvisional(id) {
+  if (!requiereSesion()) return;
   if (!confirm("¿Eliminar este par de cama por completo?")) return;
   database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional/" + id).remove().then(function () {
     showToast("Par de cama eliminado");
@@ -1060,13 +1173,14 @@ function eliminarParProvisional(id) {
 }
 
 function seleccionarCama(key) {
+  if (!requiereSesion()) return;
   const datos = datosAlumno();
   if (!datos) { showToast("Completa tu matrícula y nombre en la pestaña de Asientos primero"); return; }
 
   const ref = database.ref(TRIP_CONFIG.firebaseRoot + "/camas_hotel/" + key + "/miembros");
   ref.once("value").then(function (snap) {
     const miembros = snap.val() || {};
-    if (miembros[currentUser]) { showToast("Ya estás en esta cama"); return; }
+    if (miembros[idIdentidad()]) { showToast("Ya estás en esta cama"); return; }
     if (Object.keys(miembros).length >= TRIP_CONFIG.hotel.personasPorCama) { showToast("Esa cama ya está completa"); return; }
 
     // Salir de cualquier otra cama antes de unirse a la nueva
@@ -1074,18 +1188,19 @@ function seleccionarCama(key) {
       const all = allSnap.val() || {};
       const tareas = [];
       Object.keys(all).forEach(function (k) {
-        if (all[k].miembros && all[k].miembros[currentUser] && k !== key) {
-          tareas.push(database.ref(TRIP_CONFIG.firebaseRoot + "/camas_hotel/" + k + "/miembros/" + currentUser).remove());
+        if (all[k].miembros && all[k].miembros[idIdentidad()] && k !== key) {
+          tareas.push(database.ref(TRIP_CONFIG.firebaseRoot + "/camas_hotel/" + k + "/miembros/" + idIdentidad()).remove());
         }
       });
-      tareas.push(ref.child(currentUser).set({ nombre: datos.nombre, matricula: datos.matricula }));
+      tareas.push(ref.child(idIdentidad()).set({ nombre: datos.nombre, matricula: datos.matricula }));
       Promise.all(tareas).then(function () { showToast("🛏️ Cama reservada"); renderHospedaje(); });
     });
   });
 }
 
 function salirCama(key) {
-  database.ref(TRIP_CONFIG.firebaseRoot + "/camas_hotel/" + key + "/miembros/" + currentUser).remove().then(function () {
+  if (!requiereSesion()) return;
+  database.ref(TRIP_CONFIG.firebaseRoot + "/camas_hotel/" + key + "/miembros/" + idIdentidad()).remove().then(function () {
     showToast("Saliste de la cama");
     renderHospedaje();
   });
@@ -1175,8 +1290,8 @@ function renderGlamping() {
     let miId = null, soyResponsable = false;
     Object.keys(casas).forEach(function (id) {
       const c = casas[id];
-      if (c.responsable && c.responsable.usuario === currentUser) { miId = id; soyResponsable = true; }
-      if (c.miembros && c.miembros[currentUser]) miId = id;
+      if (c.responsable && c.responsable.usuario === idIdentidad()) { miId = id; soyResponsable = true; }
+      if (c.miembros && c.miembros[idIdentidad()]) miId = id;
     });
 
     let html = '<div class="alert warning">💰 Recuerda: el costo de Glamping ya lo confirmaste con los coordinadores.</div>';
@@ -1281,6 +1396,7 @@ function mostrarDiferencialGlamping() {
 }
 
 function crearGlamping() {
+  if (!requiereSesion()) return;
   const datos = datosAlumno();
   if (!datos) { showToast("Completa tu matrícula y nombre en la pestaña de Asientos primero"); return; }
   const select = document.getElementById("modalidadGlampingInput");
@@ -1293,7 +1409,7 @@ function crearGlamping() {
     nombre: nombre,
     capacidad: capacidad,
     precio: precio,
-    responsable: { usuario: currentUser, nombre: datos.nombre, matricula: datos.matricula },
+    responsable: { usuario: idIdentidad(), nombre: datos.nombre, matricula: datos.matricula },
     miembros: {},
     timestamp: firebase.database.ServerValue.TIMESTAMP
   }).then(function () {
@@ -1303,9 +1419,10 @@ function crearGlamping() {
 }
 
 function unirseGlamping(id) {
+  if (!requiereSesion()) return;
   const datos = datosAlumno();
   if (!datos) { showToast("Completa tu matrícula y nombre en la pestaña de Asientos primero"); return; }
-  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping/" + id + "/miembros/" + currentUser).set({
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping/" + id + "/miembros/" + idIdentidad()).set({
     nombre: datos.nombre, matricula: datos.matricula
   }).then(function () {
     showToast("✨ Te uniste a la tienda de Glamping");
@@ -1314,13 +1431,15 @@ function unirseGlamping(id) {
 }
 
 function salirGlamping(id) {
-  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping/" + id + "/miembros/" + currentUser).remove().then(function () {
+  if (!requiereSesion()) return;
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping/" + id + "/miembros/" + idIdentidad()).remove().then(function () {
     showToast("Saliste de la tienda de Glamping");
     renderGlamping();
   });
 }
 
 function eliminarGlamping(id) {
+  if (!requiereSesion()) return;
   if (!confirm("¿Eliminar esta tienda de Glamping por completo?")) return;
   database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping/" + id).remove().then(function () {
     showToast("Tienda de Glamping eliminada");
@@ -1329,6 +1448,7 @@ function eliminarGlamping(id) {
 }
 
 function reconfigurarCapacidadGlamping(id, minimo) {
+  if (!requiereSesion()) return;
   const select = document.getElementById("nuevaCapacidadGlampingInput");
   const nueva = parseInt(select.value, 10);
   if (!nueva || nueva < minimo) { showToast("La capacidad no puede ser menor a " + minimo + " (los que ya están dentro)"); return; }
@@ -1348,8 +1468,8 @@ function renderCasasPropias() {
     let miId = null, soyResponsable = false;
     Object.keys(casas).forEach(function (id) {
       const c = casas[id];
-      if (c.responsable && c.responsable.usuario === currentUser) { miId = id; soyResponsable = true; }
-      if (c.miembros && c.miembros[currentUser]) miId = id;
+      if (c.responsable && c.responsable.usuario === idIdentidad()) { miId = id; soyResponsable = true; }
+      if (c.miembros && c.miembros[idIdentidad()]) miId = id;
     });
 
     let html = "";
@@ -1415,6 +1535,7 @@ function renderCasasPropias() {
 }
 
 function crearCasaPropia() {
+  if (!requiereSesion()) return;
   const datos = datosAlumno();
   if (!datos) { showToast("Completa tu matrícula y nombre en la pestaña de Asientos primero"); return; }
   const nombre = document.getElementById("nombreCasaInput").value.trim() || ("Casa de " + datos.nombre.split(" ")[0]);
@@ -1425,7 +1546,7 @@ function crearCasaPropia() {
   ref.set({
     nombre: nombre,
     capacidad: capacidad,
-    responsable: { usuario: currentUser, nombre: datos.nombre, matricula: datos.matricula },
+    responsable: { usuario: idIdentidad(), nombre: datos.nombre, matricula: datos.matricula },
     miembros: {},
     timestamp: firebase.database.ServerValue.TIMESTAMP
   }).then(function () {
@@ -1435,9 +1556,10 @@ function crearCasaPropia() {
 }
 
 function unirseCasaPropia(id) {
+  if (!requiereSesion()) return;
   const datos = datosAlumno();
   if (!datos) { showToast("Completa tu matrícula y nombre en la pestaña de Asientos primero"); return; }
-  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia/" + id + "/miembros/" + currentUser).set({
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia/" + id + "/miembros/" + idIdentidad()).set({
     nombre: datos.nombre, matricula: datos.matricula
   }).then(function () {
     showToast("⛺ Te uniste a la casa de campaña");
@@ -1446,13 +1568,15 @@ function unirseCasaPropia(id) {
 }
 
 function salirCasaPropia(id) {
-  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia/" + id + "/miembros/" + currentUser).remove().then(function () {
+  if (!requiereSesion()) return;
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia/" + id + "/miembros/" + idIdentidad()).remove().then(function () {
     showToast("Saliste de la casa de campaña");
     renderCasasPropias();
   });
 }
 
 function eliminarCasaPropia(id) {
+  if (!requiereSesion()) return;
   if (!confirm("¿Eliminar esta casa de campaña por completo?")) return;
   database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia/" + id).remove().then(function () {
     showToast("Casa de campaña eliminada");
@@ -1461,6 +1585,7 @@ function eliminarCasaPropia(id) {
 }
 
 function reconfigurarCapacidadCasa(id, minimo) {
+  if (!requiereSesion()) return;
   const nueva = parseInt(document.getElementById("nuevaCapacidadInput").value, 10);
   if (!nueva || nueva < minimo) { showToast("La capacidad no puede ser menor a " + minimo + " (los que ya están dentro)"); return; }
   database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia/" + id + "/capacidad").set(nueva).then(function () {
