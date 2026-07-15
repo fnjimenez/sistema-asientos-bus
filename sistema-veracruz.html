@@ -942,11 +942,20 @@ function escucharAsientos() {
         } else {
           el.classList.add("ocupado");
         }
+        el.title = "Asiento " + num + ": " + nombreCorto(data[num].nombre);
+      } else {
+        el.title = "Asiento " + num + ": disponible";
       }
     });
     renderMiAsiento(data);
     renderParticipantes(data);
   });
+}
+
+function nombreCorto(nombreCompleto) {
+  if (!nombreCompleto) return "";
+  const partes = nombreCompleto.trim().split(" ");
+  return partes.length > 1 ? (partes[0] + " " + partes[1]) : partes[0];
 }
 
 function renderMiAsiento(data) {
@@ -1637,12 +1646,89 @@ function renderParticipantes(asientosData) {
     cont.innerHTML = '<p style="color:#999;">Aún no hay participantes registrados.</p>';
     return;
   }
-  let html = "";
-  entries.forEach(function (num) {
-    const p = asientosData[num];
-    html += '<div class="participant-row"><span>💺 Asiento ' + num + ' — ' + p.nombre + '</span><span>' + p.matricula + '</span></div>';
+  if (!database) { cont.innerHTML = '<p style="color:#999;">Conectando con la base de datos...</p>'; return; }
+
+  const root = TRIP_CONFIG.firebaseRoot;
+  Promise.all([
+    database.ref(root + "/camas_hotel").once("value"),
+    database.ref(root + "/pares_cama_provisional").once("value"),
+    database.ref(root + "/casas_campamento/propia").once("value"),
+    database.ref(root + "/casas_campamento/glamping").once("value")
+  ]).then(function (snaps) {
+    const camas = snaps[0].val() || {};
+    const pares = snaps[1].val() || {};
+    const propias = snaps[2].val() || {};
+    const glampings = snaps[3].val() || {};
+    const hospedajeMap = {}; // identidad (usuario/matrícula) -> descripción de hospedaje
+
+    // Camas de hotel ya estructuradas (habitación/cama)
+    Object.keys(camas).forEach(function (key) {
+      const m = key.match(/^h(\d+)_c(\d+)$/);
+      const label = m ? ("🏨 Habitación " + m[1] + " · Cama " + m[2]) : ("🏨 " + key);
+      Object.keys(camas[key].miembros || {}).forEach(function (uid) { hospedajeMap[uid] = label; });
+    });
+
+    // Pares de cama provisionales (mientras no se confirma la distribución final)
+    Object.keys(pares).forEach(function (id) {
+      const p = pares[id];
+      if (p.responsable) hospedajeMap[p.responsable.usuario] = "🏨 Par de cama (provisional, responsable)";
+      Object.keys(p.miembros || {}).forEach(function (uid) { hospedajeMap[uid] = "🏨 Par de cama (provisional, pareja)"; });
+    });
+
+    // Casas de campaña propias
+    Object.keys(propias).forEach(function (id) {
+      const c = propias[id];
+      if (c.responsable) hospedajeMap[c.responsable.usuario] = "⛺ " + c.nombre + " (responsable)";
+      Object.keys(c.miembros || {}).forEach(function (uid) { hospedajeMap[uid] = "⛺ " + c.nombre; });
+    });
+
+    // Glamping
+    Object.keys(glampings).forEach(function (id) {
+      const c = glampings[id];
+      if (c.responsable) hospedajeMap[c.responsable.usuario] = "✨ " + c.nombre + " (responsable)";
+      Object.keys(c.miembros || {}).forEach(function (uid) { hospedajeMap[uid] = "✨ " + c.nombre; });
+    });
+
+    let html = "";
+    entries.forEach(function (num) {
+      const p = asientosData[num];
+      const hosp = hospedajeMap[p.usuario] || '<span style="color:var(--danger);">⚠️ sin hospedaje registrado</span>';
+      html +=
+        '<div class="participant-row" style="flex-direction:column;align-items:flex-start;gap:3px;">' +
+          '<div style="display:flex;justify-content:space-between;width:100%;"><span>💺 Asiento ' + num + ' — ' + p.nombre + '</span><span>' + p.matricula + '</span></div>' +
+          '<div style="font-size:.82em;color:var(--muted);">' + hosp + '</div>' +
+        '</div>';
+    });
+
+    // Detectar identidades con hospedaje pero SIN asiento (para cuadrar ambos registros)
+    const idsConAsiento = {};
+    entries.forEach(function (num) { idsConAsiento[asientosData[num].usuario] = true; });
+    const nombresPorId = {};
+    entries.forEach(function (num) { nombresPorId[asientosData[num].usuario] = asientosData[num].nombre; });
+    // Rescatar nombres desde los propios registros de hospedaje por si acaso
+    [camas, propias, glampings].forEach(function (grupo) {
+      Object.values(grupo).forEach(function (item) {
+        if (item.responsable) nombresPorId[item.responsable.usuario] = nombresPorId[item.responsable.usuario] || item.responsable.nombre;
+        Object.keys(item.miembros || {}).forEach(function (uid) {
+          nombresPorId[uid] = nombresPorId[uid] || item.miembros[uid].nombre;
+        });
+      });
+    });
+    Object.values(pares).forEach(function (p) {
+      if (p.responsable) nombresPorId[p.responsable.usuario] = nombresPorId[p.responsable.usuario] || p.responsable.nombre;
+      Object.keys(p.miembros || {}).forEach(function (uid) { nombresPorId[uid] = nombresPorId[uid] || p.miembros[uid].nombre; });
+    });
+
+    const sinAsiento = Object.keys(hospedajeMap).filter(function (uid) { return !idsConAsiento[uid]; });
+    if (sinAsiento.length) {
+      html += '<h3 style="margin-top:16px;color:var(--danger);">⚠️ Tienen hospedaje pero NO han elegido asiento</h3>';
+      sinAsiento.forEach(function (uid) {
+        html += '<div class="participant-row"><span>' + (nombresPorId[uid] || uid) + '</span><span style="font-size:.85em;">' + hospedajeMap[uid] + '</span></div>';
+      });
+    }
+
+    cont.innerHTML = html;
   });
-  cont.innerHTML = html;
 }
 </script>
 </body>
