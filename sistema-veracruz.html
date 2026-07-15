@@ -465,6 +465,7 @@ function initFirebase() {
   escucharAsientos();
   escucharHospedaje();
   escucharConfigCamas();
+  intentarSesionAutomatica();
 }
 
 function escucharConfigCamas() {
@@ -530,12 +531,36 @@ function actualizarEstadoSesionUI() {
     const btn = document.getElementById("logoutBtn");
     if (btn) btn.addEventListener("click", function () {
       sesionActiva = false; sesionId = null;
+      localStorage.removeItem("veracruzSesion");
       actualizarEstadoSesionUI();
       showToast("Sesión cerrada");
     });
   } else {
     box.innerHTML = "";
   }
+}
+
+function intentarSesionAutomatica() {
+  try {
+    const raw = localStorage.getItem("veracruzSesion");
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (!d || !d.id || !d.hash) return;
+    database.ref(TRIP_CONFIG.firebaseRoot + "/passwords/" + d.id).once("value").then(function (snap) {
+      const guardado = snap.val();
+      if (guardado && guardado === d.hash) {
+        sesionActiva = true; sesionId = d.id;
+        actualizarEstadoSesionUI();
+        showToast("✅ Sesión recordada: " + d.id);
+      } else {
+        localStorage.removeItem("veracruzSesion");
+      }
+    });
+  } catch (e) { /* sin sesión guardada previa, no pasa nada */ }
+}
+
+function guardarSesionLocal(id, hash) {
+  localStorage.setItem("veracruzSesion", JSON.stringify({ id: id, hash: hash }));
 }
 
 function iniciarSesion() {
@@ -552,11 +577,13 @@ function iniciarSesion() {
       if (!guardado) {
         ref.set(hash).then(function () {
           sesionActiva = true; sesionId = id;
+          guardarSesionLocal(id, hash);
           showToast("🔑 Contraseña creada. Sesión iniciada como " + id);
           actualizarEstadoSesionUI();
         });
       } else if (guardado === hash) {
         sesionActiva = true; sesionId = id;
+        guardarSesionLocal(id, hash);
         showToast("✅ Sesión iniciada");
         actualizarEstadoSesionUI();
       } else {
@@ -583,14 +610,19 @@ function guardarPrellenado() {
 function cargarPrellenado() {
   try {
     const raw = localStorage.getItem("veracruzPrefill");
-    if (!raw) return;
-    const d = JSON.parse(raw);
-    if (d.p) {
-      document.getElementById("esPersonalCheck").checked = true;
-      document.getElementById("esPersonalCheck").dispatchEvent(new Event("change"));
+    if (raw) {
+      const d = JSON.parse(raw);
+      if (d.p) {
+        document.getElementById("esPersonalCheck").checked = true;
+        document.getElementById("esPersonalCheck").dispatchEvent(new Event("change"));
+      }
+      document.getElementById("matriculaInput").value = d.m || "";
+      document.getElementById("nombreInput").value = d.n || "";
     }
-    document.getElementById("matriculaInput").value = d.m || "";
-    document.getElementById("nombreInput").value = d.n || "";
+    if (localStorage.getItem("veracruzAnticipo") === "1") {
+      document.getElementById("anticipoCheck").checked = true;
+      anticipoConfirmado = true;
+    }
   } catch (e) { /* sin datos previos, no pasa nada */ }
 }
 
@@ -757,6 +789,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.getElementById("anticipoCheck").addEventListener("change", function (e) {
     anticipoConfirmado = e.target.checked;
+    localStorage.setItem("veracruzAnticipo", anticipoConfirmado ? "1" : "0");
   });
 
   document.getElementById("esPersonalCheck").addEventListener("change", function (e) {
@@ -941,7 +974,7 @@ function seleccionarAsiento(num) {
   const alerta = document.getElementById("alertaAsiento");
   const datos = datosAlumno();
 
-  if (!anticipoConfirmado) {
+  if (!anticipoConfirmado && !esPersonal()) {
     alerta.innerHTML = '<div class="alert warning">⚠️ Debes confirmar que entregaste tu anticipo antes de elegir asiento.</div>';
     showToast("⚠️ Confirma tu anticipo (arriba) antes de elegir asiento");
     return;
