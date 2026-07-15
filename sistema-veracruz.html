@@ -327,6 +327,11 @@ body{
       <button class="btn danger" id="adminLoginBtn">Ingresar</button>
       <div id="adminControls" style="display:none;margin-top:12px;">
         <button class="btn danger" id="liberarTodoBtn">🗑️ Liberar TODOS los asientos</button>
+        <div style="margin-top:10px;">
+          <label style="font-size:.85em;font-weight:700;display:block;margin-bottom:4px;">Liberar un asiento específico</label>
+          <input type="number" id="asientoEspecificoInput" min="1" max="42" placeholder="Ej. 2" style="width:100%;padding:10px;margin-bottom:6px;border-radius:8px;border:1px solid #ccc;">
+          <button class="btn warning" id="liberarAsientoEspecificoBtn">🔓 Liberar ese asiento</button>
+        </div>
         <div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--danger);">
           <label style="font-weight:700;display:block;margin-bottom:6px;">🏨 Configuración de hospedaje (hotel, jueves)</label>
           <label style="font-weight:400;font-size:.85em;">Número de habitaciones</label>
@@ -682,6 +687,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  document.getElementById("liberarAsientoEspecificoBtn").addEventListener("click", function () {
+    const num = parseInt(document.getElementById("asientoEspecificoInput").value, 10);
+    if (!num || num < 1 || num > TRIP_CONFIG.totalAsientos) { showToast("Escribe un número de asiento válido"); return; }
+    database.ref(TRIP_CONFIG.firebaseRoot + "/asientos/" + num).remove().then(function () {
+      showToast("🔓 Asiento " + num + " liberado");
+    });
+  });
+
   document.getElementById("actualizarCamasBtn").addEventListener("click", function () {
     const habitaciones = parseInt(document.getElementById("habitacionesInput").value, 10);
     const camasPorHabitacion = parseInt(document.getElementById("camasPorHabInput").value, 10);
@@ -802,6 +815,7 @@ function renderMiAsiento(data) {
   if (mio) {
     box.innerHTML =
       '<div class="alert success">✅ Tu asiento actual: <b>' + myCurrentSeat + '</b> — ' + mio.nombre + '</div>' +
+      '<p style="font-size:.82em;color:var(--muted);margin-bottom:8px;">🔄 ¿Quieres cambiar de asiento? Solo da clic directo en otro cuadro disponible (morado claro) — se libera este automáticamente y se asigna el nuevo.</p>' +
       '<button class="btn danger" id="liberarMiAsientoBtn">Liberar mi asiento</button>';
     document.getElementById("liberarMiAsientoBtn").addEventListener("click", function () {
       database.ref(TRIP_CONFIG.firebaseRoot + "/asientos/" + myCurrentSeat).remove().then(function () {
