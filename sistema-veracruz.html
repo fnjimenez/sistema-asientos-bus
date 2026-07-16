@@ -255,8 +255,6 @@ body{
   <h1>🚌 Viaje Académico a Estado de México y Veracruz</h1>
   <p style="font-size:.8em;letter-spacing:.03em;opacity:.9;">Gestión y Planificación Industrial · Logística Portuaria · Responsabilidad Social y Cambio Climático</p>
   <p style="margin-top:10px;">🏫 Universidad del SABES, San Felipe</p>
-  <p>👩‍🏫 <b>Prof. Responsable:</b> Fausto Noé Jiménez (<a href="mailto:fausto.noej@sabes.edu.mx">fausto.noej@sabes.edu.mx</a>, 418-101-1904)</p>
-  <p style="font-size:.85em;">🎓 <b>Coordinadores:</b> Marina E. 479-114-6769 · Ana Magdala M. 428-100-0019 · Juana Isabel C. 428-268-1398</p>
   <div id="connBadge">Conectando...</div>
   <div id="countdown"></div>
 </div>
@@ -1254,6 +1252,24 @@ function renderCamas() {
    distribución final, esta vista se reemplaza automáticamente por
    la de habitaciones/camas estructurada (renderCamas de arriba).
    ============================================================ */
+function renderListaGeneral(items, titulo, miIdActual) {
+  const ids = Object.keys(items || {});
+  if (ids.length === 0) return "";
+  let html = '<h3 style="margin-top:18px;">👥 ' + titulo + ' (' + ids.length + ')</h3>';
+  ids.forEach(function (id) {
+    const item = items[id] || {};
+    const miembros = item.miembros ? Object.keys(item.miembros).length : 0;
+    const ocupados = 1 + miembros;
+    const cap = item.capacidad || 2;
+    const esMio = id === miIdActual;
+    const respNombre = item.responsable && item.responsable.nombre ? item.responsable.nombre : "(sin responsable)";
+    html += '<div class="participant-row"' + (esMio ? ' style="border:2px solid var(--warning);border-radius:8px;padding:8px;"' : '') + '>' +
+      '<span>' + (item.nombre || "Registro") + ' — ' + respNombre + (esMio ? ' <b>(el tuyo)</b>' : '') + '</span>' +
+      '<span>' + ocupados + '/' + cap + '</span></div>';
+  });
+  return html;
+}
+
 function renderAdminListadoCompleto(items, titulo, eliminarFnName, capacidadFn) {
   if (!isAdmin) return "";
   const ids = Object.keys(items || {});
@@ -1336,6 +1352,7 @@ function renderParesProvisional() {
       }
     }
 
+    html += renderListaGeneral(pares, "Todos los Pares de Cama Registrados", miId);
     html += renderAdminListadoCompleto(pares, "Pares de Cama Provisionales (Hotel)", "adminEliminarParProvisional", function () { return 2; });
 
     cont.innerHTML = html;
@@ -1611,6 +1628,7 @@ function renderGlamping() {
       }
     }
 
+    html += renderListaGeneral(casas, "Todas las Tiendas de Glamping Registradas", miId);
     html += renderAdminListadoCompleto(casas, "Tiendas de Glamping", "adminEliminarGlamping", function (item) { return item.capacidad; });
 
     grid.innerHTML = html;
@@ -1779,6 +1797,7 @@ function renderCasasPropias() {
       }
     }
 
+    html += renderListaGeneral(casas, "Todas las Casas de Campaña Registradas", miId);
     html += renderAdminListadoCompleto(casas, "Casas de Campaña Propias", "adminEliminarCasaPropia", function (item) { return item.capacidad; });
 
     grid.innerHTML = html;
