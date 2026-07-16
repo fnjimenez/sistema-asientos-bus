@@ -1326,7 +1326,7 @@ let glampingConfirmado = false;
 function renderGlamping() {
   const grid = document.getElementById("casasCampamentoGrid");
 
-  if (!glampingConfirmado) {
+  if (!glampingConfirmado && !isAdmin) {
     grid.innerHTML =
       '<div class="alert danger">💰 <b>Alerta económica:</b> la tarifa base de camping ($' + TRIP_CONFIG.campamento.tarifaBase + ' por persona) ya está incluida en tu cuota general. Si eliges Glamping, pagarás un <b>diferencial extra por persona</b> sobre esa tarifa base (se calcula automáticamente al elegir el tipo de tienda). Antes de continuar, confirma con los coordinadores que aceptas ese costo adicional y sus términos de pago.</div>' +
       '<div class="form-group"><label><input type="checkbox" id="glampingConfirmCheck"> Ya consulté el costo por persona con los coordinadores y acepto los términos de pago de Glamping.</label></div>' +
