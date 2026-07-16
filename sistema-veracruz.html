@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🚌 Viaje Académico Veracruz - SABES San Felipe</title>
+<title>🧳 SIGVA · Viaje Académico Edo. México y Veracruz - SABES</title>
 
 <!-- Firebase (síncrono, SIN defer, para evitar el loop de "Esperando Firebase...") -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -91,6 +91,8 @@ body{
   margin-bottom:16px;box-shadow:0 1px 5px rgba(0,0,0,.06);
 }
 .card h2{color:var(--primary);margin-bottom:14px;font-size:1.15em;border-bottom:2px solid var(--border);padding-bottom:8px;}
+.room-card{border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px;background:#fafbff;}
+.room-card p{margin:2px 0;font-size:.92em;}
 .card h3{color:var(--accent);margin:14px 0 8px;font-size:1em;}
 
 /* ITINERARIO tipo timeline */
@@ -195,6 +197,24 @@ body{
 }
 .toast.show{opacity:1;bottom:34px;}
 
+/* MASCOTA "TUGA" - guía animada tipo Clippy */
+.mascota-wrap{position:fixed;bottom:20px;right:20px;z-index:998;display:flex;flex-direction:column;align-items:flex-end;}
+.mascota-burbuja{
+  background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 4px 16px rgba(0,0,0,.18);
+  max-width:230px;font-size:.85em;margin-bottom:10px;display:none;position:relative;color:var(--ink);
+}
+.mascota-burbuja:after{
+  content:"";position:absolute;bottom:-8px;right:24px;
+  border-width:8px 8px 0;border-style:solid;border-color:#fff transparent transparent transparent;
+}
+.mascota-btn{
+  width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--primary),var(--primary-light));
+  display:flex;align-items:center;justify-content:center;font-size:1.7em;
+  box-shadow:0 4px 14px rgba(0,0,0,.28);animation:mascotaBounce 2.6s infinite ease-in-out;
+}
+@keyframes mascotaBounce{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-10px) rotate(-6deg);}}
+
 @media(max-width:600px){
   .fechas-grid{grid-template-columns:repeat(2,1fr);}
   .banner h1{font-size:1.2em;}
@@ -203,11 +223,40 @@ body{
 </head>
 <body>
 
+<!-- WIDGET DE CUENTA (esquina superior derecha, estilo login de cualquier sitio) -->
+<div id="cuentaWidget" style="position:fixed;top:14px;right:14px;z-index:1000;">
+  <button id="cuentaToggleBtn" type="button" style="background:#fff;border:none;border-radius:30px;padding:9px 16px;font-weight:700;font-size:.85em;box-shadow:0 2px 10px rgba(0,0,0,.15);cursor:pointer;color:var(--primary);">🔐 Cuenta</button>
+  <div id="cuentaDropdown" style="display:none;position:absolute;right:0;top:44px;width:280px;background:#fff;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.2);padding:16px;">
+    <h3 style="margin-bottom:8px;">🔐 Inicia sesión</h3>
+    <div class="alert info" style="font-size:.78em;">Tu matrícula/empleado + una contraseña que tú eliges. Así nadie más puede modificar tu registro.</div>
+    <div class="form-group">
+      <label><input type="checkbox" id="esPersonalCheck"> Soy personal / coordinador</label>
+    </div>
+    <div class="form-group">
+      <label id="matriculaLabel" style="font-size:.85em;">Matrícula (U0000000N0000)</label>
+      <input type="text" id="matriculaInput" placeholder="U2303057N0061" maxlength="13">
+    </div>
+    <div class="form-group">
+      <label style="font-size:.85em;">Nombre completo</label>
+      <input type="text" id="nombreInput" placeholder="Nombre y apellidos">
+    </div>
+    <div class="form-group">
+      <label style="font-size:.85em;">Contraseña (mín. 4 caracteres)</label>
+      <input type="password" id="passwordInput" placeholder="••••••" maxlength="30">
+    </div>
+    <button class="btn success" id="loginBtn" type="button">🔑 Entrar / Crear contraseña</button>
+    <div id="sesionEstadoBox" style="margin-top:10px;"></div>
+  </div>
+</div>
+
 <div class="banner">
+  <div class="badge" style="background:rgba(255,255,255,.28);">🧳 SIGVA · Sistema de Gestión de Viajes Académicos</div>
   <div class="badge">🎓 VIAJE DE ESTUDIOS · AGOSTO 2026</div>
-  <h1>🚌 Viaje Académico a Veracruz</h1>
-  <p>🏫 Universidad del SABES Campus San Felipe</p>
-  <p>📞 Prof. Fausto Noé Jiménez (<a href="mailto:fausto.noej@sabes.edu.mx">fausto.noej@sabes.edu.mx</a>, 418-101-1904)</p>
+  <h1>🚌 Viaje Académico a Estado de México y Veracruz</h1>
+  <p style="font-size:.8em;letter-spacing:.03em;opacity:.9;">Gestión y Planificación Industrial · Logística Portuaria · Responsabilidad Social y Cambio Climático</p>
+  <p style="margin-top:10px;">🏫 Universidad del SABES, San Felipe</p>
+  <p>👩‍🏫 <b>Prof. Responsable:</b> Fausto Noé Jiménez (<a href="mailto:fausto.noej@sabes.edu.mx">fausto.noej@sabes.edu.mx</a>, 418-101-1904)</p>
+  <p style="font-size:.85em;">🎓 <b>Coordinadores:</b> Marina E. 479-114-6769 · Ana Magdala M. 428-100-0019 · Juana Isabel C. 428-268-1398</p>
   <div id="connBadge">Conectando...</div>
   <div id="countdown"></div>
 </div>
@@ -283,30 +332,6 @@ body{
 <!-- TAB ASIENTOS -->
 <div class="tab-content" id="tab-asientos">
   <div class="card">
-    <h2>🔐 Inicia sesión</h2>
-    <div class="alert info">Tu matrícula/empleado + una contraseña que tú eliges (la creas la primera vez que entras). Así nadie más puede modificar tu asiento, cama o casa aunque sepa tu matrícula.</div>
-
-    <div class="form-group">
-      <label><input type="checkbox" id="esPersonalCheck"> Soy personal / coordinador (no soy alumno)</label>
-    </div>
-    <div class="form-group">
-      <label id="matriculaLabel">Matrícula (formato: U0000000N0000)</label>
-      <input type="text" id="matriculaInput" placeholder="U2303057N0061" maxlength="13">
-    </div>
-    <div class="form-group">
-      <label>Nombre completo</label>
-      <input type="text" id="nombreInput" placeholder="Nombre y apellidos">
-    </div>
-    <div class="form-group">
-      <label>Contraseña (mínimo 4 caracteres)</label>
-      <input type="password" id="passwordInput" placeholder="••••••" maxlength="30">
-      <p style="font-size:.78em;color:var(--muted);margin-top:4px;">Si es tu primera vez, esta contraseña se crea automáticamente para ti. Si ya tienes una, escribe la misma para entrar.</p>
-    </div>
-    <button class="btn success" id="loginBtn" type="button">🔑 Entrar / Crear mi contraseña</button>
-    <div id="sesionEstadoBox" style="margin-top:10px;"></div>
-  </div>
-
-  <div class="card">
     <h2>🪑 Selecciona tu Asiento</h2>
 
     <div class="form-group">
@@ -380,6 +405,48 @@ body{
     <h2>👥 Participantes Registrados</h2>
     <div id="listaParticipantes"><p style="color:#999;">Cargando...</p></div>
   </div>
+</div>
+
+<footer style="max-width:900px;margin:30px auto 10px;padding:0 14px;">
+  <div class="card">
+    <h2>📇 Contactos del Viaje</h2>
+    <p style="margin-bottom:14px;">👋 Antes y durante nuestro viaje académico a Veracruz 🚌🌴, es importante que tengas a la mano y puedas identificar a las siguientes personas de contacto:</p>
+
+    <div class="room-card" style="border-color:var(--primary);">
+      <h3>🧑‍🏫 Responsable de la Visita Académica</h3>
+      <p><b>Prof. Fausto Noé Jiménez</b></p>
+      <p>📱 418-101-1904</p>
+      <p>✉️ <a href="mailto:fausto.noej@sabes.edu.mx">fausto.noej@sabes.edu.mx</a></p>
+      <p>🏫 Universidad del SABES, San Felipe</p>
+    </div>
+
+    <h3 style="margin-top:18px;">🎓 Alumnos Coordinadores</h3>
+
+    <div class="room-card">
+      <p><b>📌 Marina Estrada Solano</b></p>
+      <p>📱 479-114-6769</p>
+      <p>🎯 Administración y Desarrollo de Negocios (ADN) / Plan 2020</p>
+    </div>
+
+    <div class="room-card">
+      <p><b>📌 Ana Magdala Merino Zapiain</b></p>
+      <p>📱 428-100-0019</p>
+      <p>💻 Ingeniería en Tecnologías de Información (TI) / Plan 2020</p>
+    </div>
+
+    <div class="room-card">
+      <p><b>📌 Juana Isabel Centeno Torres</b></p>
+      <p>📱 428-268-1398</p>
+      <p>⚙️ Ingeniería Industrial / Plan 2025</p>
+    </div>
+
+    <p style="margin-top:14px;color:var(--muted);">Guarda sus números 📲 para que puedan identificarse fácilmente durante el trayecto y cualquier coordinación necesaria. ¡Nos vemos pronto! ✈️🧳</p>
+  </div>
+</footer>
+
+<div class="mascota-wrap" id="mascotaWrap">
+  <div class="mascota-burbuja" id="mascotaBurbuja"></div>
+  <button class="mascota-btn" id="mascotaBtn" type="button" title="Tuga, tu guía del viaje">🐢</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -489,6 +556,53 @@ function escucharConfigCamas() {
 /* ============================================================
    UTILIDADES
    ============================================================ */
+/* ============================================================
+   MASCOTA "TUGA" - guía animada con tips rotativos
+   ============================================================ */
+const TUGA_TIPS_POR_TAB = {
+  info: [
+    "¡Hola! Soy Tuga 🐢, tu guía para este viaje. Aquí en 📋 Información puedes ver el itinerario completo día por día.",
+    "No olvides el equipo requerido para La Corona y Hutchison Ports ICAVE: calzado industrial y playera institucional.",
+    "En zona portuaria (ICAVE) no se permite tomar fotos ni videos salvo autorización — síguelo al pie de la letra."
+  ],
+  asientos: [
+    "Antes de elegir asiento, abre '🔐 Cuenta' arriba a la derecha e inicia sesión con tu matrícula.",
+    "No olvides marcar la casilla de anticipo antes de elegir tu asiento en el camión.",
+    "Para cambiar de asiento, solo da clic directo en otro cuadro disponible — no hace falta liberar primero.",
+    "¿Escribiste mal tu nombre? Usa el botón '✏️ Corregir mi nombre en todos lados'."
+  ],
+  hospedaje: [
+    "En Noche 1 (Hotel) puedes crear o unirte a un par de cama mientras se confirma la distribución final.",
+    "En Noche 2 (Campamento) elige entre llevar tu propia casa de campaña o Glamping (este último tiene costo extra).",
+    "Si creas tu casa de campaña, tú decides cuántas personas caben — y lo puedes cambiar después si te equivocas.",
+    "Antes de elegir Glamping, confirma el costo extra por persona con los coordinadores 💰."
+  ],
+  participantes: [
+    "Aquí puedes ver quién ya tiene asiento y hospedaje asignado — y quién le falta alguno de los dos.",
+    "Si ves '⚠️ sin hospedaje registrado' junto a un nombre, es buena idea recordarle que le falta ese paso."
+  ]
+};
+let tugaIndexPorTab = { info: 0, asientos: 0, hospedaje: 0, participantes: 0 };
+let tugaTabActual = "info";
+
+function mostrarTipTuga() {
+  const burbuja = document.getElementById("mascotaBurbuja");
+  const tips = TUGA_TIPS_POR_TAB[tugaTabActual] || TUGA_TIPS_POR_TAB.info;
+  const i = tugaIndexPorTab[tugaTabActual] || 0;
+  burbuja.textContent = tips[i];
+  burbuja.style.display = "block";
+  tugaIndexPorTab[tugaTabActual] = (i + 1) % tips.length;
+}
+
+function mostrarNudgeTuga(mensaje, key) {
+  if (localStorage.getItem("tugaNudge_" + key)) return; // ya se mostró antes, no repetir
+  localStorage.setItem("tugaNudge_" + key, "1");
+  const burbuja = document.getElementById("mascotaBurbuja");
+  burbuja.textContent = mensaje;
+  burbuja.style.display = "block";
+  setTimeout(function () { burbuja.style.display = "none"; }, 8000);
+}
+
 function showToast(msg) {
   const t = document.getElementById("toast");
   t.textContent = msg;
@@ -525,6 +639,7 @@ function requiereSesion() {
 
 function actualizarEstadoSesionUI() {
   const box = document.getElementById("sesionEstadoBox");
+  const toggleBtn = document.getElementById("cuentaToggleBtn");
   if (!box) return;
   if (estaLogueado()) {
     box.innerHTML = '<div class="alert success">✅ Sesión iniciada como <b>' + sesionId + '</b>. <button class="btn danger" id="logoutBtn" type="button" style="margin-top:8px;">Cerrar sesión</button></div>';
@@ -535,8 +650,10 @@ function actualizarEstadoSesionUI() {
       actualizarEstadoSesionUI();
       showToast("Sesión cerrada");
     });
+    if (toggleBtn) { toggleBtn.textContent = "✅ " + sesionId; toggleBtn.style.color = "var(--accent)"; }
   } else {
     box.innerHTML = "";
+    if (toggleBtn) { toggleBtn.textContent = "🔐 Cuenta"; toggleBtn.style.color = "var(--primary)"; }
   }
 }
 
@@ -580,6 +697,7 @@ function iniciarSesion() {
           guardarSesionLocal(id, hash);
           showToast("🔑 Contraseña creada. Sesión iniciada como " + id);
           actualizarEstadoSesionUI();
+          mostrarNudgeTuga("¡Bienvenido/a! 🐢 Soy Tuga. Ya tienes tu cuenta lista — ahora ve marcando tu anticipo y elige tu asiento en el camión.", "bienvenida");
         });
       } else if (guardado === hash) {
         sesionActiva = true; sesionId = id;
@@ -769,12 +887,29 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("esPersonalCheck").addEventListener("change", guardarPrellenado);
   document.getElementById("loginBtn").addEventListener("click", iniciarSesion);
 
+  document.getElementById("cuentaToggleBtn").addEventListener("click", function (e) {
+    e.stopPropagation();
+    const dd = document.getElementById("cuentaDropdown");
+    dd.style.display = (dd.style.display === "block") ? "none" : "block";
+  });
+  document.addEventListener("click", function (e) {
+    const widget = document.getElementById("cuentaWidget");
+    if (!widget.contains(e.target)) document.getElementById("cuentaDropdown").style.display = "none";
+  });
+
+  document.getElementById("mascotaBtn").addEventListener("click", mostrarTipTuga);
+  setTimeout(function () {
+    mostrarTipTuga();
+    setTimeout(function () { document.getElementById("mascotaBurbuja").style.display = "none"; }, 7000);
+  }, 2500);
+
   document.querySelectorAll(".tab-btn").forEach(function (btn) {
     btn.addEventListener("click", function () {
       document.querySelectorAll(".tab-btn").forEach(function (b) { b.classList.remove("active"); });
       document.querySelectorAll(".tab-content").forEach(function (c) { c.classList.remove("active"); });
       btn.classList.add("active");
       document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+      tugaTabActual = btn.dataset.tab;
     });
   });
 
@@ -1016,6 +1151,7 @@ function seleccionarAsiento(num) {
       myCurrentSeat = num;
       alerta.innerHTML = '<div class="alert success">✅ Asiento ' + num + ' asignado correctamente.</div>';
       showToast("Asiento " + num + " confirmado");
+      mostrarNudgeTuga("✅ ¡Ya tienes asiento! Ahora ve a 🏨 Hospedaje para elegir tu cama o casa de campaña.", "hospedaje");
     });
   });
 }
@@ -1092,6 +1228,20 @@ function renderCamas() {
       html += '<button class="btn danger" onclick="salirCama(\'' + miCama + '\')" style="margin-top:14px;">🚪 Salir de mi cama actual</button>';
     }
 
+    if (isAdmin) {
+      const ocupadas = Object.keys(camas).filter(function (k) { return camas[k].miembros && Object.keys(camas[k].miembros).length > 0; });
+      if (ocupadas.length) {
+        html += '<div class="card" style="border:2px dashed var(--danger);margin-top:20px;">';
+        html += '<h3 style="color:var(--danger);">🔐 (Admin) Camas de Hotel — TODAS las ocupadas (' + ocupadas.length + ')</h3>';
+        ocupadas.forEach(function (key) {
+          const nombres = Object.values(camas[key].miembros).map(function (m) { return m.nombre; }).join(", ");
+          html += '<div class="participant-row"><span>' + key.replace(/^h(\d+)_c(\d+)$/, "Hab. $1 · Cama $2") + ' — ' + nombres + '</span>' +
+            '<button class="btn danger" onclick="adminVaciarCama(\'' + key + '\')" style="width:auto;padding:6px 14px;">🗑️</button></div>';
+        });
+        html += '</div>';
+      }
+    }
+
     cont.innerHTML = html;
   });
 }
@@ -1104,6 +1254,25 @@ function renderCamas() {
    distribución final, esta vista se reemplaza automáticamente por
    la de habitaciones/camas estructurada (renderCamas de arriba).
    ============================================================ */
+function renderAdminListadoCompleto(items, titulo, eliminarFnName, capacidadFn) {
+  if (!isAdmin) return "";
+  const ids = Object.keys(items || {});
+  if (ids.length === 0) return "";
+  let html = '<div class="card" style="border:2px dashed var(--danger);margin-top:20px;">';
+  html += '<h3 style="color:var(--danger);">🔐 (Admin) ' + titulo + ' — TODOS los registros (' + ids.length + ')</h3>';
+  ids.forEach(function (id) {
+    const item = items[id] || {};
+    const miembros = item.miembros ? Object.keys(item.miembros).length : 0;
+    const ocupados = 1 + miembros;
+    const cap = capacidadFn ? capacidadFn(item) : "?";
+    const respNombre = item.responsable && item.responsable.nombre ? item.responsable.nombre : "(sin responsable, corrupto)";
+    html += '<div class="participant-row"><span>' + (item.nombre || id) + ' — ' + respNombre + ' (' + ocupados + '/' + cap + ')</span>' +
+      '<button class="btn danger" onclick="' + eliminarFnName + '(\'' + id + '\')" style="width:auto;padding:6px 14px;">🗑️</button></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
 function renderParesProvisional() {
   const cont = document.getElementById("hospedajeContenido");
 
@@ -1166,6 +1335,8 @@ function renderParesProvisional() {
         });
       }
     }
+
+    html += renderAdminListadoCompleto(pares, "Pares de Cama Provisionales (Hotel)", "adminEliminarParProvisional", function () { return 2; });
 
     cont.innerHTML = html;
   });
@@ -1256,6 +1427,15 @@ function salirCama(key) {
   if (!requiereSesion()) return;
   database.ref(TRIP_CONFIG.firebaseRoot + "/camas_hotel/" + key + "/miembros/" + idIdentidad()).remove().then(function () {
     showToast("Saliste de la cama");
+    renderHospedaje();
+  });
+}
+
+function adminVaciarCama(key) {
+  if (!isAdmin) { showToast("Solo el administrador puede hacer esto"); return; }
+  if (!confirm("(Admin) ¿Vaciar esta cama por completo (quitar a todos)?")) return;
+  database.ref(TRIP_CONFIG.firebaseRoot + "/camas_hotel/" + key).remove().then(function () {
+    showToast("🗑️ (Admin) Cama vaciada");
     renderHospedaje();
   });
 }
@@ -1431,6 +1611,8 @@ function renderGlamping() {
       }
     }
 
+    html += renderAdminListadoCompleto(casas, "Tiendas de Glamping", "adminEliminarGlamping", function (item) { return item.capacidad; });
+
     grid.innerHTML = html;
     mostrarDiferencialGlamping();
   });
@@ -1596,6 +1778,8 @@ function renderCasasPropias() {
         });
       }
     }
+
+    html += renderAdminListadoCompleto(casas, "Casas de Campaña Propias", "adminEliminarCasaPropia", function (item) { return item.capacidad; });
 
     grid.innerHTML = html;
   });
