@@ -1161,6 +1161,7 @@ function renderParesProvisional() {
           html += '<div class="card" style="box-shadow:none;border:1px solid var(--border);margin-top:10px;">';
           html += '<p><b>Responsable:</b> ' + p.responsable.nombre + '</p>';
           html += '<button class="btn success" onclick="unirseParProvisional(\'' + id + '\')">Unirme como su pareja</button>';
+          if (isAdmin) html += '<button class="btn danger" onclick="adminEliminarParProvisional(\'' + id + '\')" style="margin-top:6px;">🗑️ (Admin) Eliminar esta casa/par</button>';
           html += '</div>';
         });
       }
@@ -1214,6 +1215,16 @@ function eliminarParProvisional(id) {
     renderParesProvisional();
   });
 }
+
+function adminEliminarParProvisional(id) {
+  if (!isAdmin) { showToast("Solo el administrador puede hacer esto"); return; }
+  if (!confirm("(Admin) ¿Eliminar este par de cama por completo?")) return;
+  database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional/" + id).remove().then(function () {
+    showToast("🗑️ (Admin) Par de cama eliminado");
+    renderParesProvisional();
+  });
+}
+
 
 function seleccionarCama(key) {
   if (!requiereSesion()) return;
@@ -1414,6 +1425,7 @@ function renderGlamping() {
           html += '<p><b>Responsable:</b> ' + c.responsable.nombre + '</p>';
           html += '<p><b>Ocupación:</b> ' + ocupados + '/' + c.capacidad + '</p>';
           html += '<button class="btn success" onclick="unirseGlamping(\'' + id + '\')">Unirme a esta Tienda</button>';
+          if (isAdmin) html += '<button class="btn danger" onclick="adminEliminarGlamping(\'' + id + '\')" style="margin-top:6px;">🗑️ (Admin) Eliminar esta tienda</button>';
           html += '</div>';
         });
       }
@@ -1487,6 +1499,15 @@ function eliminarGlamping(id) {
   if (!confirm("¿Eliminar esta tienda de Glamping por completo?")) return;
   database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping/" + id).remove().then(function () {
     showToast("Tienda de Glamping eliminada");
+    renderGlamping();
+  });
+}
+
+function adminEliminarGlamping(id) {
+  if (!isAdmin) { showToast("Solo el administrador puede hacer esto"); return; }
+  if (!confirm("(Admin) ¿Eliminar esta tienda de Glamping por completo?")) return;
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping/" + id).remove().then(function () {
+    showToast("🗑️ (Admin) Tienda de Glamping eliminada");
     renderGlamping();
   });
 }
@@ -1570,6 +1591,7 @@ function renderCasasPropias() {
           html += '<p><b>Responsable:</b> ' + c.responsable.nombre + '</p>';
           html += '<p><b>Ocupación:</b> ' + ocupados + '/' + c.capacidad + '</p>';
           html += '<button class="btn success" onclick="unirseCasaPropia(\'' + id + '\')">Unirme a esta Casa</button>';
+          if (isAdmin) html += '<button class="btn danger" onclick="adminEliminarCasaPropia(\'' + id + '\')" style="margin-top:6px;">🗑️ (Admin) Eliminar esta casa</button>';
           html += '</div>';
         });
       }
@@ -1625,6 +1647,15 @@ function eliminarCasaPropia(id) {
   if (!confirm("¿Eliminar esta casa de campaña por completo?")) return;
   database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia/" + id).remove().then(function () {
     showToast("Casa de campaña eliminada");
+    renderCasasPropias();
+  });
+}
+
+function adminEliminarCasaPropia(id) {
+  if (!isAdmin) { showToast("Solo el administrador puede hacer esto"); return; }
+  if (!confirm("(Admin) ¿Eliminar esta casa de campaña por completo?")) return;
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia/" + id).remove().then(function () {
+    showToast("🗑️ (Admin) Casa de campaña eliminada");
     renderCasasPropias();
   });
 }
