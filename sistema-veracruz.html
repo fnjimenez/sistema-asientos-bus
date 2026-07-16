@@ -466,6 +466,24 @@ body{
 
     <p style="margin-top:14px;font-size:.85em;color:var(--muted);">Se abre en una pestaña nueva. Si no tienes tu constancia IMSS vigente, el formulario te explica cómo descargarla o cómo tramitar tu alta al seguro facultativo con la universidad.</p>
   </div>
+
+  <div class="admin-box" id="adminDocsBox" style="display:none;">
+    <h3>🔐 Acceso Administrador — Documentación y Base de Datos</h3>
+    <p style="font-size:.85em;color:var(--muted);margin-bottom:10px;">Enlaces de acceso restringido — solo coordinadores y personal autorizado.</p>
+    <a href="https://drive.google.com/drive/folders/1yE6XsxQUcgkiZuCRJNHFoFQk5LWPXOoh?usp=sharing" target="_blank" rel="noopener" style="text-decoration:none;display:block;margin-bottom:8px;">
+      <button class="btn danger" type="button">📁 Carpeta Drive — Documentación de Alumnos (restringido)</button>
+    </a>
+    <a href="https://docs.google.com/spreadsheets/d/1fVx1ukApIHG5nESVirtsuyTHhPwsJb580T-jTvw2UzE/edit?usp=sharing" target="_blank" rel="noopener" style="text-decoration:none;display:block;">
+      <button class="btn danger" type="button">📊 Hoja Excel — Datos Clave de Participantes (restringido)</button>
+    </a>
+  </div>
+
+  <div class="admin-box" id="coordAccesoCard">
+    <h3>🔑 Acceso Coordinador (solo Documentación)</h3>
+    <p style="font-size:.85em;color:var(--muted);margin-bottom:8px;">Para coordinadores con acceso a la carpeta Drive y el Excel de participantes (sin permisos para borrar asientos ni hospedajes).</p>
+    <input type="password" id="coordPass" placeholder="Contraseña de coordinador" style="width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ccc;">
+    <button class="btn success" id="coordLoginBtn" type="button">Entrar</button>
+  </div>
 </div>
 
 <div class="mascota-wrap" id="mascotaWrap">
@@ -503,7 +521,8 @@ const TRIP_CONFIG = {
     ]
   },
   firebaseRoot: "viajeVeracruz2026",
-  adminPassword: "SABES2026"
+  adminPassword: "SABES2026",
+  coordinadorPassword: "COORDVERA2026" // acceso solo a documentación (Drive/Excel), NO borra nada
 };
 
 const firebaseConfig = {
@@ -978,7 +997,20 @@ document.addEventListener("DOMContentLoaded", function () {
     if (pass === TRIP_CONFIG.adminPassword) {
       isAdmin = true;
       document.getElementById("adminControls").style.display = "block";
+      const docsBox = document.getElementById("adminDocsBox");
+      if (docsBox) docsBox.style.display = "block";
       showToast("🔓 Acceso admin concedido");
+    } else {
+      showToast("❌ Contraseña incorrecta");
+    }
+  });
+
+  document.getElementById("coordLoginBtn").addEventListener("click", function () {
+    const pass = document.getElementById("coordPass").value;
+    if (pass === TRIP_CONFIG.coordinadorPassword) {
+      document.getElementById("adminDocsBox").style.display = "block";
+      document.getElementById("coordAccesoCard").style.display = "none";
+      showToast("🔓 Acceso a documentación concedido");
     } else {
       showToast("❌ Contraseña incorrecta");
     }
