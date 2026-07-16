@@ -1126,7 +1126,7 @@ function renderParesProvisional() {
       html += '<h3>' + (soyResponsable ? "👑 Mi Par de Cama (Responsable)" : "🛏️ Mi Par de Cama") + '</h3>';
       html += '<p><b>Ocupación:</b> ' + ocupados + '/2 personas</p>';
       html += '<div class="progress"><div class="progress-fill" style="width:' + (ocupados / 2 * 100) + '%"></div></div>';
-      html += '<p><b>Responsable:</b> ' + p.responsable.nombre + '</p>';
+      html += '<p><b>Responsable:</b> ' + (p.responsable ? p.responsable.nombre : '(sin datos, registro editado manualmente)') + '</p>';
       if (Object.keys(p.miembros || {}).length) {
         html += '<p><b>Pareja:</b></p><ul>';
         Object.values(p.miembros).forEach(function (m) { html += '<li>' + m.nombre + '</li>'; });
@@ -1147,6 +1147,7 @@ function renderParesProvisional() {
 
       const disponibles = Object.keys(pares).filter(function (id) {
         const p = pares[id];
+        if (!p || !p.responsable) return false; // registro corrupto/incompleto, ignorar
         const ocupados = 1 + Object.keys(p.miembros || {}).length;
         return ocupados < 2;
       });
@@ -1362,7 +1363,7 @@ function renderGlamping() {
         html += '<div class="alert warning">💵 No se pudo calcular el diferencial para esta tienda (fue creada antes de esta actualización). Confirma el costo directamente con los coordinadores.</div>';
       }
 
-      html += '<p><b>Responsable:</b> ' + c.responsable.nombre + '</p>';
+      html += '<p><b>Responsable:</b> ' + (c.responsable ? c.responsable.nombre : '(sin datos, registro editado manualmente)') + '</p>';
       if (Object.keys(c.miembros || {}).length) {
         html += '<p><b>Compañeros:</b></p><ul>';
         Object.values(c.miembros).forEach(function (m) { html += '<li>' + m.nombre + '</li>'; });
@@ -1396,6 +1397,7 @@ function renderGlamping() {
 
       const disponibles = Object.keys(casas).filter(function (id) {
         const c = casas[id];
+        if (!c || !c.responsable || !c.capacidad) return false; // registro corrupto/incompleto, ignorar
         const ocupados = 1 + Object.keys(c.miembros || {}).length;
         return ocupados < c.capacidad;
       });
@@ -1524,7 +1526,7 @@ function renderCasasPropias() {
       html += '<p><b>Nombre:</b> ' + c.nombre + '</p>';
       html += '<p><b>Ocupación:</b> ' + ocupados + '/' + c.capacidad + ' personas</p>';
       html += '<div class="progress"><div class="progress-fill" style="width:' + (ocupados / c.capacidad * 100) + '%"></div></div>';
-      html += '<p><b>Responsable:</b> ' + c.responsable.nombre + '</p>';
+      html += '<p><b>Responsable:</b> ' + (c.responsable ? c.responsable.nombre : '(sin datos, registro editado manualmente)') + '</p>';
       if (Object.keys(c.miembros || {}).length) {
         html += '<p><b>Compañeros:</b></p><ul>';
         Object.values(c.miembros).forEach(function (m) { html += '<li>' + m.nombre + '</li>'; });
@@ -1551,6 +1553,7 @@ function renderCasasPropias() {
 
       const disponibles = Object.keys(casas).filter(function (id) {
         const c = casas[id];
+        if (!c || !c.responsable || !c.capacidad) return false; // registro corrupto/incompleto, ignorar
         const ocupados = 1 + Object.keys(c.miembros || {}).length;
         return ocupados < c.capacidad;
       });
