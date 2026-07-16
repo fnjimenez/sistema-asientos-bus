@@ -271,6 +271,7 @@ body{
   <button class="tab-btn" data-tab="asientos">🪑 Asientos</button>
   <button class="tab-btn" data-tab="hospedaje">🏨 Hospedaje</button>
   <button class="tab-btn" data-tab="participantes">👥 Participantes</button>
+  <button class="tab-btn" data-tab="documentacion">📄 Documentación</button>
 </div>
 
 <!-- TAB INFORMACIÓN -->
@@ -440,6 +441,33 @@ body{
   </div>
 </div>
 
+<!-- TAB DOCUMENTACIÓN -->
+<div class="tab-content" id="tab-documentacion">
+  <div class="card">
+    <h2>📄 Documentación Obligatoria</h2>
+    <div class="alert warning">⚠️ Este es un trámite aparte del asiento y el hospedaje. Elegir asiento/cama <b>no garantiza tu lugar</b> — tu participación se confirma hasta que la Coordinación de Vinculación valide tu expediente completo.</div>
+
+    <p style="margin-bottom:14px;">Para participar en el viaje necesitas subir tu documentación en el siguiente formulario:</p>
+
+    <ul class="req-list">
+      <li class="ok">👤 Datos del alumno (nombre, matrícula, carrera, plan, cuatrimestre, teléfono, correo institucional)</li>
+      <li class="ok">📞 Contacto de emergencia familiar</li>
+      <li class="ok">🛡️ Número de Seguro Social (NSS) vigente ante el IMSS</li>
+      <li class="ok">📋 Constancia de vigencia de derechos IMSS (PDF, descargada desde IMSS Digital)</li>
+      <li class="ok">🪪 INE escaneada (PDF, ambos lados en una sola hoja)</li>
+      <li class="ok">🖼️ Fotografía con fondo blanco (JPG)</li>
+      <li class="ok">🎓 Credencial de estudiante SABES vigente (PDF, ambos lados)</li>
+      <li class="ok">✅ Carta de conformidad (lineamientos de La Corona y Hutchison Ports ICAVE)</li>
+    </ul>
+
+    <a href="https://clever-douhua-9ef246.netlify.app" target="_blank" rel="noopener" style="text-decoration:none;">
+      <button class="btn success" style="margin-top:16px;">📨 Ir al Formulario de Documentación</button>
+    </a>
+
+    <p style="margin-top:14px;font-size:.85em;color:var(--muted);">Se abre en una pestaña nueva. Si no tienes tu constancia IMSS vigente, el formulario te explica cómo descargarla o cómo tramitar tu alta al seguro facultativo con la universidad.</p>
+  </div>
+</div>
+
 <div class="mascota-wrap" id="mascotaWrap">
   <div class="mascota-burbuja" id="mascotaBurbuja"></div>
   <button class="mascota-btn" id="mascotaBtn" type="button" title="Tuga, tu guía del viaje">🐢</button>
@@ -576,6 +604,11 @@ const TUGA_TIPS_POR_TAB = {
   participantes: [
     "Aquí puedes ver quién ya tiene asiento y hospedaje asignado — y quién le falta alguno de los dos.",
     "Si ves '⚠️ sin hospedaje registrado' junto a un nombre, es buena idea recordarle que le falta ese paso."
+  ],
+  documentacion: [
+    "⚠️ Elegir asiento o cama NO garantiza tu lugar — tu expediente de documentación es lo que confirma tu participación.",
+    "Tu constancia IMSS debe descargarse de IMSS Digital y decir 'VIGENTE', no capturas de pantalla.",
+    "La INE y tu credencial de estudiante van en PDF, ambos lados, en UNA sola hoja cada uno."
   ]
 };
 let tugaIndexPorTab = { info: 0, asientos: 0, hospedaje: 0, participantes: 0 };
