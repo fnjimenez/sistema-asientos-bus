@@ -1339,14 +1339,24 @@ function renderAdminListadoCompleto(items, titulo, eliminarFnName, capacidadFn) 
   if (ids.length === 0) return "";
   let html = '<div class="card" style="border:2px dashed var(--danger);margin-top:20px;">';
   html += '<h3 style="color:var(--danger);">🔐 (Admin) ' + titulo + ' — TODOS los registros (' + ids.length + ')</h3>';
+  html += '<p style="font-size:.78em;color:var(--muted);margin-bottom:8px;">La matrícula/ID mostrada entre paréntesis es la que el sistema usa para identificar a cada quien — si el asiento de alguien no coincide EXACTO con esto, el sistema los trata como personas distintas.</p>';
   ids.forEach(function (id) {
     const item = items[id] || {};
     const miembros = item.miembros ? Object.keys(item.miembros).length : 0;
     const ocupados = 1 + miembros;
     const cap = capacidadFn ? capacidadFn(item) : "?";
     const respNombre = item.responsable && item.responsable.nombre ? item.responsable.nombre : "(sin responsable, corrupto)";
-    html += '<div class="participant-row"><span>' + (item.nombre || id) + ' — ' + respNombre + ' (' + ocupados + '/' + cap + ')</span>' +
-      '<button class="btn danger" onclick="' + eliminarFnName + '(\'' + id + '\')" style="width:auto;padding:6px 14px;">🗑️</button></div>';
+    const respId = item.responsable && item.responsable.usuario ? item.responsable.usuario : "—";
+    html += '<div class="participant-row" style="flex-direction:column;align-items:flex-start;gap:2px;">' +
+      '<div style="display:flex;justify-content:space-between;width:100%;"><span>' + (item.nombre || id) + ' — ' + respNombre + ' (' + ocupados + '/' + cap + ')</span>' +
+      '<button class="btn danger" onclick="' + eliminarFnName + '(\'' + id + '\')" style="width:auto;padding:6px 14px;">🗑️</button></div>' +
+      '<span style="font-size:.78em;color:var(--muted);">🔑 ID responsable: <code>' + respId + '</code></span>';
+    if (item.miembros) {
+      Object.keys(item.miembros).forEach(function (uid) {
+        html += '<span style="font-size:.78em;color:var(--muted);">🔑 ID miembro (' + item.miembros[uid].nombre + '): <code>' + uid + '</code></span>';
+      });
+    }
+    html += '</div>';
   });
   html += '</div>';
   return html;
@@ -1993,9 +2003,10 @@ function renderParticipantes(asientosData) {
     entries.forEach(function (num) {
       const p = asientosData[num];
       const hosp = hospedajeMap[p.usuario] || '<span style="color:var(--danger);">⚠️ sin hospedaje registrado</span>';
+      const idAdmin = isAdmin ? ' <code style="font-size:.75em;color:var(--muted);">[' + p.usuario + ']</code>' : '';
       html +=
         '<div class="participant-row" style="flex-direction:column;align-items:flex-start;gap:3px;">' +
-          '<div style="display:flex;justify-content:space-between;width:100%;"><span>💺 Asiento ' + num + ' — ' + p.nombre + '</span><span>' + p.matricula + '</span></div>' +
+          '<div style="display:flex;justify-content:space-between;width:100%;"><span>💺 Asiento ' + num + ' — ' + p.nombre + idAdmin + '</span><span>' + p.matricula + '</span></div>' +
           '<div style="font-size:.82em;color:var(--muted);">' + hosp + '</div>' +
         '</div>';
     });
