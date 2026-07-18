@@ -1387,8 +1387,18 @@ function renderParesProvisional() {
       html += '<p><b>Responsable:</b> ' + (p.responsable ? p.responsable.nombre : '(sin datos, registro editado manualmente)') + '</p>';
       if (Object.keys(p.miembros || {}).length) {
         html += '<p><b>Pareja:</b></p><ul>';
-        Object.values(p.miembros).forEach(function (m) { html += '<li>' + m.nombre + '</li>'; });
+        Object.keys(p.miembros).forEach(function (uid) {
+          html += '<li>' + p.miembros[uid].nombre + (soyResponsable ? ' <button class="btn danger" onclick="quitarParejaProvisional(\'' + miId + '\', \'' + uid + '\')" style="width:auto;padding:3px 10px;font-size:.8em;margin-left:6px;">Quitar</button>' : '') + '</li>';
+        });
         html += '</ul>';
+      }
+      if (soyResponsable && ocupados < 2) {
+        html += '<div class="form-group" style="margin-top:10px;">';
+        html += '<label>➕ Jalar a un compañero ya registrado (matrícula/empleado)</label>';
+        html += '<input type="text" id="jalarParMatricula" placeholder="U2303057N0061 o EMP-1234" style="margin-bottom:6px;">';
+        html += '<input type="text" id="jalarParNombre" placeholder="Nombre completo">';
+        html += '</div>';
+        html += '<button class="btn success" onclick="jalarParejaProvisional(\'' + miId + '\')">Agregar como mi pareja</button>';
       }
       if (soyResponsable) {
         html += '<button class="btn danger" onclick="eliminarParProvisional(\'' + miId + '\')" style="margin-top:10px;">🗑️ Eliminar Mi Par de Cama</button>';
@@ -1473,6 +1483,38 @@ function eliminarParProvisional(id) {
   if (!confirm("¿Eliminar este par de cama por completo?")) return;
   database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional/" + id).remove().then(function () {
     showToast("Par de cama eliminado");
+    renderParesProvisional();
+  });
+}
+
+function jalarParejaProvisional(id) {
+  if (!requiereSesion()) return;
+  const matriculaRaw = document.getElementById("jalarParMatricula").value.trim().toUpperCase();
+  const nombre = document.getElementById("jalarParNombre").value.trim();
+  if (!nombre) { showToast("Escribe el nombre completo de tu compañero(a)"); return; }
+  const uid = matriculaRaw.startsWith("EMP-") ? matriculaRaw : matriculaRaw;
+  if (!uid) { showToast("Escribe la matrícula o número de empleado de tu compañero(a)"); return; }
+
+  const ref = database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional/" + id);
+  ref.once("value").then(function (snap) {
+    const p = snap.val() || {};
+    const ocupados = 1 + Object.keys(p.miembros || {}).length;
+    if (ocupados >= 2) { showToast("Ese par de cama ya está completo"); return; }
+    if (p.responsable && p.responsable.usuario === uid) { showToast("Esa persona ya es el responsable de este par"); return; }
+    ref.child("miembros/" + uid).set({ nombre: nombre, matricula: uid }).then(function () {
+      showToast("✅ " + nombre + " agregado(a) como tu pareja");
+      document.getElementById("jalarParMatricula").value = "";
+      document.getElementById("jalarParNombre").value = "";
+      renderParesProvisional();
+    });
+  });
+}
+
+function quitarParejaProvisional(id, uid) {
+  if (!requiereSesion()) return;
+  if (!confirm("¿Quitar a esta persona de tu par de cama?")) return;
+  database.ref(TRIP_CONFIG.firebaseRoot + "/pares_cama_provisional/" + id + "/miembros/" + uid).remove().then(function () {
+    showToast("Compañero(a) removido(a)");
     renderParesProvisional();
   });
 }
@@ -1647,7 +1689,9 @@ function renderGlamping() {
       html += '<p><b>Responsable:</b> ' + (c.responsable ? c.responsable.nombre : '(sin datos, registro editado manualmente)') + '</p>';
       if (Object.keys(c.miembros || {}).length) {
         html += '<p><b>Compañeros:</b></p><ul>';
-        Object.values(c.miembros).forEach(function (m) { html += '<li>' + m.nombre + '</li>'; });
+        Object.keys(c.miembros).forEach(function (uid) {
+          html += '<li>' + c.miembros[uid].nombre + (soyResponsable ? ' <button class="btn danger" onclick="quitarCompaneroGlamping(\'' + miId + '\', \'' + uid + '\')" style="width:auto;padding:3px 10px;font-size:.8em;margin-left:6px;">Quitar</button>' : '') + '</li>';
+        });
         html += '</ul>';
       }
       if (soyResponsable) {
@@ -1659,6 +1703,14 @@ function renderGlamping() {
         });
         html += '</select></div>';
         html += '<button class="btn warning" onclick="reconfigurarCapacidadGlamping(\'' + miId + '\', ' + ocupados + ')">✏️ Actualizar capacidad</button>';
+        if (ocupados < c.capacidad) {
+          html += '<div class="form-group" style="margin-top:10px;">';
+          html += '<label>➕ Jalar a un compañero ya registrado (matrícula/empleado)</label>';
+          html += '<input type="text" id="jalarGlampingMatricula" placeholder="U2303057N0061 o EMP-1234" style="margin-bottom:6px;">';
+          html += '<input type="text" id="jalarGlampingNombre" placeholder="Nombre completo">';
+          html += '</div>';
+          html += '<button class="btn success" onclick="jalarCompaneroGlamping(\'' + miId + '\')">Agregar a mi tienda</button>';
+        }
         html += '<button class="btn danger" onclick="eliminarGlamping(\'' + miId + '\')" style="margin-top:8px;">🗑️ Eliminar Mi Tienda</button>';
       } else {
         html += '<button class="btn warning" onclick="salirGlamping(\'' + miId + '\')" style="margin-top:10px;">🚪 Salir de esta Tienda</button>';
@@ -1776,6 +1828,37 @@ function eliminarGlamping(id) {
   });
 }
 
+function jalarCompaneroGlamping(id) {
+  if (!requiereSesion()) return;
+  const uid = document.getElementById("jalarGlampingMatricula").value.trim().toUpperCase();
+  const nombre = document.getElementById("jalarGlampingNombre").value.trim();
+  if (!nombre) { showToast("Escribe el nombre completo de tu compañero(a)"); return; }
+  if (!uid) { showToast("Escribe la matrícula o número de empleado de tu compañero(a)"); return; }
+
+  const ref = database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping/" + id);
+  ref.once("value").then(function (snap) {
+    const c = snap.val() || {};
+    const ocupados = 1 + Object.keys(c.miembros || {}).length;
+    if (ocupados >= c.capacidad) { showToast("Tu tienda ya está completa"); return; }
+    if (c.responsable && c.responsable.usuario === uid) { showToast("Esa persona ya es el responsable"); return; }
+    ref.child("miembros/" + uid).set({ nombre: nombre, matricula: uid }).then(function () {
+      showToast("✅ " + nombre + " agregado(a) a tu tienda");
+      document.getElementById("jalarGlampingMatricula").value = "";
+      document.getElementById("jalarGlampingNombre").value = "";
+      renderGlamping();
+    });
+  });
+}
+
+function quitarCompaneroGlamping(id, uid) {
+  if (!requiereSesion()) return;
+  if (!confirm("¿Quitar a esta persona de tu tienda?")) return;
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/glamping/" + id + "/miembros/" + uid).remove().then(function () {
+    showToast("Compañero(a) removido(a)");
+    renderGlamping();
+  });
+}
+
 function adminEliminarGlamping(id) {
   if (!isAdmin) { showToast("Solo el administrador puede hacer esto"); return; }
   if (!confirm("(Admin) ¿Eliminar esta tienda de Glamping por completo?")) return;
@@ -1823,7 +1906,9 @@ function renderCasasPropias() {
       html += '<p><b>Responsable:</b> ' + (c.responsable ? c.responsable.nombre : '(sin datos, registro editado manualmente)') + '</p>';
       if (Object.keys(c.miembros || {}).length) {
         html += '<p><b>Compañeros:</b></p><ul>';
-        Object.values(c.miembros).forEach(function (m) { html += '<li>' + m.nombre + '</li>'; });
+        Object.keys(c.miembros).forEach(function (uid) {
+          html += '<li>' + c.miembros[uid].nombre + (soyResponsable ? ' <button class="btn danger" onclick="quitarCompaneroCasaPropia(\'' + miId + '\', \'' + uid + '\')" style="width:auto;padding:3px 10px;font-size:.8em;margin-left:6px;">Quitar</button>' : '') + '</li>';
+        });
         html += '</ul>';
       }
       if (soyResponsable) {
@@ -1832,6 +1917,14 @@ function renderCasasPropias() {
         html += '<input type="number" id="nuevaCapacidadInput" min="' + ocupados + '" max="20" value="' + c.capacidad + '">';
         html += '</div>';
         html += '<button class="btn warning" onclick="reconfigurarCapacidadCasa(\'' + miId + '\', ' + ocupados + ')">✏️ Actualizar capacidad</button>';
+        if (ocupados < c.capacidad) {
+          html += '<div class="form-group" style="margin-top:10px;">';
+          html += '<label>➕ Jalar a un compañero ya registrado (matrícula/empleado)</label>';
+          html += '<input type="text" id="jalarCasaMatricula" placeholder="U2303057N0061 o EMP-1234" style="margin-bottom:6px;">';
+          html += '<input type="text" id="jalarCasaNombre" placeholder="Nombre completo">';
+          html += '</div>';
+          html += '<button class="btn success" onclick="jalarCompaneroCasaPropia(\'' + miId + '\')">Agregar a mi casa</button>';
+        }
         html += '<button class="btn danger" onclick="eliminarCasaPropia(\'' + miId + '\')" style="margin-top:8px;">🗑️ Eliminar Mi Casa</button>';
       } else {
         html += '<button class="btn warning" onclick="salirCasaPropia(\'' + miId + '\')" style="margin-top:10px;">🚪 Salir de esta Casa</button>';
@@ -1923,6 +2016,37 @@ function eliminarCasaPropia(id) {
   if (!confirm("¿Eliminar esta casa de campaña por completo?")) return;
   database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia/" + id).remove().then(function () {
     showToast("Casa de campaña eliminada");
+    renderCasasPropias();
+  });
+}
+
+function jalarCompaneroCasaPropia(id) {
+  if (!requiereSesion()) return;
+  const uid = document.getElementById("jalarCasaMatricula").value.trim().toUpperCase();
+  const nombre = document.getElementById("jalarCasaNombre").value.trim();
+  if (!nombre) { showToast("Escribe el nombre completo de tu compañero(a)"); return; }
+  if (!uid) { showToast("Escribe la matrícula o número de empleado de tu compañero(a)"); return; }
+
+  const ref = database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia/" + id);
+  ref.once("value").then(function (snap) {
+    const c = snap.val() || {};
+    const ocupados = 1 + Object.keys(c.miembros || {}).length;
+    if (ocupados >= c.capacidad) { showToast("Tu casa ya está completa"); return; }
+    if (c.responsable && c.responsable.usuario === uid) { showToast("Esa persona ya es el responsable"); return; }
+    ref.child("miembros/" + uid).set({ nombre: nombre, matricula: uid }).then(function () {
+      showToast("✅ " + nombre + " agregado(a) a tu casa");
+      document.getElementById("jalarCasaMatricula").value = "";
+      document.getElementById("jalarCasaNombre").value = "";
+      renderCasasPropias();
+    });
+  });
+}
+
+function quitarCompaneroCasaPropia(id, uid) {
+  if (!requiereSesion()) return;
+  if (!confirm("¿Quitar a esta persona de tu casa?")) return;
+  database.ref(TRIP_CONFIG.firebaseRoot + "/casas_campamento/propia/" + id + "/miembros/" + uid).remove().then(function () {
+    showToast("Compañero(a) removido(a)");
     renderCasasPropias();
   });
 }
