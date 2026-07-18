@@ -1321,14 +1321,21 @@ function renderListaGeneral(items, titulo, miIdActual) {
   let html = '<h3 style="margin-top:18px;">👥 ' + titulo + ' (' + ids.length + ')</h3>';
   ids.forEach(function (id) {
     const item = items[id] || {};
-    const miembros = item.miembros ? Object.keys(item.miembros).length : 0;
-    const ocupados = 1 + miembros;
+    const miembrosObj = item.miembros || {};
+    const ocupados = 1 + Object.keys(miembrosObj).length;
     const cap = item.capacidad || 2;
     const esMio = id === miIdActual;
     const respNombre = item.responsable && item.responsable.nombre ? item.responsable.nombre : "(sin responsable)";
-    html += '<div class="participant-row"' + (esMio ? ' style="border:2px solid var(--warning);border-radius:8px;padding:8px;"' : '') + '>' +
+
+    let nombresLista = '<li>👑 ' + respNombre + ' (responsable)</li>';
+    Object.values(miembrosObj).forEach(function (m) { nombresLista += '<li>' + m.nombre + '</li>'; });
+
+    html += '<details' + (esMio ? ' style="border:2px solid var(--warning);border-radius:8px;padding:6px 10px;"' : ' style="padding:6px 10px;"') + '>';
+    html += '<summary style="cursor:pointer;display:flex;justify-content:space-between;list-style:none;">' +
       '<span>' + (item.nombre || "Registro") + ' — ' + respNombre + (esMio ? ' <b>(el tuyo)</b>' : '') + '</span>' +
-      '<span>' + ocupados + '/' + cap + '</span></div>';
+      '<span>' + ocupados + '/' + cap + '</span></summary>';
+    html += '<ul style="margin-top:6px;font-size:.88em;">' + nombresLista + '</ul>';
+    html += '</details>';
   });
   return html;
 }
