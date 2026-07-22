@@ -108,6 +108,10 @@ body{
 .req-list li{padding:5px 0 5px 24px;position:relative;font-size:.92em;}
 .req-list li.ok:before{content:"✅";position:absolute;left:0;}
 .req-list li.no:before{content:"🚫";position:absolute;left:0;}
+.req-check{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:.9em;cursor:pointer;}
+.req-check input{margin-top:3px;flex-shrink:0;width:16px;height:16px;}
+.epp-toggle{padding:9px 12px;border:none;border-radius:10px;background:#eef0f4;font-weight:700;cursor:pointer;font-size:.82em;margin:3px;}
+.epp-toggle.active{background:var(--primary);color:#fff;}
 
 .form-group{margin-bottom:14px;}
 .form-group label{display:block;font-weight:700;margin-bottom:6px;font-size:.9em;color:var(--ink);}
@@ -144,8 +148,13 @@ body{
   writing-mode:vertical-rl;text-align:center;font-size:.55em;color:#b6b9c7;letter-spacing:1px;
 }
 .seat{
-  aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;
   font-weight:700;font-size:.8em;cursor:pointer;color:#fff;background:var(--primary-light);
+  overflow:hidden;padding:2px;line-height:1.1;
+}
+.seat-nombre{
+  font-weight:400;font-size:.62em;max-width:100%;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;opacity:.95;
 }
 .seat.ocupado{background:#8e44ad;cursor:not-allowed;}
 .seat.mio{background:var(--warning);}
@@ -215,6 +224,22 @@ body{
 }
 @keyframes mascotaBounce{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-10px) rotate(-6deg);}}
 
+.mascota-btn-chica{
+  width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;
+  background:#fff;color:var(--primary);font-size:1.1em;font-weight:700;
+  box-shadow:0 3px 10px rgba(0,0,0,.2);
+}
+.mascota-busqueda{
+  display:flex;gap:6px;margin-bottom:10px;background:#fff;padding:8px;
+  border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.18);
+}
+.mascota-busqueda input{
+  flex:1;padding:8px 10px;border:1px solid #ccc;border-radius:8px;font-size:.85em;width:170px;
+}
+.mascota-busqueda button{
+  border:none;border-radius:8px;background:var(--primary);color:#fff;padding:0 12px;cursor:pointer;
+}
+
 @media(max-width:600px){
   .fechas-grid{grid-template-columns:repeat(2,1fr);}
   .banner h1{font-size:1.2em;}
@@ -272,6 +297,7 @@ body{
   <button class="tab-btn" data-tab="hospedaje">🏨 Hospedaje</button>
   <button class="tab-btn" data-tab="participantes">👥 Participantes</button>
   <button class="tab-btn" data-tab="documentacion">📄 Documentación</button>
+  <button class="tab-btn" data-tab="epp">🦺 EPP Y Seguridad</button>
 </div>
 
 <!-- TAB INFORMACIÓN -->
@@ -486,9 +512,131 @@ body{
   </div>
 </div>
 
+<!-- TAB EPP Y SEGURIDAD -->
+<div class="tab-content" id="tab-epp">
+  <div class="card">
+    <h2>🦺 EPP y Seguridad por Sede</h2>
+    <div class="night-toggle" style="flex-wrap:wrap;">
+      <button class="epp-toggle active" data-epp="general">🌍 Todo el viaje</button>
+      <button class="epp-toggle" data-epp="corona">🏭 La Corona</button>
+      <button class="epp-toggle" data-epp="aquarium">🐠 Aquarium Veracruz</button>
+      <button class="epp-toggle" data-epp="icave">🚢 Hutchison Ports ICAVE</button>
+      <button class="epp-toggle" data-epp="tortuguero">🐢 Vida Milenaria</button>
+    </div>
+
+    <!-- GENERAL -->
+    <div class="epp-panel" id="epp-general">
+      <h3>🌍 Durante todo el viaje</h3>
+      <div class="alert info">Estas reglas aplican en todo momento, sin importar la sede que visitemos.</div>
+
+      <div class="alert danger" style="border:3px solid var(--danger);font-weight:700;font-size:1em;padding:16px;">
+        🚫🍺 <b>ALERTA MÁXIMA — QUEDA ESTRICTAMENTE PROHIBIDO:</b><br>
+        Ingerir <b>bebidas alcohólicas</b>, <b>drogas</b> o <b>enervantes</b> antes o durante cualquier momento del viaje.<br><br>
+        <span style="font-weight:400;font-size:.9em;">
+        Incurrir en esta falta genera <b>sanción administrativa y académica</b> conforme al Reglamento de Alumnos de la Universidad del SABES, y además <b>invalida en su totalidad la cobertura del seguro contra accidentes para TODOS los participantes</b> del grupo — las condiciones generales de este tipo de pólizas excluyen expresamente los siniestros ocurridos bajo el efecto de alcohol, drogas o sustancias psicotrópicas.
+        <br><br>
+        <i>📌 Nota para administración: agregar aquí el número de artículo exacto del Reglamento de Alumnos SABES y de la póliza contratada, para respaldo formal por escrito.</i>
+        </span>
+      </div>
+      <label class="req-check"><input type="checkbox" data-epp-key="gen_alcohol_drogas"> Entiendo y acepto que NO debo ingerir bebidas alcohólicas, drogas ni enervantes en ningún momento del viaje, y las consecuencias que esto implica.</label>
+
+      <label class="req-check"><input type="checkbox" data-epp-key="gen_ine"> Traigo mi identificación oficial vigente (credencial escolar o INE) en todo momento.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="general_1"> Sé quién es el responsable/coordinador de mi grupo y cómo contactarlo.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="general_2"> Me mantengo con el grupo — no me separo ni me adelanto sin avisar.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="general_3"> Sigo en todo momento las indicaciones de profesores, guías y coordinadores.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="general_4"> Llevo protector solar, gorra/sombrero y agua suficiente para las actividades al aire libre.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="general_5"> Uso mi distintivo del grupo (pulsera, gafete, etc.) cuando se indique.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="general_6"> En caso de emergencia, sigo las indicaciones del guía/coordinador y no actúo por mi cuenta.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="general_7"> Traigo el equipo de protección personal (EPP) requerido por cada sede (ver su sección correspondiente).</label>
+    </div>
+
+    <!-- LA CORONA -->
+    <div class="epp-panel" id="epp-corona" style="display:none;">
+      <h3>🏭 Fábrica de Jabón La Corona</h3>
+      <div class="alert info">Lineamientos oficiales de La Corona (Programa de Buenas Prácticas de Manufactura).</div>
+
+      <h4 style="margin-top:12px;color:var(--accent);">Antes de la visita</h4>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_1"> Uso calzado de seguridad o industrial cerrado, con suela antiderrapante (NO zapato abierto ni de piso sin cerrar).</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_2"> NO llevo bebidas ni alimentos a las áreas productivas.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_3"> NO llevo reproductor de música.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_4"> NO llevo mochila, bolsa ni bulto a las áreas productivas.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_5"> NO llevo envases (plástico, vidrio, etc.).</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_6"> NO uso cámaras, equipos de video ni celular en áreas productivas, salvo autorización previa.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_7"> NO uso shorts, bermudas, pantalones cortos, minifaldas, zapatos descubiertos o de tacón.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_8"> NO uso accesorios visibles (joyería, aretes, collares, pulseras, relojes).</label>
+
+      <h4 style="margin-top:14px;color:var(--accent);">Durante el recorrido</h4>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_9"> Sigo las indicaciones del guía en todo momento.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_10"> Porto de forma visible el gafete/etiqueta de identificación.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_11"> Porto el EPP proporcionado por el guía (casco, cofia, cubrebocas) según el área.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_12"> Avanzo de manera ordenada y mantengo el orden del grupo.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_13"> Respeto la delimitación de áreas (franjas amarillas).</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_14"> No empujo, no corro y no grito.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_15"> Solo fumo (si aplica) en las áreas asignadas para ello.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_16"> Tengo precaución al subir/bajar escaleras y utilizo el pasamanos.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_17"> Me mantengo unido al grupo, no me separo.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_18"> Respeto los señalamientos de seguridad e higiene de cada área.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_19"> No me acerco a máquinas que estén en operación.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="corona_20"> En caso de emergencia, sigo las indicaciones del guía.</label>
+    </div>
+
+    <!-- AQUARIUM -->
+    <div class="epp-panel" id="epp-aquarium" style="display:none;">
+      <h3>🐠 Aquarium de Veracruz</h3>
+      <div class="alert warning">⏳ Reglamento pendiente de confirmación por parte del Aquarium. En cuanto se reciba, se agregará aquí con sus lineamientos específicos (vestimenta, fotografía, comportamiento dentro de la instalación, etc.).</div>
+    </div>
+
+    <!-- HUTCHISON PORTS ICAVE -->
+    <div class="epp-panel" id="epp-icave" style="display:none;">
+      <h3>🚢 Hutchison Ports ICAVE (Puerto de Veracruz)</h3>
+      <div class="alert danger">⚠️ Esta visita requiere trámite de permisos con anticipación. La documentación completa (INE, foto, NSS, formato Excel) se sube en la pestaña 📄 Documentación — aquí solo confirmas que cumples cada requisito.</div>
+
+      <h4 style="margin-top:12px;color:var(--accent);">Documentación por asistente (incluye chofer)</h4>
+      <label class="req-check"><input type="checkbox" data-epp-key="icave_1"> Ya subí mi INE escaneada por ambos lados (NO foto), vigente, en formato PDF.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="icave_2"> Ya subí mi fotografía con fondo blanco (JPG).</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="icave_3"> Ya llené mi NSS en el formato de Excel correspondiente.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="icave_4"> El formato de Excel general está debidamente llenado con mis datos.</label>
+
+      <h4 style="margin-top:14px;color:var(--accent);">Lineamientos de seguridad durante la visita</h4>
+      <label class="req-check"><input type="checkbox" data-epp-key="icave_5"> NO llevo equipos electrónicos — únicamente mi celular.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="icave_6"> Entiendo que durante el recorrido NO se pueden tomar fotografías; solo las fotos grupales que tome el personal de Relaciones Públicas de ICAVE.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="icave_7"> Uso calzado cerrado tipo industrial y sigo las indicaciones de seguridad patrimonial en todo momento.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="icave_8"> Sigo siempre al guía asignado y no me acerco a maquinaria ni zonas de carga sin autorización.</label>
+    </div>
+
+    <!-- CAMPAMENTO TORTUGUERO VIDA MILENARIA -->
+    <div class="epp-panel" id="epp-tortuguero" style="display:none;">
+      <h3>🐢 Campamento Tortuguero "Vida Milenaria" — Campus Norte, Tecolutla</h3>
+      <div class="alert info">Reglamento de la asociación para la actividad de liberación de tortugas. Al participar se asume que el grupo leyó y acepta estos puntos.</div>
+
+      <h4 style="margin-top:12px;color:var(--accent);">Respeto a las tortugas y al entorno</h4>
+      <label class="req-check"><input type="checkbox" data-epp-key="tortuguero_1"> Entiendo que está estrictamente prohibido tocar a las tortugas (ni para fotos ni videos).</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="tortuguero_2"> Solo tomaré fotos/video una vez que las tortugas estén en la arena, y SIN flash (las desorienta).</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="tortuguero_3"> NO me llevaré conchas, arena, cangrejos, piedras ni ningún elemento natural (es Área Natural Protegida).</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="tortuguero_4"> NO dejaré basura ni alteraré el ecosistema de ninguna forma.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="tortuguero_5"> NO tomaré fotos del área de camping/glamping si hay otros campistas usándola (por su privacidad).</label>
+
+      <h4 style="margin-top:14px;color:var(--accent);">Horario y organización</h4>
+      <label class="req-check"><input type="checkbox" data-epp-key="tortuguero_6"> Entiendo que las liberaciones son entre 6:00 y 7:00 a.m. y el horario se asigna según orden de confirmación — no se garantiza atención fuera de ese horario.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="tortuguero_7"> Llevaré puesto mi distintivo de grupo (pulsera/pañoleta/gafete) para ser identificado por el coordinador.</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="tortuguero_8"> Sé que la actividad dura aproximadamente 1 hora (bienvenida + taller + liberación).</label>
+      <label class="req-check"><input type="checkbox" data-epp-key="tortuguero_9"> Si se usa dron, entiendo que debe ser manejado por alguien con experiencia y no debe volar sobre las crías (es posible que esté prohibido por ser Área Natural Protegida).</label>
+    </div>
+  </div>
+
+  <div id="reporteEPPBox"></div>
+</div>
+
 <div class="mascota-wrap" id="mascotaWrap">
+  <div class="mascota-busqueda" id="mascotaBusqueda" style="display:none;">
+    <input type="text" id="tugaPreguntaInput" placeholder="Ej. ICAVE, anticipo, glamping...">
+    <button id="tugaPreguntarBtn" type="button">🔍</button>
+  </div>
   <div class="mascota-burbuja" id="mascotaBurbuja"></div>
-  <button class="mascota-btn" id="mascotaBtn" type="button" title="Tuga, tu guía del viaje">🐢</button>
+  <div style="display:flex;gap:8px;align-items:flex-end;">
+    <button class="mascota-btn-chica" id="mascotaPreguntarToggle" type="button" title="Preguntarle algo a Tuga">❓</button>
+    <button class="mascota-btn" id="mascotaBtn" type="button" title="Tuga, tu guía del viaje">🐢</button>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -538,6 +686,7 @@ let database;
 let myCurrentSeat = null;
 let anticipoConfirmado = false;
 let isAdmin = false;
+let esCoordinador = false;
 let nocheActual = "hotel";
 
 /* ============================================================
@@ -628,6 +777,11 @@ const TUGA_TIPS_POR_TAB = {
     "⚠️ Elegir asiento o cama NO garantiza tu lugar — tu expediente de documentación es lo que confirma tu participación.",
     "Tu constancia IMSS debe descargarse de IMSS Digital y decir 'VIGENTE', no capturas de pantalla.",
     "La INE y tu credencial de estudiante van en PDF, ambos lados, en UNA sola hoja cada uno."
+  ],
+  epp: [
+    "🦺 Revisa la sección de cada sede — los requisitos de calzado y vestimenta cambian entre La Corona e ICAVE.",
+    "🚢 En Hutchison Ports ICAVE solo se permite el celular — nada de cámaras ni otros equipos electrónicos.",
+    "🐢 En el campamento tortuguero está prohibido tocar a las tortugas, incluso para fotos."
   ]
 };
 let tugaIndexPorTab = { info: 0, asientos: 0, hospedaje: 0, participantes: 0 };
@@ -649,6 +803,56 @@ function mostrarNudgeTuga(mensaje, key) {
   burbuja.textContent = mensaje;
   burbuja.style.display = "block";
   setTimeout(function () { burbuja.style.display = "none"; }, 8000);
+}
+
+/* ============================================================
+   PREGUNTAS FRECUENTES DE TUGA (búsqueda por palabra clave,
+   sin conexión a IA — respuestas ya escritas)
+   ============================================================ */
+const TUGA_FAQ = [
+  { palabras: ["cuenta", "login", "sesion", "sesión", "contraseña", "password", "entrar"],
+    respuesta: "🔐 Arriba a la derecha está el botón 'Cuenta'. Ahí escribes tu matrícula/empleado, tu nombre y una contraseña (tú la creas la primera vez; luego usa la misma para entrar)." },
+  { palabras: ["anticipo"],
+    respuesta: "💰 Si eres alumno, debes marcar la casilla de anticipo antes de poder elegir asiento. Si eres personal/coordinador, ese requisito no te aplica." },
+  { palabras: ["asiento", "camion", "camión", "cambiar de asiento", "lugar"],
+    respuesta: "🪑 Para elegir asiento ve a la pestaña Asientos. Para CAMBIAR de asiento, solo da clic directo en otro cuadro disponible — no hace falta liberar el anterior primero." },
+  { palabras: ["nombre", "mayusculas", "mayúsculas", "corregir"],
+    respuesta: "✏️ Si tu nombre quedó mal escrito, corrígelo en el campo 'Nombre completo' y da clic en 'Corregir mi nombre en todos lados' — actualiza tu asiento, cama y casa a la vez." },
+  { palabras: ["hotel", "cama", "cuarto", "habitacion", "habitación", "par"],
+    respuesta: "🏨 Mientras no se confirme la distribución final de cuartos, puedes organizarte en 'Par de Cama' con un compañero, en la pestaña Hospedaje → Hotel." },
+  { palabras: ["campamento", "casa de campaña", "tienda", "camping"],
+    respuesta: "⛺ En Hospedaje → Campamento puedes crear tu propia casa de campaña (tú decides cuántos caben) o elegir Glamping (tiene costo extra)." },
+  { palabras: ["glamping"],
+    respuesta: "✨ Glamping tiene un costo adicional sobre la tarifa base de camping ($150). Antes de elegirlo, confirma el precio exacto con los coordinadores — el sistema te muestra el diferencial por persona al seleccionar el tipo de tienda." },
+  { palabras: ["documentacion", "documentación", "ine", "imss", "foto", "expediente"],
+    respuesta: "📄 En la pestaña Documentación tienes la lista completa (INE, foto, constancia IMSS, credencial, etc.) y el enlace al formulario. Elegir asiento NO garantiza tu lugar — el expediente completo es lo que lo confirma." },
+  { palabras: ["epp", "seguridad", "corona", "icave", "puerto", "aquarium", "tortuga", "tortuguero"],
+    respuesta: "🦺 En la pestaña EPP Y Seguridad hay una sección por cada sede (La Corona, Aquarium, ICAVE, Vida Milenaria) con lo que debes llevar y las reglas de cada lugar." },
+  { palabras: ["alcohol", "droga", "drogas", "bebida", "alcoholicas", "alcohólicas"],
+    respuesta: "🚫 Está totalmente prohibido ingerir bebidas alcohólicas, drogas o enervantes en cualquier momento del viaje — implica sanción académica y anula el seguro de accidentes de TODO el grupo." },
+  { palabras: ["fecha", "cuando", "cuándo", "agosto", "salida"],
+    respuesta: "📅 El viaje es del 19 al 22 de agosto de 2026 (miércoles a sábado). Revisa el itinerario completo en la pestaña Información." },
+  { palabras: ["contacto", "coordinador", "coordinadora", "telefono", "teléfono", "responsable"],
+    respuesta: "📇 Los contactos del Prof. Responsable y las Coordinadoras están en la pestaña Información, al final." },
+  { palabras: ["itinerario", "actividades", "que vamos a visitar", "visitas"],
+    respuesta: "🗺️ El itinerario día por día (La Corona, ICAVE, Acuario, El Tajín, Campamento Tortuguero) está en la pestaña Información." }
+];
+
+function buscarTuga() {
+  const input = document.getElementById("tugaPreguntaInput");
+  const query = input.value.trim().toLowerCase();
+  const burbuja = document.getElementById("mascotaBurbuja");
+  if (!query) { showToast("Escribe alguna palabra para preguntar"); return; }
+
+  const match = TUGA_FAQ.find(function (item) {
+    return item.palabras.some(function (p) { return query.includes(p); });
+  });
+
+  burbuja.textContent = match
+    ? match.respuesta
+    : "🐢 No encontré nada sobre '" + query + "'. Intenta con otra palabra (ej. asiento, hospedaje, ICAVE, documentación, anticipo...) o pregúntale directo al Prof. Fausto.";
+  burbuja.style.display = "block";
+  input.value = "";
 }
 
 function showToast(msg) {
@@ -699,10 +903,105 @@ function actualizarEstadoSesionUI() {
       showToast("Sesión cerrada");
     });
     if (toggleBtn) { toggleBtn.textContent = "✅ " + sesionId; toggleBtn.style.color = "var(--accent)"; }
+    cargarChecklistEPP();
   } else {
     box.innerHTML = "";
     if (toggleBtn) { toggleBtn.textContent = "🔐 Cuenta"; toggleBtn.style.color = "var(--primary)"; }
   }
+}
+
+/* ============================================================
+   CHECKLIST EPP Y SEGURIDAD
+   Cada casilla se guarda por identidad (matrícula/empleado) en
+   Firebase. Admin y Coordinadores pueden ver el reporte general
+   y SOBREESCRIBIR cualquier respuesta si encuentran documentación
+   faltante o errónea, aunque el alumno haya marcado lo contrario.
+   ============================================================ */
+function guardarEppRespuesta(key, valor) {
+  const id = idIdentidad();
+  if (!id) { showToast("Inicia sesión (matrícula/empleado) antes de marcar"); return; }
+  if (!requiereSesion()) return;
+  const datos = datosAlumno();
+  const root = TRIP_CONFIG.firebaseRoot + "/epp_checklist/" + id;
+  database.ref(root + "/" + key).set(valor);
+  if (datos) database.ref(root + "/_meta").set({ nombre: datos.nombre, matricula: datos.matricula });
+}
+
+function cargarChecklistEPP() {
+  const id = idIdentidad();
+  if (!id || !database) return;
+  database.ref(TRIP_CONFIG.firebaseRoot + "/epp_checklist/" + id).once("value").then(function (snap) {
+    const data = snap.val() || {};
+    document.querySelectorAll("[data-epp-key]").forEach(function (chk) {
+      chk.checked = !!data[chk.dataset.eppKey];
+    });
+  });
+}
+
+function mostrarReporteEPP() {
+  if (!isAdmin && !esCoordinador) return;
+  const box = document.getElementById("reporteEPPBox");
+  if (!box) return;
+  if (!database) { box.innerHTML = '<p style="color:#999;">Conectando...</p>'; return; }
+
+  // Mapa clave -> texto de la pregunta (tomado directo del DOM, no se duplica a mano)
+  const etiquetas = {};
+  document.querySelectorAll("[data-epp-key]").forEach(function (chk) {
+    etiquetas[chk.dataset.eppKey] = chk.parentElement.textContent.trim();
+  });
+  const todasLasClaves = Object.keys(etiquetas);
+
+  Promise.all([
+    database.ref(TRIP_CONFIG.firebaseRoot + "/asientos").once("value"),
+    database.ref(TRIP_CONFIG.firebaseRoot + "/epp_checklist").once("value")
+  ]).then(function (snaps) {
+    const asientos = snaps[0].val() || {};
+    const checklist = snaps[1].val() || {};
+
+    // Un participante por identidad (usando su asiento como fuente del nombre)
+    const participantes = {};
+    Object.values(asientos).forEach(function (p) { participantes[p.usuario] = p.nombre; });
+    // Agregar también quienes tienen checklist pero no aparecen en asientos (usando el nombre guardado en _meta)
+    Object.keys(checklist).forEach(function (id) {
+      if (!participantes[id]) {
+        participantes[id] = (checklist[id]._meta && checklist[id]._meta.nombre) ? checklist[id]._meta.nombre : id;
+      }
+    });
+
+    const ids = Object.keys(participantes);
+    let html = '<div class="card" style="border:2px dashed var(--danger);margin-top:20px;">';
+    html += '<h3 style="color:var(--danger);">🔐 (Admin/Coordinador) Reporte General de Cumplimiento EPP</h3>';
+    html += '<p style="font-size:.8em;color:var(--muted);margin-bottom:10px;">Puedes corregir cualquier casilla directamente aquí — tu cambio sobreescribe lo que haya marcado el alumno.</p>';
+
+    if (ids.length === 0) {
+      html += '<p style="color:#999;">Aún no hay participantes registrados.</p>';
+    } else {
+      ids.forEach(function (id) {
+        const respuestas = checklist[id] || {};
+        const totalMarcadas = todasLasClaves.filter(function (k) { return respuestas[k]; }).length;
+        html += '<details style="margin-bottom:8px;padding:6px 10px;">';
+        html += '<summary style="cursor:pointer;display:flex;justify-content:space-between;">' +
+          '<span>' + (participantes[id] || id) + ' <code style="font-size:.75em;color:var(--muted);">[' + id + ']</code></span>' +
+          '<span>' + totalMarcadas + '/' + todasLasClaves.length + '</span></summary>';
+        html += '<div style="margin-top:8px;">';
+        todasLasClaves.forEach(function (k) {
+          const marcado = !!respuestas[k];
+          html += '<label class="req-check"><input type="checkbox" ' + (marcado ? 'checked' : '') +
+            ' onchange="adminSobreescribirEpp(\'' + id + '\', \'' + k + '\', this.checked)"> ' + etiquetas[k] + '</label>';
+        });
+        html += '</div></details>';
+      });
+    }
+    html += '</div>';
+    box.innerHTML = html;
+  });
+}
+
+function adminSobreescribirEpp(id, key, valor) {
+  if (!isAdmin && !esCoordinador) { showToast("No tienes permiso para esto"); return; }
+  database.ref(TRIP_CONFIG.firebaseRoot + "/epp_checklist/" + id + "/" + key).set(valor).then(function () {
+    showToast("✏️ Respuesta corregida");
+  });
 }
 
 function intentarSesionAutomatica() {
@@ -946,6 +1245,20 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   document.getElementById("mascotaBtn").addEventListener("click", mostrarTipTuga);
+  document.getElementById("mascotaPreguntarToggle").addEventListener("click", function () {
+    const caja = document.getElementById("mascotaBusqueda");
+    caja.style.display = (caja.style.display === "flex") ? "none" : "flex";
+    if (caja.style.display === "flex") document.getElementById("tugaPreguntaInput").focus();
+  });
+  document.getElementById("tugaPreguntarBtn").addEventListener("click", buscarTuga);
+  document.getElementById("tugaPreguntaInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") buscarTuga();
+  });
+  document.addEventListener("change", function (e) {
+    if (e.target.matches("[data-epp-key]")) {
+      guardarEppRespuesta(e.target.dataset.eppKey, e.target.checked);
+    }
+  });
   setTimeout(function () {
     mostrarTipTuga();
     setTimeout(function () { document.getElementById("mascotaBurbuja").style.display = "none"; }, 7000);
@@ -958,6 +1271,10 @@ document.addEventListener("DOMContentLoaded", function () {
       btn.classList.add("active");
       document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
       tugaTabActual = btn.dataset.tab;
+      if (btn.dataset.tab === "epp") {
+        cargarChecklistEPP();
+        mostrarReporteEPP();
+      }
     });
   });
 
@@ -967,6 +1284,15 @@ document.addEventListener("DOMContentLoaded", function () {
       btn.classList.add("active");
       nocheActual = btn.dataset.night;
       renderHospedaje();
+    });
+  });
+
+  document.querySelectorAll(".epp-toggle").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".epp-toggle").forEach(function (b) { b.classList.remove("active"); });
+      document.querySelectorAll(".epp-panel").forEach(function (p) { p.style.display = "none"; });
+      btn.classList.add("active");
+      document.getElementById("epp-" + btn.dataset.epp).style.display = "block";
     });
   });
 
@@ -1000,6 +1326,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const docsBox = document.getElementById("adminDocsBox");
       if (docsBox) docsBox.style.display = "block";
       showToast("🔓 Acceso admin concedido");
+      mostrarReporteEPP();
     } else {
       showToast("❌ Contraseña incorrecta");
     }
@@ -1008,9 +1335,11 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("coordLoginBtn").addEventListener("click", function () {
     const pass = document.getElementById("coordPass").value;
     if (pass === TRIP_CONFIG.coordinadorPassword) {
+      esCoordinador = true;
       document.getElementById("adminDocsBox").style.display = "block";
       document.getElementById("coordAccesoCard").style.display = "none";
       showToast("🔓 Acceso a documentación concedido");
+      mostrarReporteEPP();
     } else {
       showToast("❌ Contraseña incorrecta");
     }
@@ -1139,8 +1468,10 @@ function escucharAsientos() {
           el.classList.add("ocupado");
         }
         el.title = "Asiento " + num + ": " + nombreCorto(data[num].nombre);
+        el.innerHTML = num + '<span class="seat-nombre">' + primerNombre(data[num].nombre) + '</span>';
       } else {
         el.title = "Asiento " + num + ": disponible";
+        el.innerHTML = num;
       }
     });
     renderMiAsiento(data);
@@ -1152,6 +1483,11 @@ function nombreCorto(nombreCompleto) {
   if (!nombreCompleto) return "";
   const partes = nombreCompleto.trim().split(" ");
   return partes.length > 1 ? (partes[0] + " " + partes[1]) : partes[0];
+}
+
+function primerNombre(nombreCompleto) {
+  if (!nombreCompleto) return "";
+  return nombreCompleto.trim().split(" ")[0];
 }
 
 function renderMiAsiento(data) {
